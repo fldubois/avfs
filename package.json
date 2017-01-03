@@ -1,0 +1,25 @@
+{
+  "name": "avfs",
+  "version": "0.0.0",
+  "description": "Another Virtual File System",
+  "author": "Florent Dubois <florent.dubois@devaddict.io>",
+  "license": "MIT",
+  "keywords": [
+    "file system",
+    "fs",
+    "memory",
+    "virtual",
+    "mock",
+    "fixture"
+  ],
+  "homepage": "https://github.com/fldubois/avfs#readme",
+  "bugs": "https://github.com/fldubois/avfs/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fldubois/avfs.git"
+  },
+  "main": "lib/avfs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
