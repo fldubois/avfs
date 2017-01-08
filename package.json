@@ -23,6 +23,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "lodash.get": "^4.4.2"
+    "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2"
   }
 }
