@@ -115,6 +115,39 @@ describe('avfs', function () {
       });
     });
 
+  });
+
+  describe('renameSync()', function () {
+
+    it('should rename files', function () {
+      var content = new Buffer('Hello, friend.');
+
+      fs.files = {'tmp': {'old.txt': content}};
+
+      var result = fs.renameSync('/tmp/old.txt', '/tmp/new.txt');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.contain.keys('new.txt');
+      expect(fs.files.tmp['new.txt']).to.equal(content);
+    });
+
+    it('should rename files', function () {
+      var content = new Buffer('Hello, friend.');
+
+      fs.files = {'tmp': {'old.txt': content}};
+
+      var result = fs.renameSync('/tmp/old.txt', '/var/old.txt');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.var).to.contain.keys('old.txt');
+      expect(fs.files.var['old.txt']).to.equal(content);
+    });
+
+    it('should throw on non existing path', function () {
+      expect(function () {
+        fs.renameSync('/tmp/old.txt', '/tmp/new.txt');
+      }).to.throw(Error, 'Error: ENOENT, no such file or directory \'/tmp/old.txt\'');
+    });
 
   });
 
