@@ -15,6 +15,53 @@ describe('avfs', function () {
     fs.next    = 0;
   });
 
+  describe('closeSync()', function () {
+
+    it('should close the file handle', function () {
+      var fd = 0;
+
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file.txt'
+      };
+
+      var result = fs.closeSync(fd);
+
+      expect(result).to.be.an('undefined');
+      expect(fs.handles[fd]).to.equal(null);
+    });
+
+    it('should throw on non writing file descriptor', function () {
+      var fd = 0;
+
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 1, // F_RO
+        path:  '/tmp/file.txt'
+      };
+
+      expect(function () {
+        fs.closeSync(fd);
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non existing file descriptor', function () {
+      expect(function () {
+        fs.closeSync(0);
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non integer file descriptor', function () {
+      expect(function () {
+        fs.closeSync('Hello');
+      }).to.throw(Error, 'Bad argument');
+    });
+
+  });
+
   describe('existsSync()', function () {
 
     it('should return true for existing file', function () {
