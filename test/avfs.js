@@ -164,6 +164,71 @@ describe('avfs', function () {
 
   });
 
+  describe('readFileSync()', function () {
+
+    it('should return the file buffer', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var content = fs.readFileSync('/tmp/file.txt');
+
+      expect(content).to.be.an.instanceof(Buffer);
+      expect(content.toString()).to.equal('Hello, friend.');
+    });
+
+    it('should return an encoded string', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var content = fs.readFileSync('/tmp/file.txt', {encoding: 'utf8'});
+
+      expect(content).to.be.a('string');
+      expect(content).to.equal('Hello, friend.');
+    });
+
+    it('should accept the encoding as options', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var content = fs.readFileSync('/tmp/file.txt', 'utf8');
+
+      expect(content).to.be.a('string');
+      expect(content).to.equal('Hello, friend.');
+    });
+
+    it('should throw on non existing file', function () {
+      expect(function () {
+        fs.readFileSync('/tmp/file.txt');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on directory', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.readFileSync('/tmp');
+      }).to.throw(Error, 'EISDIR, illegal operation on a directory');
+    });
+
+    it('should throw on unknown encoding', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.readFileSync('/tmp/file.txt', 'utf5');
+      }).to.throw(Error, 'Unknown encoding: utf5');
+    });
+
+    it('should throw on non string path', function () {
+      expect(function () {
+        fs.readFileSync(true);
+      }).to.throw(TypeError, 'path must be a string');
+    });
+
+    it('should throw on bad options type', function () {
+      expect(function () {
+        fs.readFileSync('/tmp/file.txt', true);
+      }).to.throw(TypeError, 'Bad arguments');
+    });
+
+  });
+
   describe('renameSync()', function () {
 
     it('should rename files', function () {
