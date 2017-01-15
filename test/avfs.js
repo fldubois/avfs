@@ -320,4 +320,96 @@ describe('avfs', function () {
 
   });
 
+  describe('writeFileSync()', function () {
+
+    it('should write buffer to file', function () {
+      fs.files = {'tmp': {}};
+
+      var result = fs.writeFileSync('/tmp/file', new Buffer('Hello, friend.'));
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.contain.keys('file');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+    });
+
+    it('should write string to file', function () {
+      fs.files = {'tmp': {}};
+
+      var result = fs.writeFileSync('/tmp/file', 'Hello, friend.');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.contain.keys('file');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+    });
+
+    it('should write encoded string to file', function () {
+      fs.files = {'tmp': {}};
+
+      var result = fs.writeFileSync('/tmp/file', 'aàâäeéèâë', {encoding: 'ascii'});
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.contain.keys('file');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
+    });
+
+    it('should accept the encoding as options', function () {
+      fs.files = {'tmp': {}};
+
+      var result = fs.writeFileSync('/tmp/file', 'aàâäeéèâë', 'ascii');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.contain.keys('file');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
+    });
+
+    it('should throw on non existing parent directory', function () {
+      expect(function () {
+        fs.writeFileSync('/tmp/file.txt', 'Hello, friend.');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on not directory parent', function () {
+      fs.files = {'tmp': new Buffer('Hello, friend.')};
+
+      expect(function () {
+        fs.writeFileSync('/tmp/file.txt', 'Hello, friend.');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on directory path', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.writeFileSync('/tmp', 'Hello, friend.');
+      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
+    });
+
+    it('should throw on unknown encoding', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.writeFileSync('/tmp/file.txt', 'Hello, friend.', 'utf5');
+      }).to.throw(Error, 'Unknown encoding: utf5');
+    });
+
+    it('should throw on non string path', function () {
+      expect(function () {
+        fs.writeFileSync(true);
+      }).to.throw(TypeError, 'path must be a string');
+    });
+
+    it('should throw on bad options type', function () {
+      expect(function () {
+        fs.writeFileSync('/tmp/file.txt', 'Hello, friend.', true);
+      }).to.throw(TypeError, 'Bad arguments');
+    });
+
+  });
+
 });
