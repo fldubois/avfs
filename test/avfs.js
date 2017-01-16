@@ -320,6 +320,39 @@ describe('avfs', function () {
 
   });
 
+  describe('unlinkSync()', function () {
+
+    it('should delete file', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var result = fs.unlinkSync('/tmp/file.txt');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.deep.equal({});
+    });
+
+    it('should throw on non existing path', function () {
+      expect(function () {
+        fs.unlinkSync('/tmp/file.txt');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on directory', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.unlinkSync('/tmp');
+      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
+    });
+
+    it('should throw on non string path', function () {
+      expect(function () {
+        fs.unlinkSync(true);
+      }).to.throw(TypeError, 'path must be a string');
+    });
+
+  });
+
   describe('writeFileSync()', function () {
 
     it('should write buffer to file', function () {
