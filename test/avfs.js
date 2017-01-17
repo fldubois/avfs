@@ -101,7 +101,7 @@ describe('avfs', function () {
       ['r', 'r+', 'rs', 'rs+'].forEach(function (flags) {
         expect(function () {
           fs.openSync('/tmp/file.txt', flags);
-        }).to.throw(Error, 'Error: ENOENT, no such file or directory \'/tmp/file.txt\'', 'with flags \'' + flags + '\'');
+        }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file.txt\'', 'with flags \'' + flags + '\'');
       });
     });
 
@@ -111,7 +111,7 @@ describe('avfs', function () {
       ['wx', 'xw', 'wx+', 'xw+', 'ax', 'xa', 'ax+', 'xa+'].forEach(function (flags) {
         expect(function () {
           fs.openSync('/tmp/file.txt', flags);
-        }).to.throw(Error, 'Error: EEXIST, file already exists \'/tmp/file.txt\'', 'with flags \'' + flags + '\'');
+        }).to.throw(Error, 'EEXIST, file already exists \'/tmp/file.txt\'', 'with flags \'' + flags + '\'');
       });
     });
 
@@ -258,7 +258,7 @@ describe('avfs', function () {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.renameSync('/tmp/old.txt', '/tmp/new.txt');
-      }).to.throw(Error, 'Error: ENOENT, no such file or directory \'/tmp/old.txt\'');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/old.txt\'');
     });
 
   });
@@ -326,7 +326,7 @@ describe('avfs', function () {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.truncateSync('/tmp/file.txt');
-      }).to.throw(Error, 'Error: ENOENT, no such file or directory \'/tmp/file.txt\'');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file.txt\'');
     });
 
     it('should throw on directory', function () {
@@ -334,7 +334,7 @@ describe('avfs', function () {
 
       expect(function () {
         fs.truncateSync('/tmp');
-      }).to.throw(Error, 'Error: EISDIR, illegal operation on a directory \'/tmp\'');
+      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
     });
 
     it('should throw on non string path', function () {
