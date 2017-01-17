@@ -263,6 +263,39 @@ describe('avfs', function () {
 
   });
 
+  describe('rmdirSync()', function () {
+
+    it('should delete file', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var result = fs.rmdirSync('/tmp');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files).to.deep.equal({});
+    });
+
+    it('should throw on non existing path', function () {
+      expect(function () {
+        fs.rmdirSync('/tmp');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp\'');
+    });
+
+    it('should throw on file', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.rmdirSync('/tmp/file.txt');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on non string path', function () {
+      expect(function () {
+        fs.rmdirSync(true);
+      }).to.throw(TypeError, 'path must be a string');
+    });
+
+  });
+
   describe('truncateSync()', function () {
 
     it('should truncate file', function () {
