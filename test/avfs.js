@@ -714,6 +714,196 @@ describe('avfs', function () {
 
   });
 
+  describe('write()', function () {
+
+    it('should write in the file', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        write: 0
+      };
+
+      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
+        expect(error).to.equal(null);
+
+        expect(written).to.equal(5);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+        expect(fs.files.tmp.file.toString()).to.equal('Hello');
+
+        return done();
+      });
+    });
+
+    it('should write the file from position', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {'file': new Buffer('Hello, world')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        write: 0
+      };
+
+      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 7, function (error, written, buffer) {
+        expect(error).to.equal(null);
+
+        expect(written).to.equal(5);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+        expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
+
+        return done();
+      });
+    });
+
+    it('should write the file from current position', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {'file': new Buffer('Hello, world')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        write: 7
+      };
+
+      fs.write(fd, new Buffer('Hello, friend'), 0, 5, null, function (error, written, buffer) {
+        expect(error).to.equal(null);
+
+        expect(written).to.equal(5);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+        expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
+
+        expect(fs.handles[fd].write).to.equal(12);
+
+        return done();
+      });
+    });
+
+    it('should read the buffer from offset', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        write: 0
+      };
+
+      fs.write(fd, new Buffer('Hello, friend'), 7, 6, 0, function (error, written, buffer) {
+        expect(error).to.equal(null);
+
+        expect(written).to.equal(6);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+        expect(fs.files.tmp.file.toString()).to.equal('friend');
+
+        return done();
+      });
+    });
+
+    it('should fail on non existing fd', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {}};
+
+      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EBADF, write');
+
+        expect(written).to.equal(0);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        return done();
+      });
+    });
+
+    it('should fail on closed fd', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {}};
+
+      fs.handles[fd] = null;
+
+      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EBADF, write');
+
+        expect(written).to.equal(0);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        return done();
+      });
+    });
+
+    it('should fail on non writing fd', function (done) {
+      var fd = 0;
+
+      fs.files = {'tmp': {}};
+
+      fs.handles[fd] = {
+        flags: 1, // F_RO
+        path:  '/tmp/file.txt',
+        write:  0
+      };
+
+      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EBADF, write');
+
+        expect(written).to.equal(0);
+
+        expect(buffer).to.be.an.instanceof(Buffer);
+        expect(buffer.toString()).to.equal('Hello, friend');
+
+        return done();
+      });
+    });
+
+    it('should throw on bad fd type', function () {
+      expect(function () {
+        fs.write(true);
+      }).to.throw(TypeError, 'Bad arguments');
+    });
+
+    it('should throw on offset out of bounds', function () {
+      expect(function () {
+        fs.write(0, new Buffer('Hello, friend'), 1000, 0, 0, function () {});
+      }).to.throw(Error, 'Offset is out of bounds');
+    });
+
+    it('should throw on length beyond buffer', function () {
+      expect(function () {
+        fs.write(0, new Buffer('Hello, friend'), 0, 1000, 0, function () {});
+      }).to.throw(Error, 'off + len > buffer.length');
+    });
+
+  });
+
   describe('writeFileSync()', function () {
 
     it('should write buffer to file', function () {
