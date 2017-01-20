@@ -492,6 +492,49 @@ describe('avfs', function () {
 
   });
 
+  describe('readdirSync()', function () {
+
+    it('should list directory files', function () {
+      fs.files = {
+        'tmp': {
+          'fileA.txt': new Buffer('Hello, friend.'),
+          'fileB.txt': new Buffer('Hello, friend.'),
+          'fileC.txt': new Buffer('Hello, friend.')
+        }
+      };
+
+      var result = fs.readdirSync('/tmp');
+
+      expect(result).to.be.an('array');
+      expect(result).to.deep.equal([
+        'fileA.txt',
+        'fileB.txt',
+        'fileC.txt'
+      ]);
+    });
+
+    it('should throw on non existing path', function () {
+      expect(function () {
+        fs.readdirSync('/tmp');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp\'');
+    });
+
+    it('should throw on file', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.readdirSync('/tmp/file.txt');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on non string path', function () {
+      expect(function () {
+        fs.readdirSync(true);
+      }).to.throw(TypeError, 'path must be a string');
+    });
+
+  });
+
   describe('readFileSync()', function () {
 
     it('should return the file buffer', function () {
