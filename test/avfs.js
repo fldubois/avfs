@@ -167,6 +167,78 @@ describe('avfs', function () {
 
   });
 
+  describe('createReadStream()', function () {
+
+    it('should return a readable stream', function (callback) {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createReadStream('/tmp/file.txt');
+
+      expect(stream.readable).to.equal(true);
+
+      var content = '';
+
+      stream.on('readable', function () {
+        var chunk = null;
+
+        while ((chunk = stream.read()) !== null) {
+          expect(chunk).to.be.an.instanceof(Buffer);
+
+          content += chunk.toString();
+        }
+      });
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(content).to.equal('Hello, friend.');
+
+        return callback();
+      });
+    });
+
+    it('should emit an error on non existing file', function (callback) {
+      var stream = fs.createReadStream('/tmp/file.txt');
+
+      stream.on('readable', function () {
+        return callback(new Error('Event `readable` emitted on non existing file'));
+      });
+
+      stream.on('error', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('ENOENT, open \'/tmp/file.txt\'');
+
+        return callback();
+      });
+
+      stream.on('end', function () {
+        return callback(new Error('Event `end` emitted on non existing file'));
+      });
+    });
+
+    it('should emit an error on directory', function (callback) {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createReadStream('/tmp');
+
+      stream.on('readable', function () {
+        return callback(new Error('Event `readable` emitted on non existing file'));
+      });
+
+      stream.on('error', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EISDIR, read');
+
+        return callback();
+      });
+
+      stream.on('end', function () {
+        return callback(new Error('Event `end` emitted on non existing file'));
+      });
+    });
+
+  });
+
   describe('existsSync()', function () {
 
     it('should return true for existing file', function () {
