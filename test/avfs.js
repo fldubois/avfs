@@ -239,6 +239,139 @@ describe('avfs', function () {
 
   });
 
+  describe('createWriteStream()', function () {
+
+    it('should return a writable stream', function (callback) {
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createWriteStream('/tmp/file');
+
+      expect(stream.writable).to.equal(true);
+
+      stream.on('error', callback);
+
+      stream.on('finish', function () {
+        expect(fs.files.tmp.file.toString()).to.equal('Hello, world !');
+
+        return callback();
+      });
+
+      stream.write('Hello, ');
+      stream.end('world !');
+    });
+
+    it('should accept fd option', function (callback) {
+      var fd = 12;
+
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        read:  0,
+        write: 0
+      };
+
+      var stream = fs.createWriteStream('/tmp/file2', {fd: fd});
+
+      expect(stream.writable).to.equal(true);
+
+      stream.on('error', callback);
+
+      stream.on('finish', function () {
+        expect(fs.files.tmp.file.toString()).to.equal('Hello, world !');
+        expect(fs.files.tmp.file2).to.be.an('undefined');
+
+        return callback();
+      });
+
+      stream.end('Hello, world !');
+    });
+
+    it('should accept flags option', function (callback) {
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createWriteStream('/tmp/file', {flags: 'a'});
+
+      expect(stream.writable).to.equal(true);
+
+      stream.on('error', callback);
+
+      stream.on('finish', function () {
+        expect(fs.files.tmp.file.toString()).to.equal('Hello, friend. Hello, world !');
+
+        return callback();
+      });
+
+      stream.end(' Hello, world !');
+    });
+
+    it('should accept start option', function (callback) {
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createWriteStream('/tmp/file', {flags: 'r+', start: 5});
+
+      expect(stream.writable).to.equal(true);
+
+      stream.on('error', callback);
+
+      stream.on('finish', function () {
+        expect(fs.files.tmp.file.toString()).to.equal('Hello, world !');
+
+        return callback();
+      });
+
+      stream.end(', world !');
+    });
+
+    it('should emit an error on open error', function (callback) {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createWriteStream('/tmp/file.txt', {flags: 'wx'});
+
+      stream.on('error', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EEXIST, open \'/tmp/file.txt\'');
+
+        return callback();
+      });
+
+      stream.on('finish', function () {
+        return callback(new Error('Event `finish` emitted on open error'));
+      });
+    });
+
+    it('should emit an error on directory', function (callback) {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createWriteStream('/tmp');
+
+      stream.on('error', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EISDIR, open \'/tmp\'');
+
+        return callback();
+      });
+
+      stream.on('finish', function () {
+        return callback(new Error('Event `finish` emitted on directory'));
+      });
+    });
+
+    it('should throw on non number start option', function () {
+      expect(function () {
+        fs.createWriteStream('/tmp/file.txt', {start: false});
+      }).to.throw(TypeError, 'start must be a Number');
+    });
+
+    it('should throw on negative start option', function () {
+      expect(function () {
+        fs.createWriteStream('/tmp/file.txt', {start: -1});
+      }).to.throw(Error, 'start must be >= zero');
+    });
+
+  });
+
   describe('existsSync()', function () {
 
     it('should return true for existing file', function () {
