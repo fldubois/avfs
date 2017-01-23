@@ -137,22 +137,6 @@ describe('avfs', function () {
       expect(fs.handles[fd]).to.equal(null);
     });
 
-    it('should throw on non writing file descriptor', function () {
-      var fd = 0;
-
-      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
-
-      fs.handles[fd] = {
-        flags: 1, // F_RO
-        path:  '/tmp/file.txt',
-        read:  0
-      };
-
-      expect(function () {
-        fs.closeSync(fd);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
-    });
-
     it('should throw on non existing file descriptor', function () {
       expect(function () {
         fs.closeSync(0);
