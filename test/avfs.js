@@ -172,7 +172,7 @@ describe('avfs', function () {
     it('should return a readable stream', function (callback) {
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
 
-      var stream = fs.createReadStream('/tmp/file.txt');
+      var stream = fs.createReadStream('/tmp/file.txt', {autoClose: true});
 
       expect(stream.readable).to.equal(true);
 
@@ -192,6 +192,122 @@ describe('avfs', function () {
 
       stream.on('end', function () {
         expect(content).to.equal('Hello, friend.');
+
+        return callback();
+      });
+    });
+
+    it('should accept fd option', function (callback) {
+      var fd = 12;
+
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        read:  7,
+        write: 0
+      };
+
+      var stream = fs.createReadStream('/tmp/file2', {fd: fd});
+
+      expect(stream.readable).to.equal(true);
+
+      var content = '';
+
+      stream.on('readable', function () {
+        var chunk = null;
+
+        while ((chunk = stream.read()) !== null) {
+          expect(chunk).to.be.an.instanceof(Buffer);
+
+          content += chunk.toString();
+        }
+      });
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(content).to.equal('friend.');
+
+        return callback();
+      });
+    });
+
+    it('should accept flags option', function (callback) {
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createReadStream('/tmp/file', {flags: 'a'});
+
+      expect(stream.readable).to.equal(true);
+
+      stream.on('readable', function () {
+        return callback(new Error('Event `readable` emitted on non readable file'));
+      });
+
+      stream.on('error', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EBADF, read');
+
+        return callback();
+      });
+
+      stream.on('end', function () {
+        return callback(new Error('Event `end` emitted on non readable file'));
+      });
+    });
+
+    it('should accept start option', function (callback) {
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createReadStream('/tmp/file', {start: 2});
+
+      expect(stream.readable).to.equal(true);
+
+      var content = '';
+
+      stream.on('readable', function () {
+        var chunk = null;
+
+        while ((chunk = stream.read()) !== null) {
+          expect(chunk).to.be.an.instanceof(Buffer);
+
+          content += chunk.toString();
+        }
+      });
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(content).to.equal('llo, friend.');
+
+        return callback();
+      });
+    });
+
+    it('should accept end option', function (callback) {
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      var stream = fs.createReadStream('/tmp/file', {start: 2, end: 8});
+
+      expect(stream.readable).to.equal(true);
+
+      var content = '';
+
+      stream.on('readable', function () {
+        var chunk = null;
+
+        while ((chunk = stream.read()) !== null) {
+          expect(chunk).to.be.an.instanceof(Buffer);
+
+          content += chunk.toString();
+        }
+      });
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(content).to.equal('llo, fr');
 
         return callback();
       });
@@ -235,6 +351,24 @@ describe('avfs', function () {
       stream.on('end', function () {
         return callback(new Error('Event `end` emitted on non existing file'));
       });
+    });
+
+    it('should throw on non number start option', function () {
+      expect(function () {
+        fs.createReadStream('/tmp/file.txt', {start: false});
+      }).to.throw(TypeError, 'start must be a Number');
+    });
+
+    it('should throw on non number end option', function () {
+      expect(function () {
+        fs.createReadStream('/tmp/file.txt', {start: 0, end: false});
+      }).to.throw(TypeError, 'end must be a Number');
+    });
+
+    it('should throw on end option less then start option', function () {
+      expect(function () {
+        fs.createReadStream('/tmp/file.txt', {start: 10, end: 5});
+      }).to.throw(Error, 'start must be <= end');
     });
 
   });
