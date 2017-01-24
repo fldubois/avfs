@@ -504,6 +504,58 @@ describe('avfs', function () {
 
   });
 
+  describe('mkdirSync()', function () {
+
+    it('should create a new directory', function () {
+      fs.files = {'tmp': {}};
+
+      var result = fs.mkdirSync('/tmp/dir');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp).to.contain.keys('dir');
+      expect(fs.files.tmp.dir).to.deep.equal({});
+    });
+
+    it('should create a new directory on root', function () {
+      fs.files = {'tmp': {}};
+
+      var result = fs.mkdirSync('/dir');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files).to.contain.keys('dir');
+      expect(fs.files.dir).to.deep.equal({});
+    });
+
+    it('should throw on existing path', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.mkdirSync('/tmp');
+      }).to.throw(Error, 'EEXIST, file already exists \'/tmp\'');
+    });
+
+    it('should throw on non existing parent directory', function () {
+      expect(function () {
+        fs.mkdirSync('/tmp/file.txt');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on not directory parent', function () {
+      fs.files = {'tmp': new Buffer('Hello, friend.')};
+
+      expect(function () {
+        fs.mkdirSync('/tmp/file.txt');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file.txt\'');
+    });
+
+    it('should throw on non string path', function () {
+      expect(function () {
+        fs.mkdirSync(true);
+      }).to.throw(TypeError, 'Bad argument');
+    });
+
+  });
+
   describe('openSync()', function () {
 
     it('should return a file descriptor', function () {
