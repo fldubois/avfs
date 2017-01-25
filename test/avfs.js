@@ -644,9 +644,9 @@ describe('avfs', function () {
 
   });
 
-  describe('read()', function () {
+  describe('readSync()', function () {
 
-    it('should read the file', function (done) {
+    it('should read the file', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
@@ -657,19 +657,15 @@ describe('avfs', function () {
         read:  0
       };
 
-      fs.read(0, new Buffer(5), 0, 5, 0, function (error, bytesRead, buffer) {
-        expect(error).to.equal(null);
+      var buffer = new Buffer(5);
 
-        expect(bytesRead).to.equal(5)
+      var bytesRead = fs.readSync(fd, buffer, 0, 5, 0);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello');
-
-        return done();
-      });
+      expect(bytesRead).to.equal(5);
+      expect(buffer.toString()).to.equal('Hello');
     });
 
-    it('should read the file from position', function (done) {
+    it('should read the file from position', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
@@ -680,19 +676,15 @@ describe('avfs', function () {
         read:  0
       };
 
-      fs.read(0, new Buffer(5), 0, 5, 5, function (error, bytesRead, buffer) {
-        expect(error).to.equal(null);
+      var buffer = new Buffer(5);
 
-        expect(bytesRead).to.equal(5)
+      var bytesRead = fs.readSync(fd, buffer, 0, 5, 5);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal(', fri');
-
-        return done();
-      });
+      expect(bytesRead).to.equal(5);
+      expect(buffer.toString()).to.equal(', fri');
     });
 
-    it('should read the file from current position', function (done) {
+    it('should read the file from current position', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
@@ -703,19 +695,16 @@ describe('avfs', function () {
         read:  5
       };
 
-      fs.read(0, new Buffer(5), 0, 5, null, function (error, bytesRead, buffer) {
-        expect(error).to.equal(null);
+      var buffer = new Buffer(5);
 
-        expect(bytesRead).to.equal(5)
+      var bytesRead = fs.readSync(fd, buffer, 0, 5, null);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal(', fri');
-
-        return done();
-      });
+      expect(bytesRead).to.equal(5);
+      expect(fs.handles[fd].read).to.equal(10);
+      expect(buffer.toString()).to.equal(', fri');
     });
 
-    it('should fill the buffer from offset', function (done) {
+    it('should fill the buffer from offset', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
@@ -726,19 +715,15 @@ describe('avfs', function () {
         read:  0
       };
 
-      fs.read(0, new Buffer('Hello, world!'), 7, 6, 7, function (error, bytesRead, buffer) {
-        expect(error).to.equal(null);
+      var buffer = new Buffer('Hello, world!');
 
-        expect(bytesRead).to.equal(6)
+      var bytesRead = fs.readSync(fd, buffer, 7, 6, 7);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        return done();
-      });
+      expect(bytesRead).to.equal(6);
+      expect(buffer.toString()).to.equal('Hello, friend');
     });
 
-    it('should not read file beyond his length', function (done) {
+    it('should not read file beyond his length', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
@@ -749,60 +734,32 @@ describe('avfs', function () {
         read:  14
       };
 
-      fs.read(0, new Buffer('Hello, world !'), 0, 10, null, function (error, bytesRead, buffer) {
-        expect(error).to.equal(null);
+      var buffer = new Buffer('Hello, world!');
 
-        expect(bytesRead).to.equal(0)
+      var bytesRead = fs.readSync(fd, buffer, 0, 10, null);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, world !');
-
-        return done();
-      });
+      expect(bytesRead).to.equal(0);
+      expect(buffer.toString()).to.equal('Hello, world!');
     });
 
-    it('should fail on non existing fd', function (done) {
-      var fd = 0;
-
-      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
-
-      fs.read(0, new Buffer('Hello, world!'), 0, 5, 0, function (error, bytesRead, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, read');
-
-        expect(bytesRead).to.equal(0)
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, world!');
-
-        return done();
-      });
+    it('should fail on non existing fd', function () {
+      expect(function () {
+        fs.readSync(0, new Buffer(5), 0, 5, 0);
+      }).to.throw(Error, 'EBADF, read');
     });
 
-    it('should fail on closed fd', function (done) {
+    it('should fail on closed fd', function () {
       var fd = 0;
-
-      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
 
       fs.handles[fd] = null;
 
-      fs.read(0, new Buffer('Hello, world!'), 0, 5, 0, function (error, bytesRead, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, read');
-
-        expect(bytesRead).to.equal(0)
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, world!');
-
-        return done();
-      });
+      expect(function () {
+        fs.readSync(fd, new Buffer(5), 0, 5, 0);
+      }).to.throw(Error, 'EBADF, read');
     });
 
-    it('should fail on non reading fd', function (done) {
+    it('should fail on non reading fd', function () {
       var fd = 0;
-
-      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
 
       fs.handles[fd] = {
         flags: 2, // F_WO
@@ -810,20 +767,12 @@ describe('avfs', function () {
         read:  0
       };
 
-      fs.read(0, new Buffer('Hello, world!'), 0, 5, 0, function (error, bytesRead, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, read');
-
-        expect(bytesRead).to.equal(0)
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, world!');
-
-        return done();
-      });
+      expect(function () {
+        fs.readSync(fd, new Buffer(5), 0, 5, 0);
+      }).to.throw(Error, 'EBADF, read');
     });
 
-    it('should fail on directory', function (done) {
+    it('should fail on directory', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
@@ -834,34 +783,26 @@ describe('avfs', function () {
         read:  0
       };
 
-      fs.read(0, new Buffer('Hello, world!'), 0, 5, 0, function (error, bytesRead, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EISDIR, read');
-
-        expect(bytesRead).to.equal(0)
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, world!');
-
-        return done();
-      });
+      expect(function () {
+        fs.readSync(fd, new Buffer(5), 0, 5, 0);
+      }).to.throw(Error, 'EISDIR, read');
     });
 
     it('should throw on bad fd type', function () {
       expect(function () {
-        fs.read(true);
+        fs.readSync(true);
       }).to.throw(TypeError, 'Bad arguments');
     });
 
     it('should throw on offset out of bounds', function () {
       expect(function () {
-        fs.read(0, new Buffer(10), 1000, 0, 0, function () {});
+        fs.readSync(0, new Buffer(10), 1000, 0, 0, function () {});
       }).to.throw(Error, 'Offset is out of bounds');
     });
 
     it('should throw on length beyond buffer', function () {
       expect(function () {
-        fs.read(0, new Buffer(10), 0, 1000, 0, function () {});
+        fs.readSync(0, new Buffer(10), 0, 1000, 0, function () {});
       }).to.throw(Error, 'Length extends beyond buffer');
     });
 
