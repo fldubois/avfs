@@ -1073,9 +1073,9 @@ describe('avfs', function () {
 
   });
 
-  describe('write()', function () {
+  describe('writeSync()', function () {
 
-    it('should write in the file', function (done) {
+    it('should write in the file', function () {
       var fd = 0;
 
       fs.files = {'tmp': {}};
@@ -1086,22 +1086,15 @@ describe('avfs', function () {
         write: 0
       };
 
-      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
-        expect(error).to.equal(null);
+      var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
 
-        expect(written).to.equal(5);
+      expect(written).to.equal(5);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-        expect(fs.files.tmp.file.toString()).to.equal('Hello');
-
-        return done();
-      });
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello');
     });
 
-    it('should write the file from position', function (done) {
+    it('should write the file from position', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file': new Buffer('Hello, world')}};
@@ -1112,22 +1105,15 @@ describe('avfs', function () {
         write: 0
       };
 
-      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 7, function (error, written, buffer) {
-        expect(error).to.equal(null);
+      var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 7);
 
-        expect(written).to.equal(5);
+      expect(written).to.equal(5);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-        expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
-
-        return done();
-      });
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
     });
 
-    it('should write the file from current position', function (done) {
+    it('should write the file from current position', function () {
       var fd = 0;
 
       fs.files = {'tmp': {'file': new Buffer('Hello, world')}};
@@ -1138,24 +1124,17 @@ describe('avfs', function () {
         write: 7
       };
 
-      fs.write(fd, new Buffer('Hello, friend'), 0, 5, null, function (error, written, buffer) {
-        expect(error).to.equal(null);
+      var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, null);
 
-        expect(written).to.equal(5);
+      expect(written).to.equal(5);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
 
-        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-        expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
-
-        expect(fs.handles[fd].write).to.equal(12);
-
-        return done();
-      });
+      expect(fs.handles[fd].write).to.equal(12);
     });
 
-    it('should read the buffer from offset', function (done) {
+    it('should read the buffer from offset', function () {
       var fd = 0;
 
       fs.files = {'tmp': {}};
@@ -1166,60 +1145,31 @@ describe('avfs', function () {
         write: 0
       };
 
-      fs.write(fd, new Buffer('Hello, friend'), 7, 6, 0, function (error, written, buffer) {
-        expect(error).to.equal(null);
+      var written = fs.writeSync(fd, new Buffer('Hello, friend'), 7, 6, null);
 
-        expect(written).to.equal(6);
+      expect(written).to.equal(6);
 
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-        expect(fs.files.tmp.file.toString()).to.equal('friend');
-
-        return done();
-      });
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('friend');
     });
 
-    it('should fail on non existing fd', function (done) {
-      var fd = 0;
-
-      fs.files = {'tmp': {}};
-
-      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, write');
-
-        expect(written).to.equal(0);
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        return done();
-      });
+    it('should fail on non existing fd', function () {
+      expect(function () {
+        fs.writeSync(0, new Buffer('Hello, friend'), 0, 5, 0);
+      }).to.throw(Error, 'EBADF, write');
     });
 
-    it('should fail on closed fd', function (done) {
+    it('should fail on closed fd', function () {
       var fd = 0;
-
-      fs.files = {'tmp': {}};
 
       fs.handles[fd] = null;
 
-      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, write');
-
-        expect(written).to.equal(0);
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        return done();
-      });
+      expect(function () {
+        fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
+      }).to.throw(Error, 'EBADF, write');
     });
 
-    it('should fail on non writing fd', function (done) {
+    it('should fail on non writing fd', function () {
       var fd = 0;
 
       fs.files = {'tmp': {}};
@@ -1230,34 +1180,26 @@ describe('avfs', function () {
         write:  0
       };
 
-      fs.write(fd, new Buffer('Hello, friend'), 0, 5, 0, function (error, written, buffer) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, write');
-
-        expect(written).to.equal(0);
-
-        expect(buffer).to.be.an.instanceof(Buffer);
-        expect(buffer.toString()).to.equal('Hello, friend');
-
-        return done();
-      });
+      expect(function () {
+        fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
+      }).to.throw(Error, 'EBADF, write');
     });
 
     it('should throw on bad fd type', function () {
       expect(function () {
-        fs.write(true);
+        fs.writeSync(true);
       }).to.throw(TypeError, 'Bad arguments');
     });
 
     it('should throw on offset out of bounds', function () {
       expect(function () {
-        fs.write(0, new Buffer('Hello, friend'), 1000, 0, 0, function () {});
+        fs.writeSync(0, new Buffer('Hello, friend'), 1000, 0, 0, function () {});
       }).to.throw(Error, 'Offset is out of bounds');
     });
 
     it('should throw on length beyond buffer', function () {
       expect(function () {
-        fs.write(0, new Buffer('Hello, friend'), 0, 1000, 0, function () {});
+        fs.writeSync(0, new Buffer('Hello, friend'), 0, 1000, 0, function () {});
       }).to.throw(Error, 'off + len > buffer.length');
     });
 
