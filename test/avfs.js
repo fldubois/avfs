@@ -504,6 +504,84 @@ describe('avfs', function () {
 
   });
 
+  describe('ftruncateSync()', function () {
+
+    it('should truncate file', function () {
+      var fd = 10;
+
+      fs.files = {tmp: {file: new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        read:  0
+      };
+
+      var result = fs.ftruncateSync(fd);
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.length).to.equal(0);
+    });
+
+    it('should truncate file to the specified length', function () {
+      var content = new Buffer('Hello, friend.');
+      var fd = 10;
+
+      fs.files = {tmp: {file: new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        read:  0
+      };
+
+      var result = fs.ftruncateSync(fd, 3);
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.length).to.equal(3);
+      expect(fs.files.tmp.file.toString()).to.equal(content.slice(0, 3).toString());
+    });
+
+    it('should throw on non writing file descriptor', function () {
+      var fd = 10;
+
+      fs.files = {tmp: {file: new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 1, // F_RO
+        path:  '/tmp/file',
+        read:  0
+      };
+
+      expect(function () {
+        fs.ftruncateSync(fd);
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non existing file descriptor', function () {
+      expect(function () {
+        fs.ftruncateSync(0);
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non integer file descriptor', function () {
+      expect(function () {
+        fs.ftruncateSync(true);
+      }).to.throw(TypeError, 'Bad argument');
+    });
+
+    it('should throw on non integer length', function () {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      expect(function () {
+        fs.ftruncateSync(0, true);
+      }).to.throw(TypeError, 'Not an integer');
+    });
+
+  });
+
   describe('mkdirSync()', function () {
 
     it('should create a new directory', function () {
