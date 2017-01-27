@@ -158,7 +158,7 @@ describe('avfs', function () {
     it('should return a readable stream', function (callback) {
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
 
-      var stream = fs.createReadStream('/tmp/file.txt', {autoClose: true});
+      var stream = fs.createReadStream('/tmp/file.txt');
 
       expect(stream.readable).to.equal(true);
 
@@ -299,6 +299,58 @@ describe('avfs', function () {
       });
     });
 
+    it('should close the file descriptor with autoClose option', function (callback) {
+      var fd = 12;
+
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 4, // F_RW
+        path:  '/tmp/file',
+        read:  7,
+        write: 0
+      };
+
+      var stream = fs.createReadStream('/tmp/file', {fd: fd});
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(fs.handles[fd]).to.equal(null);
+
+        return callback();
+      });
+
+      stream.pipe(new PassThrough());
+    });
+
+    it('should not close the file descriptor without autoClose option', function (callback) {
+      var fd = 12;
+
+      fs.files = {'tmp': {'file': new Buffer('Hello, friend.')}};
+
+      fs.handles[fd] = {
+        flags: 2, // F_WO
+        path:  '/tmp/file',
+        read:  7,
+        write: 0
+      };
+
+      var stream = fs.createReadStream('/tmp/file', {fd: fd, autoClose: false});
+
+      stream.on('error', function (error) {
+        expect(fs.handles[fd]).to.be.an('object');
+
+        return callback();
+      });
+
+      stream.on('end', function () {
+        return callback(new Error('Event `end` emitted on non readable file'));
+      });
+
+      stream.pipe(new PassThrough());
+    });
+
     it('should emit open event', function (callback) {
       fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
 
@@ -364,6 +416,26 @@ describe('avfs', function () {
       stream.on('end', function () {
         return callback(new Error('Event `end` emitted on non existing file'));
       });
+    });
+
+    it('should emit an error on close error', function (callback) {
+      var fd = 12;
+
+      var stream = fs.createReadStream('/tmp/file', {fd: fd, start: 8, end: 8});
+
+      stream.on('error', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('EBADF, bad file descriptor');
+        expect(error.syscall).to.equal('close');
+
+        return callback();
+      });
+
+      stream.on('end', function () {
+        return callback(new Error('Event `end` emitted with close error'));
+      });
+
+      stream.pipe(new PassThrough());
     });
 
     it('should throw on non number start option', function () {
