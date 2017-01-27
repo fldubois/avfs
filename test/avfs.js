@@ -3,6 +3,8 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
+var PassThrough = require('stream').PassThrough;
+
 var AVFS = require('../lib/avfs');
 
 var fs = new AVFS();
@@ -295,6 +297,33 @@ describe('avfs', function () {
 
         return callback();
       });
+    });
+
+    it('should emit open event', function (callback) {
+      fs.files = {'tmp': {'file.txt': new Buffer('Hello, friend.')}};
+
+      var opened = false;
+      var stream = fs.createReadStream('/tmp/file.txt', {autoClose: true});
+
+      expect(stream.readable).to.equal(true);
+
+      stream.on('open', function (fd) {
+        expect(fd).to.be.a('number');
+        expect(fs.handles[fd]).to.be.an('object');
+        expect(fs.handles[fd].path).to.equal('/tmp/file.txt');
+
+        opened = true;
+
+        return callback();
+      });
+
+      stream.on('end', function () {
+        if (opened === false) {
+          return callback(new Error('Event `end` emitted before `open`'));
+        }
+      });
+
+      stream.pipe(new PassThrough());
     });
 
     it('should emit an error on non existing file', function (callback) {
