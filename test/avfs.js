@@ -5,7 +5,10 @@ var expect = chai.expect;
 
 var PassThrough = require('stream').PassThrough;
 
-var AVFS = require('../lib/avfs');
+var flags = require('../lib/common/flags');
+
+var AVFS       = require('../lib/avfs');
+var Descriptor = require('../lib/common/descriptor');
 
 var fs = new AVFS();
 
@@ -149,11 +152,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var result = fs.closeSync(fd);
 
@@ -210,12 +209,9 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  7,
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].read = 7;
 
       var stream = fs.createReadStream('/tmp/file2', {fd: fd});
 
@@ -326,12 +322,9 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  7,
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].read = 7;
 
       var stream = fs.createReadStream('/tmp/file', {fd: fd});
 
@@ -351,12 +344,9 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 2, // F_WO
-        path:  '/tmp/file',
-        read:  7,
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.WO);
+
+      fs.handles[fd].read = 7;
 
       var stream = fs.createReadStream('/tmp/file', {fd: fd, autoClose: false});
 
@@ -506,12 +496,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0,
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var stream = fs.createWriteStream('/tmp/file2', {fd: fd});
 
@@ -634,11 +619,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var result = fs.ftruncateSync(fd);
 
@@ -653,11 +634,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var result = fs.ftruncateSync(fd, 3);
 
@@ -672,11 +649,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 1, // F_RO
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RO);
 
       expect(function () {
         fs.ftruncateSync(fd);
@@ -852,11 +825,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var buffer = new Buffer(5);
 
@@ -871,11 +840,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var buffer = new Buffer(5);
 
@@ -890,11 +855,9 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  5
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].read = 5;
 
       var buffer = new Buffer(5);
 
@@ -910,11 +873,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var buffer = new Buffer('Hello, world!');
 
@@ -929,11 +888,9 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        read:  14
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].read = 14;
 
       var buffer = new Buffer('Hello, world!');
 
@@ -962,11 +919,7 @@ describe('avfs', function () {
     it('should fail on non reading fd', function () {
       var fd = 0;
 
-      fs.handles[fd] = {
-        flags: 2, // F_WO
-        path:  '/tmp/file',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.WO);
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
@@ -978,11 +931,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp',
-        read:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp', flags.RW);
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
@@ -1281,11 +1230,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
 
@@ -1300,11 +1245,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 7);
 
@@ -1319,11 +1260,9 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        write: 7
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].write = 7;
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, null);
 
@@ -1340,11 +1279,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({})};
 
-      fs.handles[fd] = {
-        flags: 4, // F_RW
-        path:  '/tmp/file',
-        write: 0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 7, 6, null);
 
@@ -1375,11 +1310,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({})};
 
-      fs.handles[fd] = {
-        flags: 1, // F_RO
-        path:  '/tmp/file',
-        write:  0
-      };
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RO);
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
