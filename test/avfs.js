@@ -1259,6 +1259,20 @@ describe('avfs', function () {
       expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
     });
 
+    it('should always append data to the end in append mode', function () {
+      var fd = 0;
+
+      fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
+
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW | flags.APPEND);
+
+      expect(fs.writeSync(fd, new Buffer('Hello'), 0, 5, 2)).to.equal(5);
+      expect(fs.writeSync(fd, new Buffer('Hello'), 0, 5, 2)).to.equal(5);
+
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello, worldHelloHello');
+    });
+
     it('should write the file from current position', function () {
       var fd = 0;
 
