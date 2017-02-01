@@ -154,10 +154,12 @@ describe('avfs', function () {
 
       fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
+      expect(fs.handles[fd].closed).to.equal(false);
+
       var result = fs.closeSync(fd);
 
       expect(result).to.be.an('undefined');
-      expect(fs.handles[fd]).to.equal(null);
+      expect(fs.handles[fd].closed).to.equal(true);
     });
 
     it('should throw on non existing file descriptor', function () {
@@ -331,7 +333,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('end', function () {
-        expect(fs.handles[fd]).to.equal(null);
+        expect(fs.handles[fd].closed).to.equal(true);
 
         return callback();
       });
@@ -909,7 +911,9 @@ describe('avfs', function () {
     it('should fail on closed fd', function () {
       var fd = 0;
 
-      fs.handles[fd] = null;
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].close();
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
@@ -1298,7 +1302,9 @@ describe('avfs', function () {
     it('should fail on closed fd', function () {
       var fd = 0;
 
-      fs.handles[fd] = null;
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      fs.handles[fd].close();
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
