@@ -1307,6 +1307,21 @@ describe('avfs', function () {
       expect(fs.files.tmp.file.toString()).to.equal('friend');
     });
 
+    it('should fill unwritten parts with white spaces', function () {
+      var fd = 0;
+
+      fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
+
+      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+
+      var written = fs.writeSync(fd, new Buffer('OK'), 0, 2, 20);
+
+      expect(written).to.equal(2);
+
+      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file.toString()).to.equal('Hello, world        OK');
+    });
+
     it('should fail on non existing fd', function () {
       expect(function () {
         fs.writeSync(0, new Buffer('Hello, friend'), 0, 5, 0);
