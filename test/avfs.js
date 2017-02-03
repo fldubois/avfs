@@ -718,6 +718,7 @@ describe('avfs', function () {
       var result = fs.mkdirSync('/tmp/dir');
 
       expect(result).to.be.an('undefined');
+
       expect(fs.files.tmp).to.contain.keys('dir');
       expect(fs.files.tmp.dir).to.deep.equal({});
     });
@@ -728,8 +729,48 @@ describe('avfs', function () {
       var result = fs.mkdirSync('/dir');
 
       expect(result).to.be.an('undefined');
+
       expect(fs.files).to.contain.keys('dir');
       expect(fs.files.dir).to.deep.equal({});
+    });
+
+    it('should accept mode parameter as string', function () {
+      fs.files = {tmp: d({})};
+
+      var result = fs.mkdirSync('/tmp/dir', '0500');
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files.tmp).to.contain.keys('dir');
+      expect(fs.files.tmp.dir).to.deep.equal({});
+
+      expect(fs.files.tmp.dir['@mode']).to.equal(parseInt('0500', 8));
+    });
+
+    it('should accept mode parameter as number', function () {
+      fs.files = {tmp: d({})};
+
+      var result = fs.mkdirSync('/tmp/dir', 438);
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files.tmp).to.contain.keys('dir');
+      expect(fs.files.tmp.dir).to.deep.equal({});
+
+      expect(fs.files.tmp.dir['@mode']).to.equal(parseInt('0666', 8));
+    });
+
+    it('should set mode to 0777 by default', function () {
+      fs.files = {tmp: d({})};
+
+      var result = fs.mkdirSync('/tmp/dir');
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files.tmp).to.contain.keys('dir');
+      expect(fs.files.tmp.dir).to.deep.equal({});
+
+      expect(fs.files.tmp.dir['@mode']).to.equal(parseInt('0777', 8));
     });
 
     it('should throw on existing path', function () {
