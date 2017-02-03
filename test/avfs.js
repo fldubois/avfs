@@ -319,6 +319,36 @@ describe('avfs', function () {
       });
     });
 
+    it('should accept encoding option', function (callback) {
+      var content = new Buffer('Hello, friend.');
+
+      fs.files = {tmp: d({file: f(content)})};
+
+      var stream = fs.createReadStream('/tmp/file', {encoding: 'base64'});
+
+      expect(stream.readable).to.equal(true);
+
+      var content = '';
+
+      stream.on('readable', function () {
+        var chunk = null;
+
+        while ((chunk = stream.read()) !== null) {
+          expect(chunk).to.be.a('string');
+
+          content += chunk.toString();
+        }
+      });
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(content).to.equal(content.toString('base64'));
+
+        return callback();
+      });
+    });
+
     it('should close the file descriptor with autoClose option', function (callback) {
       var fd = 12;
 
