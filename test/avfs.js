@@ -263,6 +263,24 @@ describe('avfs', function () {
       });
     });
 
+    it('should accept mode option', function (callback) {
+      fs.files = {file: f(new Buffer('Hello, friend.'))};
+
+      var stream = fs.createReadStream('/file', {flags: 'w+', mode: '0700'});
+
+      expect(stream.readable).to.equal(true);
+
+      stream.on('error', callback);
+
+      stream.on('end', function () {
+        expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+
+        return callback();
+      });
+
+      stream.pipe(new PassThrough());
+    });
+
     it('should accept start option', function (callback) {
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
@@ -564,6 +582,28 @@ describe('avfs', function () {
       stream.end(' Hello, world !');
     });
 
+    it('should accept mode option', function (callback) {
+      fs.files = {tmp: d({})};
+
+      var stream = fs.createWriteStream('/tmp/file', {mode: '0700'});
+
+      expect(stream.writable).to.equal(true);
+
+      stream.on('error', callback);
+
+      stream.on('finish', function () {
+        try {
+          expect(fs.files.tmp.file['@mode']).to.equal(parseInt('0700', 8));
+        } catch (error) {
+          return callback(error);
+        }
+
+        return callback();
+      });
+
+      stream.end('Hello, world !');
+    });
+
     it('should accept start option', function (callback) {
       fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
 
@@ -859,6 +899,34 @@ describe('avfs', function () {
         expect(fs.files[filename]).to.be.an.instanceof(Buffer);
         expect(fs.files[filename].length).to.equal(0);
       });
+    });
+
+    it('should set mode on new file', function () {
+      var filename = 'file';
+
+      var fd = fs.openSync('/' + filename, 'w', '0500');
+
+      expect(fd).to.be.a('number');
+
+      expect(fs.files).to.contain.keys(filename);
+      expect(fs.files[filename]).to.be.an.instanceof(Buffer);
+      expect(fs.files[filename].length).to.equal(0);
+
+      expect(fs.files[filename]['@mode']).to.equal(parseInt('0500', 8));
+    });
+
+    it('should set mode to 0666 by default', function () {
+      var filename = 'file';
+
+      var fd = fs.openSync('/' + filename, 'w');
+
+      expect(fd).to.be.a('number');
+
+      expect(fs.files).to.contain.keys(filename);
+      expect(fs.files[filename]).to.be.an.instanceof(Buffer);
+      expect(fs.files[filename].length).to.equal(0);
+
+      expect(fs.files[filename]['@mode']).to.equal(parseInt('0666', 8));
     });
 
     it('should erase existing file in truncate mode', function () {
