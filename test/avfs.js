@@ -13,25 +13,37 @@ var Descriptor = require('../lib/common/descriptor');
 var fs = new AVFS();
 
 function d(directory) {
-  Object.defineProperty(directory, '@type', {
-    value:        'directory',
-    configurable: false,
-    enumerable:   false,
-    writable:     false
+  return Object.defineProperties(directory, {
+    '@type': {
+      value:        'directory',
+      configurable: false,
+      enumerable:   false,
+      writable:     false
+    },
+    '@mode': {
+      value:        parseInt('0777', 8),
+      configurable: false,
+      enumerable:   false,
+      writable:     true
+    }
   });
-
-  return directory;
 }
 
 function f(file) {
-  Object.defineProperty(file, '@type', {
-    value:        'file',
-    configurable: false,
-    enumerable:   false,
-    writable:     false
+  return Object.defineProperties(file, {
+    '@type': {
+      value:        'file',
+      configurable: false,
+      enumerable:   false,
+      writable:     false
+    },
+    '@mode': {
+      value:        parseInt('0666', 8),
+      configurable: false,
+      enumerable:   false,
+      writable:     true
+    }
   });
-
-  return file;
 }
 
 describe('avfs', function () {
@@ -141,6 +153,38 @@ describe('avfs', function () {
       expect(function () {
         fs.appendFileSync('/tmp/file', 'Hello, friend.', true);
       }).to.throw(TypeError, 'Bad arguments');
+    });
+
+  });
+
+  describe('chmodSync()', function () {
+
+    it('should change the mode', function () {
+      fs.files = {file: f(new Buffer('Hello, friend.'))};
+
+      var result = fs.chmodSync('/file', '0700');
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+    });
+
+    it('should throw on bad path parameter type', function () {
+      expect(function () {
+        fs.chmodSync(false, '0700');
+      }).to.throw(Error, 'Bad argument');
+    });
+
+    it('should throw on bad mode parameter type', function () {
+      expect(function () {
+        fs.chmodSync('/file', false);
+      }).to.throw(Error, 'Bad argument');
+    });
+
+    it('should throw on non existing file', function () {
+      expect(function () {
+        fs.chmodSync('/file', '0700');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/file\'');
     });
 
   });
