@@ -728,6 +728,42 @@ describe('avfs', function () {
 
   });
 
+  describe('fchmodSync()', function () {
+
+    it('should change the mode', function () {
+      var fd = 10;
+
+      fs.files = {file: f(new Buffer('Hello, friend.'))};
+
+      fs.handles[fd] = new Descriptor('/file', flags.RW);
+
+      var result = fs.fchmodSync(fd, '0700');
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+    });
+
+    it('should throw on non existing file descriptor', function () {
+      expect(function () {
+        fs.fchmodSync(0, '0700');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non integer file descriptor', function () {
+      expect(function () {
+        fs.fchmodSync(true, '0700');
+      }).to.throw(TypeError, 'Bad argument');
+    });
+
+    it('should throw on bad mode parameter type', function () {
+      expect(function () {
+        fs.fchmodSync(0, false);
+      }).to.throw(Error, 'Bad argument');
+    });
+
+  });
+
   describe('ftruncateSync()', function () {
 
     it('should truncate file', function () {
