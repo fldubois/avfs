@@ -962,6 +962,20 @@ describe('avfs', function () {
       });
     });
 
+    it('should throw on non existing parent directory', function () {
+      expect(function () {
+        fs.openSync('/tmp/file', 'w');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file\'');
+    });
+
+    it('should throw on non directory parent', function () {
+      fs.files = {tmp: f(new Buffer('Hello, friend.'))};
+
+      expect(function () {
+        fs.openSync('/tmp/file', 'w');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
+    });
+
     it('should create non existing file in create mode', function () {
       [
         'w',  'wx',  'xw',
