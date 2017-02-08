@@ -514,7 +514,7 @@ describe('avfs', function () {
 
       stream.on('error', function (error) {
         expect(error).to.be.an('error');
-        expect(error.message).to.equal('EISDIR, read');
+        expect(error.message).to.equal('EISDIR, open \'/tmp\'');
 
         return callback();
       });
@@ -960,6 +960,14 @@ describe('avfs', function () {
           fs.openSync('/tmp/file', flags);
         }).to.throw(Error, 'EEXIST, file already exists \'/tmp/file\'', 'with flags \'' + flags + '\'');
       });
+    });
+
+    it('should throw on directory', function () {
+      fs.files = {tmp: d({})};
+
+      expect(function () {
+        fs.openSync('/tmp', 'r');
+      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
     });
 
     it('should throw on non existing parent directory', function () {
