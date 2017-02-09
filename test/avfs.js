@@ -90,7 +90,7 @@ describe('avfs', function () {
       expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('Hello, aàâäeéèâë', 'utf8').toString());
     });
 
-    it('should accept the encoding as options', function () {
+    it('should accept encoding option', function () {
       fs.files = {tmp: d({file: f(new Buffer('Hello, '))})};
 
       var result = fs.appendFileSync('/tmp/file', 'aàâäeéèâë', 'ascii');
@@ -100,6 +100,23 @@ describe('avfs', function () {
       expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
       expect(fs.files.tmp.file.toString()).to.equal(new Buffer('Hello, aàâäeéèâë', 'ascii').toString());
       expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('Hello, aàâäeéèâë', 'utf8').toString());
+    });
+
+    it('should accept mode option', function () {
+      var result = fs.appendFileSync('/file', 'OK', {mode: '0700'});
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files).to.contain.keys('file');
+      expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+    });
+
+    it('should accept flag option', function () {
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
+
+      expect(function () {
+        fs.appendFileSync('/tmp/file', 'OK', {flag: 'r'});
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should create non existing file', function () {
@@ -1266,7 +1283,7 @@ describe('avfs', function () {
       expect(content).to.equal('Hello, friend.');
     });
 
-    it('should accept the encoding as options', function () {
+    it('should accept encoding option', function () {
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var content = fs.readFileSync('/tmp/file', 'utf8');
@@ -1649,7 +1666,7 @@ describe('avfs', function () {
       expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
     });
 
-    it('should accept the encoding as options', function () {
+    it('should accept encoding option', function () {
       fs.files = {tmp: d({})};
 
       var result = fs.writeFileSync('/tmp/file', 'aàâäeéèâë', 'ascii');
