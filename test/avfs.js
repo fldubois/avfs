@@ -297,7 +297,7 @@ describe('avfs', function () {
 
       stream.on('error', function (error) {
         expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, read');
+        expect(error.message).to.equal('EBADF, bad file descriptor');
 
         return callback();
       });
@@ -1146,7 +1146,7 @@ describe('avfs', function () {
     it('should fail on non existing fd', function () {
       expect(function () {
         fs.readSync(0, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, read');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should fail on closed fd', function () {
@@ -1158,7 +1158,7 @@ describe('avfs', function () {
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, read');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should fail on non reading fd', function () {
@@ -1168,7 +1168,7 @@ describe('avfs', function () {
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, read');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should fail on directory', function () {
@@ -1566,7 +1566,7 @@ describe('avfs', function () {
     it('should fail on non existing fd', function () {
       expect(function () {
         fs.writeSync(0, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, write');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should fail on closed fd', function () {
@@ -1578,7 +1578,7 @@ describe('avfs', function () {
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, write');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should fail on non writing fd', function () {
@@ -1590,7 +1590,7 @@ describe('avfs', function () {
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, write');
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should throw on bad fd type', function () {
@@ -1659,6 +1659,23 @@ describe('avfs', function () {
       expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
       expect(fs.files.tmp.file.toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
       expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
+    });
+
+    it('should accept mode option', function () {
+      var result = fs.writeFileSync('/file', 'OK', {mode: '0700'});
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files).to.contain.keys('file');
+      expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+    });
+
+    it('should accept flag option', function () {
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
+
+      expect(function () {
+        fs.writeFileSync('/tmp/file', 'OK', {flag: 'r'});
+      }).to.throw(Error, 'EBADF, bad file descriptor');
     });
 
     it('should throw on non existing parent directory', function () {
