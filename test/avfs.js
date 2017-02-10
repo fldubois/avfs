@@ -955,6 +955,18 @@ describe('avfs', function () {
       expect(fs.handles[key].path).to.equal('/tmp/file');
     });
 
+    it('should throw on bad path type', function () {
+      expect(function () {
+        fs.openSync(false, 'r');
+      }).to.throw(Error, 'path must be a string');
+    });
+
+    it('should throw on bad flags type', function () {
+      expect(function () {
+        fs.openSync('/tmp/file', false);
+      }).to.throw(Error, 'flags must be an int');
+    });
+
     it('should throw on non unknown flags', function () {
       expect(function () {
         fs.openSync('/tmp/file', 'p');
