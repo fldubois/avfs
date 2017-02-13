@@ -1354,10 +1354,13 @@ describe('avfs', function () {
       expect(fs.files.tmp.file).to.equal(content);
     });
 
-    it('should rename files', function () {
+    it('should move files', function () {
       var content = new Buffer('Hello, friend.');
 
-      fs.files = {tmp: d({old: f(content)})};
+      fs.files = {
+        tmp: d({old: f(content)}),
+        var: d({})
+      };
 
       var result = fs.renameSync('/tmp/old', '/var/old');
 
@@ -1370,6 +1373,33 @@ describe('avfs', function () {
       expect(function () {
         fs.renameSync('/tmp/old', '/tmp/new');
       }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/old\'');
+    });
+
+    it('should throw on non existing parent destination', function () {
+      fs.files = {tmp: d({old: f(new Buffer('Hello, friend.'))})};
+
+      expect(function () {
+        fs.renameSync('/tmp/old', '/dir/old');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/old\'');
+    });
+
+    it('should throw on new path under old path', function () {
+      expect(function () {
+        fs.renameSync('/tmp/old', '/tmp/old/new');
+      }).to.throw(Error, 'EINVAL, invalid argument \'/tmp/old\'');
+    });
+
+    it('should throw on not directory parent', function () {
+      fs.files = {
+        tmp: d({
+          file: f(new Buffer('Hello, friend.'))
+        }),
+        new: f(new Buffer('Hello, friend.'))
+      };
+
+      expect(function () {
+        fs.renameSync('/tmp/file', '/new/file');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
     });
 
   });
