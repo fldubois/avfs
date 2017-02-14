@@ -30,7 +30,13 @@ function d(directory) {
 }
 
 function f(file) {
-  return Object.defineProperties(file, {
+  return Object.defineProperties({}, {
+    '@content': {
+      value:        file,
+      configurable: false,
+      enumerable:   false,
+      writable:     true
+    },
     '@type': {
       value:        'file',
       configurable: false,
@@ -63,8 +69,8 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, friend.');
     });
 
     it('should append string to file', function () {
@@ -74,8 +80,8 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, friend.');
     });
 
     it('should append encoded string to file', function () {
@@ -85,9 +91,9 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal(new Buffer('Hello, aàâäeéèâë', 'ascii').toString());
-      expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('Hello, aàâäeéèâë', 'utf8').toString());
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal(new Buffer('Hello, aàâäeéèâë', 'ascii').toString());
+      expect(fs.files.tmp.file['@content'].toString()).to.not.equal(new Buffer('Hello, aàâäeéèâë', 'utf8').toString());
     });
 
     it('should accept encoding option', function () {
@@ -97,9 +103,9 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal(new Buffer('Hello, aàâäeéèâë', 'ascii').toString());
-      expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('Hello, aàâäeéèâë', 'utf8').toString());
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal(new Buffer('Hello, aàâäeéèâë', 'ascii').toString());
+      expect(fs.files.tmp.file['@content'].toString()).to.not.equal(new Buffer('Hello, aàâäeéèâë', 'utf8').toString());
     });
 
     it('should accept mode option', function () {
@@ -126,8 +132,8 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, friend.');
     });
 
     it('should throw on non existing parent directory', function () {
@@ -593,7 +599,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files.tmp.file.toString()).to.equal('Hello, world !');
+        expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, world !');
 
         return callback();
       });
@@ -616,7 +622,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files.tmp.file.toString()).to.equal('Hello, world !');
+        expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, world !');
         expect(fs.files.tmp.file2).to.be.an('undefined');
 
         return callback();
@@ -635,7 +641,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files.tmp.file.toString()).to.equal('Hello, friend. Hello, world !');
+        expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, friend. Hello, world !');
 
         return callback();
       });
@@ -675,7 +681,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files.tmp.file.toString()).to.equal('Hello, world !');
+        expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, world !');
 
         return callback();
       });
@@ -793,8 +799,8 @@ describe('avfs', function () {
       var result = fs.ftruncateSync(fd);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.length).to.equal(0);
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].length).to.equal(0);
     });
 
     it('should truncate file to the specified length', function () {
@@ -808,9 +814,9 @@ describe('avfs', function () {
       var result = fs.ftruncateSync(fd, 3);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.length).to.equal(3);
-      expect(fs.files.tmp.file.toString()).to.equal(content.slice(0, 3).toString());
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].length).to.equal(3);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal(content.slice(0, 3).toString());
     });
 
     it('should throw on non writing file descriptor', function () {
@@ -1027,8 +1033,8 @@ describe('avfs', function () {
         expect(fd).to.be.a('number');
 
         expect(fs.files).to.contain.keys(filename);
-        expect(fs.files[filename]).to.be.an.instanceof(Buffer);
-        expect(fs.files[filename].length).to.equal(0);
+        expect(fs.files[filename]['@content']).to.be.an.instanceof(Buffer);
+        expect(fs.files[filename]['@content'].length).to.equal(0);
       });
     });
 
@@ -1040,8 +1046,8 @@ describe('avfs', function () {
       expect(fd).to.be.a('number');
 
       expect(fs.files).to.contain.keys(filename);
-      expect(fs.files[filename]).to.be.an.instanceof(Buffer);
-      expect(fs.files[filename].length).to.equal(0);
+      expect(fs.files[filename]['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files[filename]['@content'].length).to.equal(0);
 
       expect(fs.files[filename]['@mode']).to.equal(parseInt('0500', 8));
     });
@@ -1054,8 +1060,8 @@ describe('avfs', function () {
       expect(fd).to.be.a('number');
 
       expect(fs.files).to.contain.keys(filename);
-      expect(fs.files[filename]).to.be.an.instanceof(Buffer);
-      expect(fs.files[filename].length).to.equal(0);
+      expect(fs.files[filename]['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files[filename]['@content'].length).to.equal(0);
 
       expect(fs.files[filename]['@mode']).to.equal(parseInt('0666', 8));
     });
@@ -1070,7 +1076,7 @@ describe('avfs', function () {
 
         expect(fd).to.be.a('number');
 
-        expect(fs.files[filename].length).to.equal(0);
+        expect(fs.files[filename]['@content'].length).to.equal(0);
       });
     });
 
@@ -1084,7 +1090,7 @@ describe('avfs', function () {
 
         expect(fd).to.be.a('number');
 
-        expect(fs.files[filename].toString()).to.equal('Hello, friend.');
+        expect(fs.files[filename]['@content'].toString()).to.equal('Hello, friend.');
       });
     });
 
@@ -1351,7 +1357,7 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.equal(content);
+      expect(fs.files.tmp.file['@content']).to.equal(content);
     });
 
     it('should move files', function () {
@@ -1366,7 +1372,7 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.var).to.contain.keys('old');
-      expect(fs.files.var.old).to.equal(content);
+      expect(fs.files.var.old['@content']).to.equal(content);
     });
 
     it('should throw on non existing path', function () {
@@ -1447,8 +1453,8 @@ describe('avfs', function () {
       var result = fs.truncateSync('/tmp/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.length).to.equal(0);
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].length).to.equal(0);
     });
 
     it('should truncate file to the specified length', function () {
@@ -1459,9 +1465,9 @@ describe('avfs', function () {
       var result = fs.truncateSync('/tmp/file', 3);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.length).to.equal(3);
-      expect(fs.files.tmp.file.toString()).to.equal(content.slice(0, 3).toString());
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].length).to.equal(3);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal(content.slice(0, 3).toString());
     });
 
     it('should throw on non existing path', function () {
@@ -1532,7 +1538,7 @@ describe('avfs', function () {
     it('should write in the file', function () {
       var fd = 0;
 
-      fs.files = {tmp: d({})};
+      fs.files = {tmp: d({file: f(new Buffer(0))})};
 
       fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
@@ -1540,8 +1546,8 @@ describe('avfs', function () {
 
       expect(written).to.equal(5);
 
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello');
     });
 
     it('should write the file from position', function () {
@@ -1555,8 +1561,8 @@ describe('avfs', function () {
 
       expect(written).to.equal(5);
 
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, Hello');
     });
 
     it('should always append data to the end in append mode', function () {
@@ -1569,8 +1575,8 @@ describe('avfs', function () {
       expect(fs.writeSync(fd, new Buffer('Hello'), 0, 5, 2)).to.equal(5);
       expect(fs.writeSync(fd, new Buffer('Hello'), 0, 5, 2)).to.equal(5);
 
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, worldHelloHello');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, worldHelloHello');
     });
 
     it('should write the file from current position', function () {
@@ -1586,8 +1592,8 @@ describe('avfs', function () {
 
       expect(written).to.equal(5);
 
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, Hello');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, Hello');
 
       expect(fs.handles[fd].write).to.equal(12);
     });
@@ -1595,7 +1601,7 @@ describe('avfs', function () {
     it('should read the buffer from offset', function () {
       var fd = 0;
 
-      fs.files = {tmp: d({})};
+      fs.files = {tmp: d({file: f(new Buffer(0))})};
 
       fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
 
@@ -1603,8 +1609,8 @@ describe('avfs', function () {
 
       expect(written).to.equal(6);
 
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('friend');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('friend');
     });
 
     it('should fill unwritten parts with white spaces', function () {
@@ -1618,8 +1624,8 @@ describe('avfs', function () {
 
       expect(written).to.equal(2);
 
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, world        OK');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, world        OK');
     });
 
     it('should fail on non existing fd', function () {
@@ -1681,8 +1687,8 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, friend.');
     });
 
     it('should write string to file', function () {
@@ -1692,8 +1698,8 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal('Hello, friend.');
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal('Hello, friend.');
     });
 
     it('should write encoded string to file', function () {
@@ -1703,9 +1709,9 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
-      expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files.tmp.file['@content'].toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
     });
 
     it('should accept encoding option', function () {
@@ -1715,9 +1721,9 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.contain.keys('file');
-      expect(fs.files.tmp.file).to.be.an.instanceof(Buffer);
-      expect(fs.files.tmp.file.toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
-      expect(fs.files.tmp.file.toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
+      expect(fs.files.tmp.file['@content']).to.be.an.instanceof(Buffer);
+      expect(fs.files.tmp.file['@content'].toString()).to.equal(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files.tmp.file['@content'].toString()).to.not.equal(new Buffer('aàâäeéèâë', 'utf8').toString());
     });
 
     it('should accept mode option', function () {
