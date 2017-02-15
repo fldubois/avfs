@@ -313,7 +313,7 @@
     // enforce a maximum number of statements allowed per line
     "max-statements-per-line": ["error", {"max": 1}],
     // require constructor function names to begin with a capital letter
-    "new-cap": "error",
+    "new-cap": ["error", {"properties": false}],
     // require parentheses when invoking a constructor with no arguments
     "new-parens": "error",
     // require or disallow an empty line after var declarations
