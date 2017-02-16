@@ -745,8 +745,15 @@ describe('avfs', function () {
       expect(fs.existsSync('/tmp/file')).to.equal(true);
     });
 
-    it('should return false for existing file', function () {
+    it('should return false for non existing file', function () {
       expect(fs.existsSync('/tmp/file')).to.equal(false);
+    });
+
+    it('should return false for bad parameter', function () {
+      expect(fs.existsSync(0)).to.equal(false);
+      expect(fs.existsSync(false)).to.equal(false);
+      expect(fs.existsSync([])).to.equal(false);
+      expect(fs.existsSync({})).to.equal(false);
     });
 
   });
