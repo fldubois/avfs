@@ -219,7 +219,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       expect(fs.handles[fd].closed).to.equal(false);
 
@@ -276,9 +276,9 @@ describe('avfs', function () {
     it('should accept fd option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 7;
 
@@ -308,7 +308,7 @@ describe('avfs', function () {
     });
 
     it('should accept flags option', function (callback) {
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var stream = fs.createReadStream('/tmp/file', {flags: 'a'});
 
@@ -349,7 +349,7 @@ describe('avfs', function () {
     });
 
     it('should accept start option', function (callback) {
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var stream = fs.createReadStream('/tmp/file', {start: 2});
 
@@ -377,7 +377,7 @@ describe('avfs', function () {
     });
 
     it('should accept end option', function (callback) {
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var stream = fs.createReadStream('/tmp/file', {start: 2, end: 8});
 
@@ -437,9 +437,9 @@ describe('avfs', function () {
     it('should close the file descriptor with autoClose option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 7;
 
@@ -459,9 +459,9 @@ describe('avfs', function () {
     it('should not close the file descriptor without autoClose option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.WO);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.WO);
 
       fs.handles[fd].read = 7;
 
@@ -590,7 +590,7 @@ describe('avfs', function () {
   describe('createWriteStream()', function () {
 
     it('should return a writable stream', function (callback) {
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var stream = fs.createWriteStream('/tmp/file');
 
@@ -611,9 +611,9 @@ describe('avfs', function () {
     it('should accept fd option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var stream = fs.createWriteStream('/tmp/file2', {fd: fd});
 
@@ -632,7 +632,7 @@ describe('avfs', function () {
     });
 
     it('should accept flags option', function (callback) {
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var stream = fs.createWriteStream('/tmp/file', {flags: 'a'});
 
@@ -672,7 +672,7 @@ describe('avfs', function () {
     });
 
     it('should accept start option', function (callback) {
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
       var stream = fs.createWriteStream('/tmp/file', {flags: 'r+', start: 5});
 
@@ -765,7 +765,7 @@ describe('avfs', function () {
 
       fs.files = {file: f(new Buffer('Hello, friend.'))};
 
-      fs.handles[fd] = new Descriptor('/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.file, '/file', flags.RW);
 
       var result = fs.fchmodSync(fd, '0700');
 
@@ -799,9 +799,9 @@ describe('avfs', function () {
     it('should truncate file', function () {
       var fd = 10;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var result = fs.ftruncateSync(fd);
 
@@ -814,9 +814,9 @@ describe('avfs', function () {
       var content = new Buffer('Hello, friend.');
       var fd = 10;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var result = fs.ftruncateSync(fd, 3);
 
@@ -829,9 +829,9 @@ describe('avfs', function () {
     it('should throw on non writing file descriptor', function () {
       var fd = 10;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, friend.'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RO);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RO);
 
       expect(function () {
         fs.ftruncateSync(fd);
@@ -1110,7 +1110,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var buffer = new Buffer(5);
 
@@ -1125,7 +1125,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var buffer = new Buffer(5);
 
@@ -1140,7 +1140,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 5;
 
@@ -1158,7 +1158,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var buffer = new Buffer('Hello, world!');
 
@@ -1173,7 +1173,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 14;
 
@@ -1194,7 +1194,7 @@ describe('avfs', function () {
     it('should fail on closed fd', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor({}, '/tmp/file', flags.RW);
 
       fs.handles[fd].close();
 
@@ -1206,7 +1206,7 @@ describe('avfs', function () {
     it('should fail on non reading fd', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.WO);
+      fs.handles[fd] = new Descriptor({}, '/tmp/file', flags.WO);
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
@@ -1218,7 +1218,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer('Hello, friend.'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp, '/tmp', flags.RW);
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
@@ -1547,7 +1547,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer(0))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
 
@@ -1560,9 +1560,9 @@ describe('avfs', function () {
     it('should write the file from position', function () {
       var fd = 0;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, world'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 7);
 
@@ -1575,9 +1575,9 @@ describe('avfs', function () {
     it('should always append data to the end in append mode', function () {
       var fd = 0;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, world'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW | flags.APPEND);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW | flags.APPEND);
 
       expect(fs.writeSync(fd, new Buffer('Hello'), 0, 5, 2)).to.equal(5);
       expect(fs.writeSync(fd, new Buffer('Hello'), 0, 5, 2)).to.equal(5);
@@ -1589,9 +1589,9 @@ describe('avfs', function () {
     it('should write the file from current position', function () {
       var fd = 0;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, world'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       fs.handles[fd].write = 7;
 
@@ -1610,7 +1610,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({file: f(new Buffer(0))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 7, 6, null);
 
@@ -1623,9 +1623,9 @@ describe('avfs', function () {
     it('should fill unwritten parts with white spaces', function () {
       var fd = 0;
 
-      fs.files = {tmp: d({'file': f(new Buffer('Hello, world'))})};
+      fs.files = {tmp: d({file: f(new Buffer('Hello, world'))})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('OK'), 0, 2, 20);
 
@@ -1644,7 +1644,7 @@ describe('avfs', function () {
     it('should fail on closed fd', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor({}, '/tmp/file', flags.RW);
 
       fs.handles[fd].close();
 
@@ -1658,7 +1658,7 @@ describe('avfs', function () {
 
       fs.files = {tmp: d({})};
 
-      fs.handles[fd] = new Descriptor('/tmp/file', flags.RO);
+      fs.handles[fd] = new Descriptor({}, '/tmp/file', flags.RO);
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);

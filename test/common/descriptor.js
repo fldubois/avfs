@@ -15,8 +15,11 @@ describe('common/descriptor', function () {
   });
 
   it('should initialize read and write counters', function () {
-    var descriptor = new Descriptor('path/to/file', flags.RO);
+    var file = {test: true};
 
+    var descriptor = new Descriptor(file, 'path/to/file', flags.RO);
+
+    expect(descriptor.file).to.equal(file);
     expect(descriptor.path).to.equal('path/to/file');
     expect(descriptor.flags).to.equal(flags.RO);
     expect(descriptor.read).to.equal(0);
@@ -26,15 +29,15 @@ describe('common/descriptor', function () {
   describe('isReadable()', function () {
 
     it('should return true for readable flags', function () {
-      expect(new Descriptor('', flags.RO).isReadable()).to.equal(true);
-      expect(new Descriptor('', flags.RW).isReadable()).to.equal(true);
+      expect(new Descriptor({}, '', flags.RO).isReadable()).to.equal(true);
+      expect(new Descriptor({}, '', flags.RW).isReadable()).to.equal(true);
     });
 
     it('should return false for non readable flags', function () {
-      expect(new Descriptor('', flags.WO).isReadable()).to.equal(false);
-      expect(new Descriptor('', 0).isReadable()).to.equal(false);
-      expect(new Descriptor('', false).isReadable()).to.equal(false);
-      expect(new Descriptor('', null).isReadable()).to.equal(false);
+      expect(new Descriptor({}, '', flags.WO).isReadable()).to.equal(false);
+      expect(new Descriptor({}, '', 0).isReadable()).to.equal(false);
+      expect(new Descriptor({}, '', false).isReadable()).to.equal(false);
+      expect(new Descriptor({}, '', null).isReadable()).to.equal(false);
     });
 
   });
@@ -42,15 +45,15 @@ describe('common/descriptor', function () {
   describe('isWritable()', function () {
 
     it('should return true for writable flags', function () {
-      expect(new Descriptor('', flags.WO).isWritable()).to.equal(true);
-      expect(new Descriptor('', flags.RW).isWritable()).to.equal(true);
+      expect(new Descriptor({}, '', flags.WO).isWritable()).to.equal(true);
+      expect(new Descriptor({}, '', flags.RW).isWritable()).to.equal(true);
     });
 
     it('should return false for non writable flags', function () {
-      expect(new Descriptor('', flags.RO).isWritable()).to.equal(false);
-      expect(new Descriptor('', 0).isWritable()).to.equal(false);
-      expect(new Descriptor('', false).isWritable()).to.equal(false);
-      expect(new Descriptor('', null).isWritable()).to.equal(false);
+      expect(new Descriptor({}, '', flags.RO).isWritable()).to.equal(false);
+      expect(new Descriptor({}, '', 0).isWritable()).to.equal(false);
+      expect(new Descriptor({}, '', false).isWritable()).to.equal(false);
+      expect(new Descriptor({}, '', null).isWritable()).to.equal(false);
     });
 
   });
