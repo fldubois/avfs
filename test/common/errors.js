@@ -26,7 +26,8 @@ describe('common/errors', function () {
       'ENOTDIR',
       'EISDIR',
       'ENOENT',
-      'EEXIST'
+      'EEXIST',
+      'EPERM'
     ]);
 
     Object.keys(errors).forEach(function (code) {
@@ -89,6 +90,15 @@ describe('common/errors', function () {
     expectError(errors.EEXIST('open', '/path/to/file'), 'EEXIST, file already exists \'/path/to/file\'', {
       errno:   47,
       code:    'EEXIST',
+      path:    '/path/to/file',
+      syscall: 'open'
+    });
+  });
+
+  it('should expose EPERM factory', function () {
+    expectError(errors.EPERM('open', '/path/to/file'), 'EPERM, operation not permitted \'/path/to/file\'', {
+      errno:   50,
+      code:    'EPERM',
       path:    '/path/to/file',
       syscall: 'open'
     });

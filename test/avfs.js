@@ -860,6 +860,98 @@ describe('avfs', function () {
 
   });
 
+  describe('linkSync()', function () {
+
+    it('should create a hard link', function () {
+      fs.files = {
+        tmp: d({
+          file: f(new Buffer('Hello, friend.'))
+        }),
+        dir: d({})
+      };
+
+      var result = fs.linkSync('/tmp/file', '/dir/file');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp.file).to.equal(fs.files.dir.file);
+    });
+
+    it('should throw on directory source', function () {
+      fs.files = {tmp: d({file: d({})})};
+
+      expect(function () {
+        fs.linkSync('/tmp/file', '/dir/file');
+      }).to.throw(Error, 'EPERM, operation not permitted \'/dir/file\'');
+    });
+
+    it('should throw on existing destination', function () {
+      fs.files = {
+        tmp: d({
+          file: f(new Buffer('Hello, friend.'))
+        }),
+        dir: d({
+          file: f(new Buffer('Hello, friend.'))
+        })
+      };
+
+      expect(function () {
+        fs.linkSync('/tmp/file', '/dir/file');
+      }).to.throw(Error, 'EEXIST, file already exists \'/dir/file\'');
+    });
+
+    it('should throw on non existing parent directory in source path', function () {
+      expect(function () {
+        fs.linkSync('/tmp/file', '/dir/file');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file\'');
+    });
+
+    it('should throw on not directory parent in source path', function () {
+      fs.files = {tmp: f(new Buffer('Hello, friend.'))};
+
+      expect(function () {
+        fs.linkSync('/tmp/file', '/dir/file');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
+    });
+
+    it('should throw on non existing parent directory in destination path', function () {
+      fs.files = {
+        tmp: d({
+          file: f(new Buffer('Hello, friend.'))
+        })
+      };
+
+      expect(function () {
+        fs.linkSync('/tmp/file', '/dir/file');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file\'');
+    });
+
+    it('should throw on not directory parent in destination path', function () {
+      fs.files = {
+        tmp: d({
+          file: f(new Buffer('Hello, friend.'))
+        }),
+        dir: f(new Buffer('Hello, friend.'))
+      };
+
+      expect(function () {
+        fs.linkSync('/tmp/file', '/dir/file');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
+    });
+
+    it('should throw on non string source path', function () {
+      expect(function () {
+        fs.linkSync(true, '/dir/file');
+      }).to.throw(TypeError, 'dest path must be a string');
+    });
+
+    it('should throw on non string destination path', function () {
+      expect(function () {
+        fs.linkSync('/tmp/file', true);
+      }).to.throw(TypeError, 'src path must be a string');
+    });
+
+  });
+
   describe('mkdirSync()', function () {
 
     it('should create a new directory', function () {
