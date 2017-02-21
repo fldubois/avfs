@@ -16,7 +16,7 @@ var fs = new AVFS();
 describe('avfs', function () {
 
   beforeEach('reset virtual file system', function () {
-    fs.files   = {};
+    fs.files   = elements.directory('0755');
     fs.handles = {};
     fs.next    = 0;
   });
@@ -24,7 +24,11 @@ describe('avfs', function () {
   describe('appendFileSync()', function () {
 
     it('should append buffer to file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, '))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, '))
+        })
+      });
 
       var result = fs.appendFileSync('/tmp/file', new Buffer('friend.'));
 
@@ -35,7 +39,11 @@ describe('avfs', function () {
     });
 
     it('should append string to file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, '))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, '))
+        })
+      });
 
       var result = fs.appendFileSync('/tmp/file', 'friend.');
 
@@ -46,7 +54,11 @@ describe('avfs', function () {
     });
 
     it('should append encoded string to file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, ', 'ascii'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, ', 'ascii'))
+        })
+      });
 
       var result = fs.appendFileSync('/tmp/file', 'aàâäeéèâë', {encoding: 'ascii'});
 
@@ -58,7 +70,11 @@ describe('avfs', function () {
     });
 
     it('should accept encoding option', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, '))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, '))
+        })
+      });
 
       var result = fs.appendFileSync('/tmp/file', 'aàâäeéèâë', 'ascii');
 
@@ -79,7 +95,11 @@ describe('avfs', function () {
     });
 
     it('should accept flag option', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.appendFileSync('/tmp/file', 'OK', {flag: 'r'});
@@ -87,7 +107,9 @@ describe('avfs', function () {
     });
 
     it('should create non existing file', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.appendFileSync('/tmp/file', 'Hello, friend.');
 
@@ -104,7 +126,9 @@ describe('avfs', function () {
     });
 
     it('should throw on not directory parent', function () {
-      fs.files = {tmp: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        tmp: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.appendFileSync('/tmp/file', 'Hello, friend.');
@@ -112,7 +136,11 @@ describe('avfs', function () {
     });
 
     it('should throw on directory path', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.appendFileSync('/tmp', 'Hello, friend.');
@@ -120,7 +148,11 @@ describe('avfs', function () {
     });
 
     it('should throw on unknown encoding', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.appendFileSync('/tmp/file', 'Hello, friend.', 'utf5');
@@ -144,7 +176,9 @@ describe('avfs', function () {
   describe('chmodSync()', function () {
 
     it('should change the mode', function () {
-      fs.files = {file: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        file: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       var result = fs.chmodSync('/file', '0700');
 
@@ -178,7 +212,11 @@ describe('avfs', function () {
     it('should close the file handle', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -207,7 +245,11 @@ describe('avfs', function () {
   describe('createReadStream()', function () {
 
     it('should return a readable stream', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createReadStream('/tmp/file');
 
@@ -237,7 +279,11 @@ describe('avfs', function () {
     it('should accept fd option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -269,7 +315,11 @@ describe('avfs', function () {
     });
 
     it('should accept flags option', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createReadStream('/tmp/file', {flags: 'a'});
 
@@ -292,7 +342,9 @@ describe('avfs', function () {
     });
 
     it('should accept mode option', function (callback) {
-      fs.files = {file: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        file: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       var stream = fs.createReadStream('/file', {flags: 'w+', mode: '0700'});
 
@@ -310,7 +362,11 @@ describe('avfs', function () {
     });
 
     it('should accept start option', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createReadStream('/tmp/file', {start: 2});
 
@@ -338,7 +394,11 @@ describe('avfs', function () {
     });
 
     it('should accept end option', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createReadStream('/tmp/file', {start: 2, end: 8});
 
@@ -368,7 +428,11 @@ describe('avfs', function () {
     it('should accept encoding option', function (callback) {
       var content = new Buffer('Hello, friend.');
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, content)})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', content)
+        })
+      });
 
       var stream = fs.createReadStream('/tmp/file', {encoding: 'base64'});
 
@@ -398,7 +462,11 @@ describe('avfs', function () {
     it('should close the file descriptor with autoClose option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -420,7 +488,11 @@ describe('avfs', function () {
     it('should not close the file descriptor without autoClose option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.WO);
 
@@ -442,7 +514,11 @@ describe('avfs', function () {
     });
 
     it('should emit open event', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var opened = false;
       var stream = fs.createReadStream('/tmp/file', {autoClose: true});
@@ -488,7 +564,11 @@ describe('avfs', function () {
     });
 
     it('should emit an error on directory', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createReadStream('/tmp');
 
@@ -551,7 +631,11 @@ describe('avfs', function () {
   describe('createWriteStream()', function () {
 
     it('should return a writable stream', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createWriteStream('/tmp/file');
 
@@ -572,7 +656,11 @@ describe('avfs', function () {
     it('should accept fd option', function (callback) {
       var fd = 12;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -593,7 +681,11 @@ describe('avfs', function () {
     });
 
     it('should accept flags option', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createWriteStream('/tmp/file', {flags: 'a'});
 
@@ -611,7 +703,9 @@ describe('avfs', function () {
     });
 
     it('should accept mode option', function (callback) {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var stream = fs.createWriteStream('/tmp/file', {mode: '0700'});
 
@@ -633,7 +727,11 @@ describe('avfs', function () {
     });
 
     it('should accept start option', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createWriteStream('/tmp/file', {flags: 'r+', start: 5});
 
@@ -651,7 +749,11 @@ describe('avfs', function () {
     });
 
     it('should emit an error on open error', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createWriteStream('/tmp/file', {flags: 'wx'});
 
@@ -668,7 +770,11 @@ describe('avfs', function () {
     });
 
     it('should emit an error on directory', function (callback) {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var stream = fs.createWriteStream('/tmp');
 
@@ -701,7 +807,11 @@ describe('avfs', function () {
   describe('existsSync()', function () {
 
     it('should return true for existing file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(fs.existsSync('/tmp/file')).to.equal(true);
     });
@@ -724,7 +834,9 @@ describe('avfs', function () {
     it('should change the mode', function () {
       var fd = 10;
 
-      fs.files = {file: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        file: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.file, '/file', flags.RW);
 
@@ -760,7 +872,11 @@ describe('avfs', function () {
     it('should truncate file', function () {
       var fd = 10;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -775,7 +891,11 @@ describe('avfs', function () {
       var content = new Buffer('Hello, friend.');
       var fd = 10;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -790,7 +910,11 @@ describe('avfs', function () {
     it('should throw on non writing file descriptor', function () {
       var fd = 10;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RO);
 
@@ -812,7 +936,11 @@ describe('avfs', function () {
     });
 
     it('should throw on non integer length', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.ftruncateSync(0, true);
@@ -824,12 +952,12 @@ describe('avfs', function () {
   describe('linkSync()', function () {
 
     it('should create a hard link', function () {
-      fs.files = {
-        tmp: elements.directory(511, {
-          file: elements.file(438, new Buffer('Hello, friend.'))
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         }),
-        dir: elements.directory(511, {})
-      };
+        dir: elements.directory('0777', {})
+      });
 
       var result = fs.linkSync('/tmp/file', '/dir/file');
 
@@ -838,7 +966,11 @@ describe('avfs', function () {
     });
 
     it('should throw on directory source', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.directory(511, {})})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.directory('0777', {})
+        })
+      });
 
       expect(function () {
         fs.linkSync('/tmp/file', '/dir/file');
@@ -846,14 +978,14 @@ describe('avfs', function () {
     });
 
     it('should throw on existing destination', function () {
-      fs.files = {
-        tmp: elements.directory(511, {
-          file: elements.file(438, new Buffer('Hello, friend.'))
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         }),
-        dir: elements.directory(511, {
-          file: elements.file(438, new Buffer('Hello, friend.'))
+        dir: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         })
-      };
+      });
 
       expect(function () {
         fs.linkSync('/tmp/file', '/dir/file');
@@ -867,7 +999,9 @@ describe('avfs', function () {
     });
 
     it('should throw on not directory parent in source path', function () {
-      fs.files = {tmp: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        tmp: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.linkSync('/tmp/file', '/dir/file');
@@ -875,11 +1009,11 @@ describe('avfs', function () {
     });
 
     it('should throw on non existing parent directory in destination path', function () {
-      fs.files = {
-        tmp: elements.directory(511, {
-          file: elements.file(438, new Buffer('Hello, friend.'))
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         })
-      };
+      });
 
       expect(function () {
         fs.linkSync('/tmp/file', '/dir/file');
@@ -887,12 +1021,12 @@ describe('avfs', function () {
     });
 
     it('should throw on not directory parent in destination path', function () {
-      fs.files = {
-        tmp: elements.directory(511, {
-          file: elements.file(438, new Buffer('Hello, friend.'))
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         }),
-        dir: elements.file(438, new Buffer('Hello, friend.'))
-      };
+        dir: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.linkSync('/tmp/file', '/dir/file');
@@ -916,7 +1050,9 @@ describe('avfs', function () {
   describe('mkdirSync()', function () {
 
     it('should create a new directory', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.mkdirSync('/tmp/dir');
 
@@ -927,7 +1063,9 @@ describe('avfs', function () {
     });
 
     it('should create a new directory on root', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.mkdirSync('/dir');
 
@@ -938,7 +1076,9 @@ describe('avfs', function () {
     });
 
     it('should accept mode parameter as string', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.mkdirSync('/tmp/dir', '0500');
 
@@ -951,7 +1091,9 @@ describe('avfs', function () {
     });
 
     it('should accept mode parameter as number', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.mkdirSync('/tmp/dir', 438);
 
@@ -964,7 +1106,9 @@ describe('avfs', function () {
     });
 
     it('should set mode to 0777 by default', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.mkdirSync('/tmp/dir');
 
@@ -977,7 +1121,11 @@ describe('avfs', function () {
     });
 
     it('should throw on existing path', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.mkdirSync('/tmp');
@@ -991,7 +1139,9 @@ describe('avfs', function () {
     });
 
     it('should throw on not directory parent', function () {
-      fs.files = {tmp: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        tmp: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.mkdirSync('/tmp/file');
@@ -1009,7 +1159,11 @@ describe('avfs', function () {
   describe('openSync()', function () {
 
     it('should return a file descriptor', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var fd = fs.openSync('/tmp/file', 'r');
 
@@ -1048,7 +1202,11 @@ describe('avfs', function () {
     });
 
     it('should throw on existing file in exclusive mode', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       ['wx', 'xw', 'wx+', 'xw+', 'ax', 'xa', 'ax+', 'xa+'].forEach(function (flags) {
         expect(function () {
@@ -1058,7 +1216,9 @@ describe('avfs', function () {
     });
 
     it('should throw on directory', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       expect(function () {
         fs.openSync('/tmp', 'r');
@@ -1072,7 +1232,9 @@ describe('avfs', function () {
     });
 
     it('should throw on non directory parent', function () {
-      fs.files = {tmp: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        tmp: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.openSync('/tmp/file', 'w');
@@ -1130,7 +1292,7 @@ describe('avfs', function () {
       ['w',  'w+'].forEach(function (flags) {
         var filename = 'file-' + flags + '';
 
-        fs.files[filename] = elements.file(438, new Buffer('Hello, friend.'));
+        fs.files[filename] = elements.file('0666', new Buffer('Hello, friend.'));
 
         var fd = fs.openSync('/' + filename, flags);
 
@@ -1144,7 +1306,7 @@ describe('avfs', function () {
       ['a',  'a+'].forEach(function (flags) {
         var filename = 'file-' + flags + '';
 
-        fs.files[filename] = elements.file(438, new Buffer('Hello, friend.'));
+        fs.files[filename] = elements.file('0666', new Buffer('Hello, friend.'));
 
         var fd = fs.openSync('/' + filename, flags);
 
@@ -1161,7 +1323,11 @@ describe('avfs', function () {
     it('should read the file', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1176,7 +1342,11 @@ describe('avfs', function () {
     it('should read the file from position', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1191,7 +1361,11 @@ describe('avfs', function () {
     it('should read the file from current position', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1209,7 +1383,11 @@ describe('avfs', function () {
     it('should fill the buffer from offset', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1224,7 +1402,11 @@ describe('avfs', function () {
     it('should not read file beyond his length', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1269,7 +1451,11 @@ describe('avfs', function () {
     it('should fail on directory', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp, '/tmp', flags.RW);
 
@@ -1301,13 +1487,13 @@ describe('avfs', function () {
   describe('readdirSync()', function () {
 
     it('should list directory files', function () {
-      fs.files = {
-        tmp: elements.directory(511, {
-          'fileA': elements.file(438, new Buffer('Hello, friend.')),
-          'fileB': elements.file(438, new Buffer('Hello, friend.')),
-          'fileC': elements.file(438, new Buffer('Hello, friend.'))
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          'fileA': elements.file('0666', new Buffer('Hello, friend.')),
+          'fileB': elements.file('0666', new Buffer('Hello, friend.')),
+          'fileC': elements.file('0666', new Buffer('Hello, friend.'))
         })
-      };
+      });
 
       var result = fs.readdirSync('/tmp');
 
@@ -1326,7 +1512,11 @@ describe('avfs', function () {
     });
 
     it('should throw on file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.readdirSync('/tmp/file');
@@ -1344,7 +1534,11 @@ describe('avfs', function () {
   describe('readFileSync()', function () {
 
     it('should return the file buffer', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var content = fs.readFileSync('/tmp/file');
 
@@ -1353,7 +1547,11 @@ describe('avfs', function () {
     });
 
     it('should return an encoded string', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var content = fs.readFileSync('/tmp/file', {encoding: 'utf8'});
 
@@ -1362,7 +1560,11 @@ describe('avfs', function () {
     });
 
     it('should accept encoding option', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var content = fs.readFileSync('/tmp/file', 'utf8');
 
@@ -1377,7 +1579,11 @@ describe('avfs', function () {
     });
 
     it('should throw on directory', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.readFileSync('/tmp');
@@ -1385,7 +1591,11 @@ describe('avfs', function () {
     });
 
     it('should throw on unknown encoding', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.readFileSync('/tmp/file', 'utf5');
@@ -1411,7 +1621,11 @@ describe('avfs', function () {
     it('should rename files', function () {
       var content = new Buffer('Hello, friend.');
 
-      fs.files = {tmp: elements.directory(511, {old: elements.file(438, content)})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          old: elements.file('0666', content)
+        })
+      });
 
       var result = fs.renameSync('/tmp/old', '/tmp/file');
 
@@ -1423,10 +1637,12 @@ describe('avfs', function () {
     it('should move files', function () {
       var content = new Buffer('Hello, friend.');
 
-      fs.files = {
-        tmp: elements.directory(511, {old: elements.file(438, content)}),
-        var: elements.directory(511, {})
-      };
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          old: elements.file('0666', content)
+        }),
+        var: elements.directory('0777', {})
+      });
 
       var result = fs.renameSync('/tmp/old', '/var/old');
 
@@ -1442,7 +1658,11 @@ describe('avfs', function () {
     });
 
     it('should throw on non existing parent destination', function () {
-      fs.files = {tmp: elements.directory(511, {old: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          old: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.renameSync('/tmp/old', '/dir/old');
@@ -1456,12 +1676,12 @@ describe('avfs', function () {
     });
 
     it('should throw on not directory parent', function () {
-      fs.files = {
-        tmp: elements.directory(511, {
-          file: elements.file(438, new Buffer('Hello, friend.'))
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         }),
-        new: elements.file(438, new Buffer('Hello, friend.'))
-      };
+        new: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.renameSync('/tmp/file', '/new/file');
@@ -1473,7 +1693,11 @@ describe('avfs', function () {
   describe('rmdirSync()', function () {
 
     it('should delete file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var result = fs.rmdirSync('/tmp');
 
@@ -1488,7 +1712,11 @@ describe('avfs', function () {
     });
 
     it('should throw on file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.rmdirSync('/tmp/file');
@@ -1508,7 +1736,11 @@ describe('avfs', function () {
     it('should truncate file', function () {
       var content = new Buffer('Hello, friend.');
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, content)})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', content)
+        })
+      });
 
       var result = fs.truncateSync('/tmp/file');
 
@@ -1520,7 +1752,11 @@ describe('avfs', function () {
     it('should truncate file to the specified length', function () {
       var content = new Buffer('Hello, friend.');
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, content)})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', content)
+        })
+      });
 
       var result = fs.truncateSync('/tmp/file', 3);
 
@@ -1537,7 +1773,11 @@ describe('avfs', function () {
     });
 
     it('should throw on directory', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.truncateSync('/tmp');
@@ -1551,7 +1791,11 @@ describe('avfs', function () {
     });
 
     it('should throw on non integer length', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.truncateSync('/tmp/file', true);
@@ -1563,7 +1807,11 @@ describe('avfs', function () {
   describe('unlinkSync()', function () {
 
     it('should delete file', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       var result = fs.unlinkSync('/tmp/file');
 
@@ -1578,7 +1826,11 @@ describe('avfs', function () {
     });
 
     it('should throw on directory', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.unlinkSync('/tmp');
@@ -1598,7 +1850,11 @@ describe('avfs', function () {
     it('should write in the file', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer(0))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer(0))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1613,7 +1869,11 @@ describe('avfs', function () {
     it('should write the file from position', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, world'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, world'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1628,7 +1888,11 @@ describe('avfs', function () {
     it('should always append data to the end in append mode', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, world'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, world'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW | flags.APPEND);
 
@@ -1642,7 +1906,11 @@ describe('avfs', function () {
     it('should write the file from current position', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, world'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, world'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1661,7 +1929,11 @@ describe('avfs', function () {
     it('should read the buffer from offset', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer(0))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer(0))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1676,7 +1948,11 @@ describe('avfs', function () {
     it('should fill unwritten parts with white spaces', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, world'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, world'))
+        })
+      });
 
       fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
 
@@ -1709,7 +1985,9 @@ describe('avfs', function () {
     it('should fail on non writing fd', function () {
       var fd = 0;
 
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       fs.handles[fd] = new Descriptor({}, '/tmp/file', flags.RO);
 
@@ -1741,7 +2019,9 @@ describe('avfs', function () {
   describe('writeFileSync()', function () {
 
     it('should write buffer to file', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.writeFileSync('/tmp/file', new Buffer('Hello, friend.'));
 
@@ -1752,7 +2032,9 @@ describe('avfs', function () {
     });
 
     it('should write string to file', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.writeFileSync('/tmp/file', 'Hello, friend.');
 
@@ -1763,7 +2045,9 @@ describe('avfs', function () {
     });
 
     it('should write encoded string to file', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.writeFileSync('/tmp/file', 'aàâäeéèâë', {encoding: 'ascii'});
 
@@ -1775,7 +2059,9 @@ describe('avfs', function () {
     });
 
     it('should accept encoding option', function () {
-      fs.files = {tmp: elements.directory(511, {})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {})
+      });
 
       var result = fs.writeFileSync('/tmp/file', 'aàâäeéèâë', 'ascii');
 
@@ -1796,7 +2082,11 @@ describe('avfs', function () {
     });
 
     it('should accept flag option', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.writeFileSync('/tmp/file', 'OK', {flag: 'r'});
@@ -1810,7 +2100,9 @@ describe('avfs', function () {
     });
 
     it('should throw on not directory parent', function () {
-      fs.files = {tmp: elements.file(438, new Buffer('Hello, friend.'))};
+      fs.files = elements.directory('0755', {
+        tmp: elements.file('0666', new Buffer('Hello, friend.'))
+      });
 
       expect(function () {
         fs.writeFileSync('/tmp/file', 'Hello, friend.');
@@ -1818,7 +2110,11 @@ describe('avfs', function () {
     });
 
     it('should throw on directory path', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.writeFileSync('/tmp', 'Hello, friend.');
@@ -1826,7 +2122,11 @@ describe('avfs', function () {
     });
 
     it('should throw on unknown encoding', function () {
-      fs.files = {tmp: elements.directory(511, {file: elements.file(438, new Buffer('Hello, friend.'))})};
+      fs.files = elements.directory('0755', {
+        tmp: elements.directory('0777', {
+          file: elements.file('0666', new Buffer('Hello, friend.'))
+        })
+      });
 
       expect(function () {
         fs.writeFileSync('/tmp/file', 'Hello, friend.', 'utf5');

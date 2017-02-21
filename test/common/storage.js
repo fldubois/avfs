@@ -16,11 +16,11 @@ function expectError(error, message, data) {
   });
 }
 
-var files = {
-  dir: elements.directory(511, {
-    file: elements.file(438, new Buffer('Hello, friend'))
+var files = elements.directory('0755', {
+  dir: elements.directory('0777', {
+    file: elements.file('0666', new Buffer('Hello, friend'))
   })
-};
+});
 
 describe('common/storage', function () {
 
@@ -36,6 +36,7 @@ describe('common/storage', function () {
   describe('parse()', function () {
 
     it('should return path elements', function () {
+      expect(storage.parse('/')).to.deep.equal([]);
       expect(storage.parse('/path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
       expect(storage.parse('path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
       expect(storage.parse('C:\\path\\to\\file.txt')).to.deep.equal(['C:', 'path', 'to', 'file.txt']);
@@ -47,6 +48,7 @@ describe('common/storage', function () {
   describe('get()', function () {
 
     it('should return the element', function () {
+      expect(storage.get(files, 'test', '/')).to.equal(files);
       expect(storage.get(files, 'test', '/dir')).to.equal(files.dir);
       expect(storage.get(files, 'test', '/dir/file')).to.equal(files.dir.file);
     });
