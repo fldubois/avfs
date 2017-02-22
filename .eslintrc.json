@@ -10,7 +10,7 @@
     // Possible Errors
 
     // disallow assignment operators in conditional expressions
-    "no-cond-assign": ["error", "always"],
+    "no-cond-assign": ["error", "except-parens"],
     // disallow the use of console
     "no-console": "warn",
     // disallow constant expressions in conditions

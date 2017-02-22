@@ -13,6 +13,10 @@ var Descriptor = require('../lib/common/descriptor');
 
 var fs = new AVFS();
 
+var noop = function () {
+  return null;
+};
+
 describe('avfs', function () {
 
   beforeEach('reset virtual file system', function () {
@@ -426,11 +430,9 @@ describe('avfs', function () {
     });
 
     it('should accept encoding option', function (callback) {
-      var content = new Buffer('Hello, friend.');
-
       fs.files = elements.directory('0755', {
         tmp: elements.directory('0777', {
-          file: elements.file('0666', content)
+          file: elements.file('0666', new Buffer('Hello, friend.'))
         })
       });
 
@@ -501,6 +503,7 @@ describe('avfs', function () {
       var stream = fs.createReadStream('/tmp/file', {fd: fd, autoClose: false});
 
       stream.on('error', function (error) {
+        expect(error).to.be.an('error');
         expect(fs.handles[fd]).to.be.an('object');
 
         return callback();
@@ -1194,10 +1197,10 @@ describe('avfs', function () {
     });
 
     it('should throw on non existing file in read mode', function () {
-      ['r', 'r+', 'rs', 'rs+'].forEach(function (flags) {
+      ['r', 'r+', 'rs', 'rs+'].forEach(function (fgs) {
         expect(function () {
-          fs.openSync('/tmp/file', flags);
-        }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file\'', 'with flags \'' + flags + '\'');
+          fs.openSync('/tmp/file', fgs);
+        }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file\'', 'with flags \'' + fgs + '\'');
       });
     });
 
@@ -1208,10 +1211,10 @@ describe('avfs', function () {
         })
       });
 
-      ['wx', 'xw', 'wx+', 'xw+', 'ax', 'xa', 'ax+', 'xa+'].forEach(function (flags) {
+      ['wx', 'xw', 'wx+', 'xw+', 'ax', 'xa', 'ax+', 'xa+'].forEach(function (fgs) {
         expect(function () {
-          fs.openSync('/tmp/file', flags);
-        }).to.throw(Error, 'EEXIST, file already exists \'/tmp/file\'', 'with flags \'' + flags + '\'');
+          fs.openSync('/tmp/file', fgs);
+        }).to.throw(Error, 'EEXIST, file already exists \'/tmp/file\'', 'with flags \'' + fgs + '\'');
       });
     });
 
@@ -1247,10 +1250,10 @@ describe('avfs', function () {
         'w+', 'wx+', 'xw+',
         'a',  'ax',  'xa',
         'a+', 'ax+', 'xa+'
-      ].forEach(function (flags) {
-        var filename = 'file-' + flags + '';
+      ].forEach(function (fgs) {
+        var filename = 'file-' + fgs + '';
 
-        var fd = fs.openSync('/' + filename, flags);
+        var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
 
@@ -1289,12 +1292,12 @@ describe('avfs', function () {
     });
 
     it('should erase existing file in truncate mode', function () {
-      ['w',  'w+'].forEach(function (flags) {
-        var filename = 'file-' + flags + '';
+      ['w',  'w+'].forEach(function (fgs) {
+        var filename = 'file-' + fgs + '';
 
         fs.files[filename] = elements.file('0666', new Buffer('Hello, friend.'));
 
-        var fd = fs.openSync('/' + filename, flags);
+        var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
 
@@ -1303,12 +1306,12 @@ describe('avfs', function () {
     });
 
     it('should not erase existing file in append mode', function () {
-      ['a',  'a+'].forEach(function (flags) {
-        var filename = 'file-' + flags + '';
+      ['a',  'a+'].forEach(function (fgs) {
+        var filename = 'file-' + fgs + '';
 
         fs.files[filename] = elements.file('0666', new Buffer('Hello, friend.'));
 
-        var fd = fs.openSync('/' + filename, flags);
+        var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
 
@@ -1472,13 +1475,13 @@ describe('avfs', function () {
 
     it('should throw on offset out of bounds', function () {
       expect(function () {
-        fs.readSync(0, new Buffer(10), 1000, 0, 0, function () {});
+        fs.readSync(0, new Buffer(10), 1000, 0, 0, noop);
       }).to.throw(Error, 'Offset is out of bounds');
     });
 
     it('should throw on length beyond buffer', function () {
       expect(function () {
-        fs.readSync(0, new Buffer(10), 0, 1000, 0, function () {});
+        fs.readSync(0, new Buffer(10), 0, 1000, 0, noop);
       }).to.throw(Error, 'Length extends beyond buffer');
     });
 
@@ -1489,9 +1492,9 @@ describe('avfs', function () {
     it('should list directory files', function () {
       fs.files = elements.directory('0755', {
         tmp: elements.directory('0777', {
-          'fileA': elements.file('0666', new Buffer('Hello, friend.')),
-          'fileB': elements.file('0666', new Buffer('Hello, friend.')),
-          'fileC': elements.file('0666', new Buffer('Hello, friend.'))
+          fileA: elements.file('0666', new Buffer('Hello, friend.')),
+          fileB: elements.file('0666', new Buffer('Hello, friend.')),
+          fileC: elements.file('0666', new Buffer('Hello, friend.'))
         })
       });
 
@@ -2004,13 +2007,13 @@ describe('avfs', function () {
 
     it('should throw on offset out of bounds', function () {
       expect(function () {
-        fs.writeSync(0, new Buffer('Hello, friend'), 1000, 0, 0, function () {});
+        fs.writeSync(0, new Buffer('Hello, friend'), 1000, 0, 0, noop);
       }).to.throw(Error, 'Offset is out of bounds');
     });
 
     it('should throw on length beyond buffer', function () {
       expect(function () {
-        fs.writeSync(0, new Buffer('Hello, friend'), 0, 1000, 0, function () {});
+        fs.writeSync(0, new Buffer('Hello, friend'), 0, 1000, 0, noop);
       }).to.throw(Error, 'off + len > buffer.length');
     });
 

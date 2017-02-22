@@ -6,16 +6,6 @@ var expect = chai.expect;
 var elements = require('../../lib/common/elements');
 var storage  = require('../../lib/common/storage');
 
-function expectError(error, message, data) {
-  expect(error).to.be.an('error');
-
-  expect(error.message).to.equal(message);
-
-  Object.keys(data).forEach(function (property) {
-    expect(error[property]).to.equal(data[property]);
-  });
-}
-
 var files = elements.directory('0755', {
   dir: elements.directory('0777', {
     file: elements.file('0666', new Buffer('Hello, friend'))
@@ -140,9 +130,9 @@ describe('common/storage', function () {
       expect(files.dir).to.not.contain.keys('test');
     });
 
-    it('should unset parameters on error', function () {
+    it('should set parameters on error', function () {
       try {
-        storage.unset(files, {syscall: 'test', filepath: '/other/path'}, '/not/file', elements.file(438, new Buffer(0)));
+        storage.unset(files, {syscall: 'test', filepath: '/other/path'}, '/not/file');
       } catch (error) {
         expect(error.code).to.equal('ENOENT');
         expect(error.path).to.equal('/other/path');
@@ -150,7 +140,7 @@ describe('common/storage', function () {
       }
 
       try {
-        storage.unset(files, {syscall: 'test'}, '/not/file', elements.file(438, new Buffer(0)));
+        storage.unset(files, {syscall: 'test'}, '/not/file');
       } catch (error) {
         expect(error.code).to.equal('ENOENT');
         expect(error.path).to.equal('/not/file');
@@ -160,13 +150,13 @@ describe('common/storage', function () {
 
     it('should throw on missing directory in path', function () {
       expect(function () {
-        storage.unset(files, 'test', '/not/file', elements.file(438, new Buffer(0)));
+        storage.unset(files, 'test', '/not/file');
       }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
     });
 
     it('should throw on not directory element in path', function () {
       expect(function () {
-        storage.unset(files, 'test', '/dir/file/test', elements.file(438, new Buffer(0)));
+        storage.unset(files, 'test', '/dir/file/test');
       }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
     });
 

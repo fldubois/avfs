@@ -23,13 +23,13 @@ describe('common/flags', function () {
 
     it('should parse string to flags', function () {
       var specs = [
-        {flag: flags.RO,     values: ['r', 'rs']                                                               },
-        {flag: flags.WO,     values: ['w', 'wx', 'xw']                                                         },
-        {flag: flags.RW,     values: ['r+', 'rs+', 'w+', 'wx+', 'xw+']                                         },
+        {flag: flags.RO,     values: ['r', 'rs']},
+        {flag: flags.WO,     values: ['w', 'wx', 'xw']},
+        {flag: flags.RW,     values: ['r+', 'rs+', 'w+', 'wx+', 'xw+']},
         {flag: flags.CREAT,  values: ['w', 'wx', 'xw', 'w+', 'wx+', 'xw+', 'a', 'ax', 'xa', 'a+', 'ax+', 'xa+']},
-        {flag: flags.TRUNC,  values: ['w', 'wx', 'xw', 'w+', 'wx+', 'xw+']                                     },
-        {flag: flags.APPEND, values: ['a', 'ax', 'xa', 'a+', 'ax+', 'xa+']                                     },
-        {flag: flags.EXCL,   values: ['xw', 'xw+', 'xa', 'xa+']                                                }
+        {flag: flags.TRUNC,  values: ['w', 'wx', 'xw', 'w+', 'wx+', 'xw+']},
+        {flag: flags.APPEND, values: ['a', 'ax', 'xa', 'a+', 'ax+', 'xa+']},
+        {flag: flags.EXCL,   values: ['xw', 'xw+', 'xa', 'xa+']}
       ];
 
       specs.forEach(function (spec) {

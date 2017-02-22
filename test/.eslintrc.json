@@ -1,0 +1,22 @@
+{
+  "env": {
+    "mocha": true
+  },
+  "rules": {
+
+    // Best Practices
+
+    // enforce dot notation whenever possible
+    "dot-notation": ["error", {"allowKeywords": true, "allowPattern": "^[A-Za-z]+((_|-)[A-Za-z]+)+$"}],
+    // disallow magic numbers
+    "no-magic-numbers": "off",
+
+    // Stylistic Issues
+
+    // enforce a maximum depth that callbacks can be nested
+    "max-nested-callbacks": ["error", 8],
+    // require or disallow padding within blocks
+    "padded-blocks": "off"
+
+  }
+}
