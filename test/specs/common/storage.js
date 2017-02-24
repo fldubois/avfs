@@ -3,8 +3,8 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements = require('../../lib/common/elements');
-var storage  = require('../../lib/common/storage');
+var elements = require('lib/common/elements');
+var storage  = require('lib/common/storage');
 
 var files = elements.directory('0755', {
   dir: elements.directory('0777', {

@@ -5,11 +5,11 @@ var expect = chai.expect;
 
 var PassThrough = require('stream').PassThrough;
 
-var elements = require('../lib/common/elements');
-var flags    = require('../lib/common/flags');
+var elements = require('lib/common/elements');
+var flags    = require('lib/common/flags');
 
-var AVFS       = require('../lib/avfs');
-var Descriptor = require('../lib/common/descriptor');
+var AVFS       = require('lib/avfs');
+var Descriptor = require('lib/common/descriptor');
 
 var fs = new AVFS();
 

@@ -3,7 +3,7 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var flags = require('../../lib/common/flags');
+var flags = require('lib/common/flags');
 
 describe('common/flags', function () {
 

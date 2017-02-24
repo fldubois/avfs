@@ -3,7 +3,7 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var errors = require('../../lib/common/errors');
+var errors = require('lib/common/errors');
 
 function expectError(error, message, data) {
   expect(error).to.be.an('error');

@@ -3,8 +3,8 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements = require('../../lib/common/elements');
-var types    = require('../../lib/common/types');
+var elements = require('lib/common/elements');
+var types    = require('lib/common/types');
 
 describe('common/elements', function () {
 

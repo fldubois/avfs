@@ -3,9 +3,9 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var flags = require('../../lib/common/flags');
+var flags = require('lib/common/flags');
 
-var Descriptor = require('../../lib/common/descriptor');
+var Descriptor = require('lib/common/descriptor');
 
 describe('common/descriptor', function () {
 

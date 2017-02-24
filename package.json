@@ -22,11 +22,12 @@
   "scripts": {
     "test": "npm run test:lint && npm run test:unit && npm run test:coverage",
     "test:lint": "eslint lib test",
-    "test:unit": "istanbul cover _mocha -- --recursive test",
+    "test:unit": "istanbul cover _mocha -- -r test/bootstrap.js --recursive test/specs",
     "test:coverage": "istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "devDependencies": {
+    "app-module-path": "^2.2.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.16",
     "eslint": "^2.13.1",
