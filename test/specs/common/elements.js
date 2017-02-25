@@ -40,11 +40,8 @@ describe('common/elements', function () {
 
     var file = elements.file(mode, content);
 
-    expect(file).to.deep.equal({});
-
-    expect(file['@content']).to.equal(content);
+    expect(file).to.be.a.vfs.file.that.contain(content);
     expect(file['@mode']).to.equal(mode);
-    expect(file['@type']).to.equal(types.FILE);
   });
 
 });

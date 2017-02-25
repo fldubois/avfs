@@ -8,6 +8,8 @@
 
     // enforce dot notation whenever possible
     "dot-notation": ["error", {"allowKeywords": true, "allowPattern": "^[A-Za-z]+((_|-)[A-Za-z]+)+$"}],
+    // disallow this keywords outside of classes or class-like objects
+    "no-invalid-this": "off",
     // disallow magic numbers
     "no-magic-numbers": "off",
 
@@ -15,6 +17,8 @@
 
     // enforce a maximum depth that callbacks can be nested
     "max-nested-callbacks": ["error", 8],
+    // disallow dangling underscores in identifiers
+    "no-underscore-dangle": ["error", { "allow": ["_obj"] }],
     // require or disallow padding within blocks
     "padded-blocks": "off"
 
