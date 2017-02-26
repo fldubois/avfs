@@ -11,8 +11,27 @@ require('chai').use(function (chai, utils) {
     utils.flag(this, 'vfs', true);
   });
 
-  Assertion.addChainableMethod('file', function () {
+  Assertion.addChainableMethod('file', function (filepath) {
     utils.expectTypes(this, ['object']);
+
+    if (utils.flag(this, 'contains')) {
+      var normalized = path.normalize(filepath).replace(/\/|\\/g, path.sep).replace(new RegExp('^' + path.sep), '');
+      var elements   = normalized.split(path.sep);
+      var object     = this._obj;
+
+      var messages = {
+        fail:   'expected #{this} to include a vfs file at ' + filepath,
+        negate: 'expected #{this} not to include a vfs file at ' + filepath
+      };
+
+      for (var i = 0; i < elements.length; i++) {
+        object = object[elements[i]];
+
+        this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
+      }
+
+      return new Assertion(object).to.be.a.vfs.file();
+    }
 
     new Assertion(this._obj).to.deep.equal({});
 
