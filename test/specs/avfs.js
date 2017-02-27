@@ -67,9 +67,7 @@ describe('avfs', function () {
       var result = fs.appendFileSync('/file', 'OK', {mode: '0700'});
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files).to.contain.a.vfs.file('/file');
-      expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0700');
     });
 
     it('should accept flag option', function () {
@@ -129,8 +127,7 @@ describe('avfs', function () {
       var result = fs.chmodSync('/tmp/file', '0700');
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.tmp.file['@mode']).to.equal(parseInt('0700', 8));
+      expect(fs.files).to.contain.a.vfs.file('/tmp/file').with.mode('0700');
     });
 
     it('should throw on bad path parameter type', function () {
@@ -283,7 +280,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('end', function () {
-        expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+        expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0700');
 
         return callback();
       });
@@ -580,7 +577,7 @@ describe('avfs', function () {
 
       stream.on('finish', function () {
         try {
-          expect(fs.files.tmp.new['@mode']).to.equal(parseInt('0700', 8));
+          expect(fs.files).to.contain.a.vfs.file('/tmp/new').with.mode('0700');
         } catch (error) {
           return callback(error);
         }
@@ -680,8 +677,7 @@ describe('avfs', function () {
       var result = fs.fchmodSync(fd, '0700');
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.tmp.file['@mode']).to.equal(parseInt('0700', 8));
+      expect(fs.files).to.contain.a.vfs.file('/tmp/file').with.mode('0700');
     });
 
     it('should throw on non existing file descriptor', function () {
@@ -845,8 +841,7 @@ describe('avfs', function () {
 
       expect(fs.files.tmp).to.contain.keys('dir');
       expect(fs.files.tmp.dir).to.deep.equal({});
-
-      expect(fs.files.tmp.dir['@mode']).to.equal(parseInt('0500', 8));
+      expect(fs.files.tmp.dir).to.have.mode('0500');
     });
 
     it('should accept mode parameter as number', function () {
@@ -856,8 +851,7 @@ describe('avfs', function () {
 
       expect(fs.files.tmp).to.contain.keys('dir');
       expect(fs.files.tmp.dir).to.deep.equal({});
-
-      expect(fs.files.tmp.dir['@mode']).to.equal(parseInt('0666', 8));
+      expect(fs.files.tmp.dir).to.have.mode('0666');
     });
 
     it('should set mode to 0777 by default', function () {
@@ -867,8 +861,7 @@ describe('avfs', function () {
 
       expect(fs.files.tmp).to.contain.keys('dir');
       expect(fs.files.tmp.dir).to.deep.equal({});
-
-      expect(fs.files.tmp.dir['@mode']).to.equal(parseInt('0777', 8));
+      expect(fs.files.tmp.dir).to.have.mode('0777');
     });
 
     it('should throw on existing path', function () {
@@ -984,9 +977,7 @@ describe('avfs', function () {
 
       expect(fd).to.be.a('number');
 
-      expect(fs.files).to.contain.a.vfs.file('/file').that.contain('');
-
-      expect(fs.files.file['@mode']).to.equal(parseInt('0500', 8));
+      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0500').that.contain('');
     });
 
     it('should set mode to 0666 by default', function () {
@@ -994,9 +985,7 @@ describe('avfs', function () {
 
       expect(fd).to.be.a('number');
 
-      expect(fs.files).to.contain.a.vfs.file('/file').that.contain('');
-
-      expect(fs.files.file['@mode']).to.equal(parseInt('0666', 8));
+      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0666').that.contain('');
     });
 
     it('should erase existing file in truncate mode', function () {
@@ -1548,9 +1537,7 @@ describe('avfs', function () {
       var result = fs.writeFileSync('/file', 'OK', {mode: '0700'});
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files).to.contain.keys('file');
-      expect(fs.files.file['@mode']).to.equal(parseInt('0700', 8));
+      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0700');
     });
 
     it('should accept flag option', function () {

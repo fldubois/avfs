@@ -42,6 +42,22 @@ require('chai').use(function (chai, utils) {
     utils.flag(this, 'vfs.file', true);
   });
 
+  Assertion.addMethod('mode', function (mode) {
+    utils.expectTypes(this, ['object']);
+
+    var object = this._obj;
+
+    var actual = this._obj['@mode'];
+    var expected = parseInt(mode, 8);
+
+    var messages = {
+      fail:   'expected vfs file mode to be #{exp}',
+      negate: 'expected vfs file mode to not be #{exp}'
+    };
+
+    this.assert(actual === expected, messages.fail, messages.negate, expected.toString(8), actual.toString(8), true);
+  });
+
   Assertion.overwriteChainableMethod('contain', function (_super) {
     return function (content) {
       if (utils.flag(this, 'vfs.file')) {
