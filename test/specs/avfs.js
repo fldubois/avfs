@@ -710,7 +710,7 @@ describe('avfs', function () {
       var result = fs.ftruncateSync(fd);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('');
+      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.is.clear();
     });
 
     it('should truncate file to the specified length', function () {
@@ -820,48 +820,35 @@ describe('avfs', function () {
       var result = fs.mkdirSync('tmp/test');
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.tmp).to.contain.keys('test');
-      expect(fs.files.tmp.test).to.deep.equal({});
+      expect(fs.files).to.contain.a.vfs.directory('/tmp/test').that.is.clear();
     });
 
     it('should create a new directory on root', function () {
       var result = fs.mkdirSync('/test');
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files).to.contain.keys('test');
-      expect(fs.files.test).to.deep.equal({});
+      expect(fs.files).to.contain.a.vfs.directory('/test').that.is.clear();
     });
 
     it('should accept mode parameter as string', function () {
       var result = fs.mkdirSync('/tmp/dir', '0500');
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.tmp).to.contain.keys('dir');
-      expect(fs.files.tmp.dir).to.deep.equal({});
-      expect(fs.files.tmp.dir).to.have.mode('0500');
+      expect(fs.files).to.contain.a.vfs.directory('/tmp/dir').with.mode('0500').that.is.clear();
     });
 
     it('should accept mode parameter as number', function () {
       var result = fs.mkdirSync('/tmp/dir', 438);
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.tmp).to.contain.keys('dir');
-      expect(fs.files.tmp.dir).to.deep.equal({});
-      expect(fs.files.tmp.dir).to.have.mode('0666');
+      expect(fs.files).to.contain.a.vfs.directory('/tmp/dir').with.mode('0666').that.is.clear();
     });
 
     it('should set mode to 0777 by default', function () {
       var result = fs.mkdirSync('/tmp/dir');
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.tmp).to.contain.keys('dir');
-      expect(fs.files.tmp.dir).to.deep.equal({});
-      expect(fs.files.tmp.dir).to.have.mode('0777');
+      expect(fs.files).to.contain.a.vfs.directory('/tmp/dir').with.mode('0777').that.is.clear();
     });
 
     it('should throw on existing path', function () {
@@ -967,8 +954,7 @@ describe('avfs', function () {
         var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
-
-        expect(fs.files).to.contain.a.vfs.file(filename).that.contain('');
+        expect(fs.files).to.contain.a.vfs.file(filename).that.is.clear();
       });
     });
 
@@ -976,16 +962,14 @@ describe('avfs', function () {
       var fd = fs.openSync('/file', 'w', '0500');
 
       expect(fd).to.be.a('number');
-
-      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0500').that.contain('');
+      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0500').that.is.clear();
     });
 
     it('should set mode to 0666 by default', function () {
       var fd = fs.openSync('/file', 'w');
 
       expect(fd).to.be.a('number');
-
-      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0666').that.contain('');
+      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0666').that.is.clear();
     });
 
     it('should erase existing file in truncate mode', function () {
@@ -997,8 +981,7 @@ describe('avfs', function () {
         var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
-
-        expect(fs.files).to.contain.a.vfs.file(filename).that.contain('');
+        expect(fs.files).to.contain.a.vfs.file(filename).that.is.clear();
       });
     });
 
@@ -1007,7 +990,6 @@ describe('avfs', function () {
         var fd = fs.openSync('/tmp/file', fgs);
 
         expect(fd).to.be.a('number');
-
         expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend.');
       });
     });
@@ -1303,7 +1285,7 @@ describe('avfs', function () {
       var result = fs.truncateSync('/tmp/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('');
+      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.is.clear();
     });
 
     it('should truncate file to the specified length', function () {
