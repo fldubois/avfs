@@ -7,8 +7,8 @@ require('app-module-path').addPath(path.join(__dirname, '..'));
 require('chai').use(function (chai, utils) {
   var Assertion = chai.Assertion;
 
-  Assertion.addProperty('vfs', function () {
-    utils.flag(this, 'vfs', true);
+  Assertion.addProperty('avfs', function () {
+    utils.flag(this, 'avfs', true);
   });
 
   Assertion.addChainableMethod('file', function (filepath) {
@@ -20,8 +20,8 @@ require('chai').use(function (chai, utils) {
       var object     = this._obj;
 
       var messages = {
-        fail:   'expected #{this} to include a vfs file at ' + filepath,
-        negate: 'expected #{this} not to include a vfs file at ' + filepath
+        fail:   'expected #{this} to include an avfs file at ' + filepath,
+        negate: 'expected #{this} not to include an avfs file at ' + filepath
       };
 
       for (var i = 0; i < elements.length; i++) {
@@ -30,16 +30,16 @@ require('chai').use(function (chai, utils) {
         this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
       }
 
-      return new Assertion(object).to.be.a.vfs.file();
+      return new Assertion(object).to.be.an.avfs.file();
     }
 
     new Assertion(this._obj).to.deep.equal({});
 
     var type = this._obj['@type'];
 
-    this.assert(type === 'file', 'expected #{this} to be a vfs file', 'expected #{this} not to be a vfs file');
+    this.assert(type === 'file', 'expected #{this} to be an avfs file', 'expected #{this} not to be an avfs file');
   }, function () {
-    utils.flag(this, 'vfs.file', true);
+    utils.flag(this, 'avfs.file', true);
   });
 
   Assertion.addChainableMethod('directory', function (directory) {
@@ -53,8 +53,8 @@ require('chai').use(function (chai, utils) {
       var object     = this._obj;
 
       messages = {
-        fail:   'expected #{this} to include a vfs directory at ' + directory,
-        negate: 'expected #{this} not to include a vfs directory at ' + directory
+        fail:   'expected #{this} to include an avfs directory at ' + directory,
+        negate: 'expected #{this} not to include an avfs directory at ' + directory
       };
 
       for (var i = 0; i < elements.length; i++) {
@@ -63,7 +63,7 @@ require('chai').use(function (chai, utils) {
         this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
       }
 
-      return new Assertion(object).to.be.a.vfs.directory();
+      return new Assertion(object).to.be.an.avfs.directory();
     }
 
     new Assertion(this._obj).to.deep.equal({});
@@ -71,13 +71,13 @@ require('chai').use(function (chai, utils) {
     var type = this._obj['@type'];
 
     messages = {
-      fail:   'expected #{this} to be a vfs directory',
-      negate: 'expected #{this} not to be a vfs directory'
+      fail:   'expected #{this} to be an avfs directory',
+      negate: 'expected #{this} not to be an avfs directory'
     };
 
     this.assert(type === 'directory', messages.fail, messages.negate);
   }, function () {
-    utils.flag(this, 'vfs.directory', true);
+    utils.flag(this, 'avfs.directory', true);
   });
 
   Assertion.addMethod('mode', function (mode) {
@@ -87,8 +87,8 @@ require('chai').use(function (chai, utils) {
     var expected = parseInt(mode, 8);
 
     var messages = {
-      fail:   'expected vfs file mode to be #{exp}',
-      negate: 'expected vfs file mode to not be #{exp}'
+      fail:   'expected avfs file mode to be #{exp}',
+      negate: 'expected avfs file mode to not be #{exp}'
     };
 
     this.assert(actual === expected, messages.fail, messages.negate, expected.toString(8), actual.toString(8), true);
@@ -99,34 +99,34 @@ require('chai').use(function (chai, utils) {
 
     var messages = null;
 
-    if (utils.flag(this, 'vfs.file')) {
+    if (utils.flag(this, 'avfs.file')) {
       var actual   = this._obj['@content'].toString();
       var expected = '';
 
       messages = {
-        fail:   'expected vfs file to be empty',
-        negate: 'expected vfs file to not be empty'
+        fail:   'expected avfs file to be empty',
+        negate: 'expected avfs file to not be empty'
       };
 
       this.assert(actual === expected, messages.fail, messages.negate, expected, actual, true);
-    } else if (utils.flag(this, 'vfs.directory')) {
+    } else if (utils.flag(this, 'avfs.directory')) {
       var children = Object.keys(this._obj);
 
       messages = {
-        fail:   'expected vfs folder to be empty',
-        negate: 'expected vfs folder to not be empty'
+        fail:   'expected avfs folder to be empty',
+        negate: 'expected avfs folder to not be empty'
       };
 
       this.assert(children.length === 0, messages.fail, messages.negate, [], children, true);
     } else {
-      throw new Error('clear() should be called on vfs element');
+      throw new Error('clear() should be called on avfs element');
     }
   });
 
   Assertion.overwriteChainableMethod('contain', function (_super) {
     return function (content) {
-      if (utils.flag(this, 'vfs.file')) {
-        new Assertion(this._obj).to.be.a.vfs.file();
+      if (utils.flag(this, 'avfs.file')) {
+        new Assertion(this._obj).to.be.an.avfs.file();
 
         var actual = this._obj['@content'];
 

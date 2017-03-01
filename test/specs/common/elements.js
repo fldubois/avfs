@@ -40,7 +40,7 @@ describe('common/elements', function () {
 
     var file = elements.file(mode, content);
 
-    expect(file).to.be.a.vfs.file.that.contain(content);
+    expect(file).to.be.an.avfs.file.that.contain(content);
     expect(file['@mode']).to.equal(mode);
   });
 

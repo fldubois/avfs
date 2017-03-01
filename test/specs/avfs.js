@@ -39,35 +39,35 @@ describe('avfs', function () {
       var result = fs.appendFileSync('/tmp/file', new Buffer(' Hello, world !'));
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
     });
 
     it('should append string to file', function () {
       var result = fs.appendFileSync('/tmp/file', ' Hello, world !');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
     });
 
     it('should append encoded string to file', function () {
       var result = fs.appendFileSync('/tmp/empty', 'aàâäeéèâë', {encoding: 'ascii'});
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/empty').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
     });
 
     it('should accept encoding option', function () {
       var result = fs.appendFileSync('/tmp/empty', 'aàâäeéèâë', 'ascii');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/empty').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
     });
 
     it('should accept mode option', function () {
       var result = fs.appendFileSync('/file', 'OK', {mode: '0700'});
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0700');
+      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0700');
     });
 
     it('should accept flag option', function () {
@@ -80,7 +80,7 @@ describe('avfs', function () {
       var result = fs.appendFileSync('/tmp/new', 'Hello, friend.');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/new').that.contain('Hello, friend.');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/new').that.contain('Hello, friend.');
     });
 
     it('should throw on non existing parent directory', function () {
@@ -127,7 +127,7 @@ describe('avfs', function () {
       var result = fs.chmodSync('/tmp/file', '0700');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').with.mode('0700');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
     });
 
     it('should throw on bad path parameter type', function () {
@@ -280,7 +280,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('end', function () {
-        expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0700');
+        expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0700');
 
         return callback();
       });
@@ -522,7 +522,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, world !');
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
 
         return callback();
       });
@@ -543,7 +543,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, world !');
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
         expect(fs.files.tmp.file2).to.be.an('undefined');
 
         return callback();
@@ -560,7 +560,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
 
         return callback();
       });
@@ -577,7 +577,7 @@ describe('avfs', function () {
 
       stream.on('finish', function () {
         try {
-          expect(fs.files).to.contain.a.vfs.file('/tmp/new').with.mode('0700');
+          expect(fs.files).to.contain.an.avfs.file('/tmp/new').with.mode('0700');
         } catch (error) {
           return callback(error);
         }
@@ -596,7 +596,7 @@ describe('avfs', function () {
       stream.on('error', callback);
 
       stream.on('finish', function () {
-        expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, world !');
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
 
         return callback();
       });
@@ -677,7 +677,7 @@ describe('avfs', function () {
       var result = fs.fchmodSync(fd, '0700');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').with.mode('0700');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
     });
 
     it('should throw on non existing file descriptor', function () {
@@ -710,7 +710,7 @@ describe('avfs', function () {
       var result = fs.ftruncateSync(fd);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.is.clear();
     });
 
     it('should truncate file to the specified length', function () {
@@ -722,7 +722,7 @@ describe('avfs', function () {
       var result = fs.ftruncateSync(fd, 3);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
     });
 
     it('should throw on non writing file descriptor', function () {
@@ -820,35 +820,35 @@ describe('avfs', function () {
       var result = fs.mkdirSync('tmp/test');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.directory('/tmp/test').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.directory('/tmp/test').that.is.clear();
     });
 
     it('should create a new directory on root', function () {
       var result = fs.mkdirSync('/test');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.directory('/test').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.directory('/test').that.is.clear();
     });
 
     it('should accept mode parameter as string', function () {
       var result = fs.mkdirSync('/tmp/dir', '0500');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.directory('/tmp/dir').with.mode('0500').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.directory('/tmp/dir').with.mode('0500').that.is.clear();
     });
 
     it('should accept mode parameter as number', function () {
       var result = fs.mkdirSync('/tmp/dir', 438);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.directory('/tmp/dir').with.mode('0666').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.directory('/tmp/dir').with.mode('0666').that.is.clear();
     });
 
     it('should set mode to 0777 by default', function () {
       var result = fs.mkdirSync('/tmp/dir');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.directory('/tmp/dir').with.mode('0777').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.directory('/tmp/dir').with.mode('0777').that.is.clear();
     });
 
     it('should throw on existing path', function () {
@@ -954,7 +954,7 @@ describe('avfs', function () {
         var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
-        expect(fs.files).to.contain.a.vfs.file(filename).that.is.clear();
+        expect(fs.files).to.contain.an.avfs.file(filename).that.is.clear();
       });
     });
 
@@ -962,14 +962,14 @@ describe('avfs', function () {
       var fd = fs.openSync('/file', 'w', '0500');
 
       expect(fd).to.be.a('number');
-      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0500').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0500').that.is.clear();
     });
 
     it('should set mode to 0666 by default', function () {
       var fd = fs.openSync('/file', 'w');
 
       expect(fd).to.be.a('number');
-      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0666').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0666').that.is.clear();
     });
 
     it('should erase existing file in truncate mode', function () {
@@ -981,7 +981,7 @@ describe('avfs', function () {
         var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
-        expect(fs.files).to.contain.a.vfs.file(filename).that.is.clear();
+        expect(fs.files).to.contain.an.avfs.file(filename).that.is.clear();
       });
     });
 
@@ -990,7 +990,7 @@ describe('avfs', function () {
         var fd = fs.openSync('/tmp/file', fgs);
 
         expect(fd).to.be.a('number');
-        expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend.');
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.');
       });
     });
 
@@ -1220,14 +1220,14 @@ describe('avfs', function () {
       var result = fs.renameSync('/tmp/file', '/tmp/new');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/new').that.contain('Hello, friend.');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/new').that.contain('Hello, friend.');
     });
 
     it('should move files', function () {
       var result = fs.renameSync('/tmp/file', '/dir/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/dir/file').that.contain('Hello, friend.');
+      expect(fs.files).to.contain.an.avfs.file('/dir/file').that.contain('Hello, friend.');
     });
 
     it('should throw on non existing path', function () {
@@ -1285,7 +1285,7 @@ describe('avfs', function () {
       var result = fs.truncateSync('/tmp/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.is.clear();
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.is.clear();
     });
 
     it('should truncate file to the specified length', function () {
@@ -1294,7 +1294,7 @@ describe('avfs', function () {
       var result = fs.truncateSync('/tmp/file', 3);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
     });
 
     it('should throw on non existing path', function () {
@@ -1363,7 +1363,7 @@ describe('avfs', function () {
 
       expect(written).to.equal(5);
 
-      expect(fs.files).to.contain.a.vfs.file('/tmp/empty').that.contain('Hello');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
     });
 
     it('should write the file from position', function () {
@@ -1375,7 +1375,7 @@ describe('avfs', function () {
 
       expect(written).to.equal(5);
 
-      expect(fs.files).to.contain.a.vfs.file('/tmp/empty').that.contain('       Hello');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
     });
 
     it('should always append data to the end in append mode', function () {
@@ -1386,7 +1386,7 @@ describe('avfs', function () {
       expect(fs.writeSync(fd, new Buffer(' Hello,'),  0, 7, 2)).to.equal(7);
       expect(fs.writeSync(fd, new Buffer(' world !'), 0, 8, 2)).to.equal(8);
 
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
     });
 
     it('should write the file from current position', function () {
@@ -1400,7 +1400,7 @@ describe('avfs', function () {
 
       expect(written).to.equal(7);
 
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, Hello, ');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, Hello, ');
 
       expect(fs.handles[fd].write).to.equal(14);
     });
@@ -1414,7 +1414,7 @@ describe('avfs', function () {
 
       expect(written).to.equal(6);
 
-      expect(fs.files).to.contain.a.vfs.file('/tmp/empty').that.contain('friend');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('friend');
     });
 
     it('should fill unwritten parts with white spaces', function () {
@@ -1426,7 +1426,7 @@ describe('avfs', function () {
 
       expect(written).to.equal(2);
 
-      expect(fs.files).to.contain.a.vfs.file('/tmp/file').that.contain('Hello, friend.      OK');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
     });
 
     it('should fail on non existing fd', function () {
@@ -1483,7 +1483,7 @@ describe('avfs', function () {
       var result = fs.writeFileSync('/file', new Buffer('Hello, friend.'));
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/file').that.contain('Hello, friend.');
+      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
     });
 
     it('should write string to file', function () {
@@ -1494,7 +1494,7 @@ describe('avfs', function () {
       var result = fs.writeFileSync('/file', 'Hello, friend.');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/file').that.contain('Hello, friend.');
+      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
     });
 
     it('should write encoded string to file', function () {
@@ -1505,21 +1505,21 @@ describe('avfs', function () {
       var result = fs.writeFileSync('/file', 'aàâäeéèâë', {encoding: 'ascii'});
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/file').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files).to.contain.an.avfs.file('/file').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
     });
 
     it('should accept encoding option', function () {
       var result = fs.writeFileSync('/file', 'aàâäeéèâë', 'ascii');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/file').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.files).to.contain.an.avfs.file('/file').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
     });
 
     it('should accept mode option', function () {
       var result = fs.writeFileSync('/file', 'OK', {mode: '0700'});
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.a.vfs.file('/file').with.mode('0700');
+      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0700');
     });
 
     it('should accept flag option', function () {
