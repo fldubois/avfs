@@ -42,6 +42,37 @@ require('chai').use(function (chai, utils) {
     utils.flag(this, 'avfs.file', true);
   });
 
+  Assertion.addChainableMethod('symlink', function (filepath) {
+    utils.expectTypes(this, ['object']);
+
+    if (utils.flag(this, 'contains')) {
+      var normalized = path.normalize(filepath).replace(/\/|\\/g, path.sep).replace(new RegExp('^' + path.sep), '');
+      var elements   = normalized.split(path.sep);
+      var object     = this._obj;
+
+      var messages = {
+        fail:   'expected #{this} to include an avfs symlink at ' + filepath,
+        negate: 'expected #{this} not to include an avfs symlink at ' + filepath
+      };
+
+      for (var i = 0; i < elements.length; i++) {
+        object = object[elements[i]];
+
+        this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
+      }
+
+      return new Assertion(object).to.be.an.avfs.symlink();
+    }
+
+    new Assertion(this._obj).to.deep.equal({});
+
+    var isLink = (this._obj['@type'] === 'symlink');
+
+    this.assert(isLink, 'expected #{this} to be an avfs symlink', 'expected #{this} not to be an avfs symlink');
+  }, function () {
+    utils.flag(this, 'avfs.symlink', true);
+  });
+
   Assertion.addChainableMethod('directory', function (directory) {
     utils.expectTypes(this, ['object']);
 
@@ -94,6 +125,23 @@ require('chai').use(function (chai, utils) {
     this.assert(actual === expected, messages.fail, messages.negate, expected.toString(8), actual.toString(8), true);
   });
 
+  Assertion.addMethod('target', function (target) {
+    utils.expectTypes(this, ['object']);
+
+    if (!utils.flag(this, 'avfs.symlink')) {
+      throw new Error('target() should be called on avfs symlink');
+    }
+
+    var actual = this._obj['@target'];
+
+    var messages = {
+      fail:   'expected avfs symlink to target #{exp}',
+      negate: 'expected avfs symlink to not target #{exp}'
+    };
+
+    this.assert(actual === target, messages.fail, messages.negate, target, actual, true);
+  });
+
   Assertion.addMethod('clear', function () {
     utils.expectTypes(this, ['object']);
 
@@ -119,7 +167,7 @@ require('chai').use(function (chai, utils) {
 
       this.assert(children.length === 0, messages.fail, messages.negate, [], children, true);
     } else {
-      throw new Error('clear() should be called on avfs element');
+      throw new Error('clear() should be called on avfs file or directory');
     }
   });
 

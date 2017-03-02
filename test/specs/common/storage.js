@@ -8,7 +8,9 @@ var storage  = require('lib/common/storage');
 
 var files = elements.directory('0755', {
   dir: elements.directory('0777', {
-    file: elements.file('0666', new Buffer('Hello, friend'))
+    file: elements.file('0666', new Buffer('Hello, friend')),
+    link: elements.symlink('0777', '/dir/file'),
+    miss: elements.symlink('0777', '/dir/not')
   })
 });
 
@@ -43,6 +45,10 @@ describe('common/storage', function () {
       expect(storage.get(files, 'test', '/dir/file')).to.equal(files.dir.file);
     });
 
+    it('should follow symlinks', function () {
+      expect(storage.get(files, 'test', '/dir/link')).to.equal(files.dir.file);
+    });
+
     it('should slice the path', function () {
       expect(storage.get(files, 'test', '/dir/file', 1)).to.equal(files.dir);
     });
@@ -75,6 +81,12 @@ describe('common/storage', function () {
       expect(function () {
         storage.get(files, 'test', '/dir/file/test');
       }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
+    });
+
+    it('should throw on missing symlink target', function () {
+      expect(function () {
+        storage.get(files, 'test', '/dir/miss');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/dir/miss\'');
     });
 
   });
