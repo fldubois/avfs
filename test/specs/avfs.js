@@ -20,13 +20,15 @@ var noop = function () {
 describe('avfs', function () {
 
   beforeEach('reset virtual file system', function () {
-    fs.files = elements.directory('0755', {
-      tmp: elements.directory('0777', {
-        ascii: elements.file('0666', new Buffer('Hello, friend.')),
-        empty: elements.file('0666', new Buffer(0)),
-        file:  elements.file('0666', new Buffer('Hello, friend.'))
+    fs.files = elements.directory(parseInt('0755', 8), {
+      tmp: elements.directory(parseInt('0777', 8), {
+        ascii: elements.file(parseInt('0666', 8), new Buffer('Hello, friend.')),
+        empty: elements.file(parseInt('0666', 8), new Buffer(0)),
+        file:  elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'))
       }),
-      dir: elements.directory('0777', {})
+      dir: elements.directory(parseInt('0777', 8), {
+        link: elements.symlink(parseInt('0777', 8), '/tmp/file')
+      })
     });
 
     fs.handles = {};
@@ -128,6 +130,14 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
+    });
+
+    it('should follow symlinks', function () {
+      var result = fs.chmodSync('/dir/link', '0700');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
+      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.mode('0777');
     });
 
     it('should throw on bad path parameter type', function () {
@@ -755,6 +765,55 @@ describe('avfs', function () {
 
   });
 
+  describe('lchmodSync()', function () {
+
+    it('should change the mode', function () {
+      var result = fs.lchmodSync('/tmp/file', '0700');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
+    });
+
+    it('should not follow symlinks', function () {
+      var result = fs.lchmodSync('/dir/link', '0700');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0666');
+      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.mode('0700');
+    });
+
+    it('should throw on bad path parameter type', function () {
+      expect(function () {
+        fs.lchmodSync(false, '0700');
+      }).to.throw(Error, 'Bad argument');
+    });
+
+    it('should throw on bad mode parameter type', function () {
+      expect(function () {
+        fs.lchmodSync('/file', false);
+      }).to.throw(Error, 'Bad argument');
+    });
+
+    it('should throw on non existing file', function () {
+      expect(function () {
+        fs.lchmodSync('/file', '0700');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/file\'');
+    });
+
+    it('should throw on non existing parent directory', function () {
+      expect(function () {
+        fs.lchmodSync('/not/file', '0700');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+    });
+
+    it('should throw on not directory parent', function () {
+      expect(function () {
+        fs.lchmodSync('/tmp/file/new', '0700');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+    });
+
+  });
+
   describe('linkSync()', function () {
 
     it('should create a hard link', function () {
@@ -1282,24 +1341,24 @@ describe('avfs', function () {
   describe('symlinkSync()', function () {
 
     it('should create a symbolic link on file', function () {
-      var result = fs.symlinkSync('/tmp/file', '/dir/link');
+      var result = fs.symlinkSync('/tmp/file', '/tmp/link');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.mode('0777').that.target('/tmp/file');
+      expect(fs.files).to.contain.an.avfs.symlink('/tmp/link').with.mode('0777').that.target('/tmp/file');
     });
 
     it('should create a symbolic link on folder', function () {
-      var result = fs.symlinkSync('/tmp', '/dir/link');
+      var result = fs.symlinkSync('/tmp', '/tmp/link');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.mode('0777').that.target('/tmp');
+      expect(fs.files).to.contain.an.avfs.symlink('/tmp/link').with.mode('0777').that.target('/tmp');
     });
 
     it('should create a symbolic link on nonexistent target', function () {
-      var result = fs.symlinkSync('/not/file', '/dir/link');
+      var result = fs.symlinkSync('/not/file', '/tmp/link');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.mode('0777').that.target('/not/file');
+      expect(fs.files).to.contain.an.avfs.symlink('/tmp/link').with.mode('0777').that.target('/not/file');
     });
 
     it('should throw on existing destination', function () {

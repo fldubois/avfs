@@ -49,6 +49,10 @@ describe('common/storage', function () {
       expect(storage.get(files, 'test', '/dir/link')).to.equal(files.dir.file);
     });
 
+    it('should not follow symlinks', function () {
+      expect(storage.get(files, 'test', '/dir/link', false)).to.equal(files.dir.link);
+    });
+
     it('should slice the path', function () {
       expect(storage.get(files, 'test', '/dir/file', 1)).to.equal(files.dir);
     });
