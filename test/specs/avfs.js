@@ -765,6 +765,30 @@ describe('avfs', function () {
 
   });
 
+  describe('fsyncSync', function () {
+
+    it('should return undefined', function () {
+      var fd = 10;
+
+      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+
+      expect(fs.fsyncSync(fd)).to.be.an('undefined');
+    });
+
+    it('should throw on non existing file descriptor', function () {
+      expect(function () {
+        fs.fsyncSync(0);
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non integer file descriptor', function () {
+      expect(function () {
+        fs.fsyncSync(true);
+      }).to.throw(TypeError, 'Bad argument');
+    });
+
+  });
+
   describe('lchmodSync()', function () {
 
     it('should change the mode', function () {
