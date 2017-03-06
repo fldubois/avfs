@@ -27,7 +27,8 @@ describe('avfs', function () {
         file:  elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'))
       }),
       dir: elements.directory(parseInt('0777', 8), {
-        link: elements.symlink(parseInt('0777', 8), '/tmp/file')
+        link:  elements.symlink(parseInt('0777', 8), '/tmp/file'),
+        dlink: elements.symlink(parseInt('0777', 8), '/dir')
       })
     });
 
@@ -1325,6 +1326,32 @@ describe('avfs', function () {
       expect(function () {
         fs.readlinkSync(true);
       }).to.throw(TypeError, 'path must be a string');
+    });
+
+  });
+
+  describe('realpathSync()', function () {
+
+    it('should resolve symlinks and cached links', function () {
+      expect(fs.realpathSync('/cache/link', {'/cache': '/dir/dlink'})).to.equal('/tmp/file');
+    });
+
+    it('should throw on non existing element', function () {
+      expect(function () {
+        fs.realpathSync('/not/test.txt');
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/not\'');
+    });
+
+    it('should throw on not string path', function () {
+      expect(function () {
+        fs.realpathSync(false);
+      }).to.throw(TypeError, 'Arguments to path.resolve must be strings');
+    });
+
+    it('should throw on not string path in cache', function () {
+      expect(function () {
+        fs.realpathSync('/not', {'/not': false});
+      }).to.throw(TypeError, 'Arguments to path.resolve must be strings');
     });
 
   });
