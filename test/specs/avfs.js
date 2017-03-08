@@ -767,6 +767,46 @@ describe('avfs', function () {
 
   });
 
+  describe('fchownSync()', function () {
+
+    it('should change the owner and group', function () {
+      var fd = 10;
+
+      fs.handles[fd] = new Descriptor(fs.files.file, '/tmp/file', flags.RW);
+
+      var result = fs.fchownSync(fd, 1001, 1001);
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp.file['@uid']).to.equal(1001);
+      expect(fs.files.tmp.file['@gid']).to.equal(1001);
+    });
+
+    it('should throw on non existing file descriptor', function () {
+      expect(function () {
+        fs.fchownSync(0, 1001, 1001);
+      }).to.throw(Error, 'EBADF, bad file descriptor');
+    });
+
+    it('should throw on non integer file descriptor', function () {
+      expect(function () {
+        fs.fchownSync(true, 1001, 1001);
+      }).to.throw(TypeError, 'Bad argument');
+    });
+
+    it('should throw on bad uid parameter type', function () {
+      expect(function () {
+        fs.fchownSync(0, false, 1001);
+      }).to.throw(TypeError, 'uid must be an unsigned int');
+    });
+
+    it('should throw on bad gid parameter type', function () {
+      expect(function () {
+        fs.fchownSync(0, 1001, false);
+      }).to.throw(TypeError, 'gid must be an unsigned int');
+    });
+
+  });
+
   describe('ftruncateSync()', function () {
 
     it('should truncate file', function () {
