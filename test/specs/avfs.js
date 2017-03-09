@@ -187,6 +187,10 @@ describe('avfs', function () {
       var result = fs.chownSync('/dir/link', 1001, 1001);
 
       expect(result).to.be.an('undefined');
+
+      expect(fs.files.dir.link['@uid']).to.equal(0);
+      expect(fs.files.dir.link['@gid']).to.equal(0);
+
       expect(fs.files.tmp.file['@uid']).to.equal(1001);
       expect(fs.files.tmp.file['@gid']).to.equal(1001);
     });
@@ -930,6 +934,66 @@ describe('avfs', function () {
     it('should throw on not directory parent', function () {
       expect(function () {
         fs.lchmodSync('/tmp/file/new', '0700');
+      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+    });
+
+  });
+
+  describe('lchownSync()', function () {
+
+    it('should change the owner and group', function () {
+      var result = fs.lchownSync('/tmp/file', 1001, 1001);
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp.file['@uid']).to.equal(1001);
+      expect(fs.files.tmp.file['@gid']).to.equal(1001);
+    });
+
+    it('should follow symlinks', function () {
+      var result = fs.lchownSync('/dir/link', 1001, 1001);
+
+      expect(result).to.be.an('undefined');
+
+      expect(fs.files.dir.link['@uid']).to.equal(1001);
+      expect(fs.files.dir.link['@gid']).to.equal(1001);
+
+      expect(fs.files.tmp.file['@uid']).to.equal(0);
+      expect(fs.files.tmp.file['@gid']).to.equal(0);
+    });
+
+    it('should throw on bad path parameter type', function () {
+      expect(function () {
+        fs.lchownSync(false, 1001, 1001);
+      }).to.throw(TypeError, 'path must be a string');
+    });
+
+    it('should throw on bad uid parameter type', function () {
+      expect(function () {
+        fs.lchownSync('/tmp/file', false, 1001);
+      }).to.throw(TypeError, 'uid must be an unsigned int');
+    });
+
+    it('should throw on bad gid parameter type', function () {
+      expect(function () {
+        fs.lchownSync('/tmp/file', 1001, false);
+      }).to.throw(TypeError, 'gid must be an unsigned int');
+    });
+
+    it('should throw on non existing file', function () {
+      expect(function () {
+        fs.lchownSync('/file', 1001, 1001);
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/file\'');
+    });
+
+    it('should throw on non existing parent directory', function () {
+      expect(function () {
+        fs.lchownSync('/not/file', 1001, 1001);
+      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+    });
+
+    it('should throw on not directory parent', function () {
+      expect(function () {
+        fs.lchownSync('/tmp/file/new', 1001, 1001);
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
     });
 
