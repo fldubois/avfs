@@ -125,6 +125,24 @@ require('chai').use(function (chai, utils) {
     this.assert(actual === expected, messages.fail, messages.negate, expected.toString(8), actual.toString(8), true);
   });
 
+  Assertion.addMethod('owner', function (uid, gid) {
+    utils.expectTypes(this, ['object']);
+
+    var actual   = {
+      uid: this._obj['@uid'],
+      gid: this._obj['@gid']
+    };
+
+    var messages = {
+      fail:   'expected avfs file owner to be #{exp}',
+      negate: 'expected avfs file owner to not be #{exp}'
+    };
+
+    var assertion = (actual.uid === uid && actual.gid === gid);
+
+    this.assert(assertion, messages.fail, messages.negate, actual.uid + ':' + actual.gid, uid + ':' + gid, true);
+  });
+
   Assertion.addMethod('target', function (target) {
     utils.expectTypes(this, ['object']);
 

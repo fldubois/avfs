@@ -179,20 +179,15 @@ describe('avfs', function () {
       var result = fs.chownSync('/tmp/file', 1001, 1001);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file['@uid']).to.equal(1001);
-      expect(fs.files.tmp.file['@gid']).to.equal(1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
     });
 
     it('should follow symlinks', function () {
       var result = fs.chownSync('/dir/link', 1001, 1001);
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.dir.link['@uid']).to.equal(0);
-      expect(fs.files.dir.link['@gid']).to.equal(0);
-
-      expect(fs.files.tmp.file['@uid']).to.equal(1001);
-      expect(fs.files.tmp.file['@gid']).to.equal(1001);
+      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(0, 0);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
     });
 
     it('should throw on bad path parameter type', function () {
@@ -781,8 +776,7 @@ describe('avfs', function () {
       var result = fs.fchownSync(fd, 1001, 1001);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file['@uid']).to.equal(1001);
-      expect(fs.files.tmp.file['@gid']).to.equal(1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
     });
 
     it('should throw on non existing file descriptor', function () {
@@ -945,20 +939,15 @@ describe('avfs', function () {
       var result = fs.lchownSync('/tmp/file', 1001, 1001);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file['@uid']).to.equal(1001);
-      expect(fs.files.tmp.file['@gid']).to.equal(1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
     });
 
     it('should follow symlinks', function () {
       var result = fs.lchownSync('/dir/link', 1001, 1001);
 
       expect(result).to.be.an('undefined');
-
-      expect(fs.files.dir.link['@uid']).to.equal(1001);
-      expect(fs.files.dir.link['@gid']).to.equal(1001);
-
-      expect(fs.files.tmp.file['@uid']).to.equal(0);
-      expect(fs.files.tmp.file['@gid']).to.equal(0);
+      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(1001, 1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(0, 0);
     });
 
     it('should throw on bad path parameter type', function () {
