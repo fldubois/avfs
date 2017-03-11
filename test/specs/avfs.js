@@ -997,6 +997,15 @@ describe('avfs', function () {
       expect(fs.files.tmp.file).to.equal(fs.files.dir.file);
     });
 
+    it('should increment the number of links', function () {
+      expect(fs.files.tmp.file['@nlink']).to.equal(1);
+
+      var result = fs.linkSync('/tmp/file', '/dir/file');
+
+      expect(result).to.be.an('undefined');
+      expect(fs.files.tmp.file['@nlink']).to.equal(2);
+    });
+
     it('should throw on directory source', function () {
       expect(function () {
         fs.linkSync('/tmp', '/dir');
@@ -1676,6 +1685,17 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files.tmp).to.not.contain.keys('file');
+    });
+
+    it('should decrement the number of links', function () {
+      var file = fs.files.tmp.file;
+
+      file['@nlink'] = 5;
+
+      var result = fs.unlinkSync('/tmp/file');
+
+      expect(result).to.be.an('undefined');
+      expect(file['@nlink']).to.equal(4);
     });
 
     it('should throw on non existing path', function () {
