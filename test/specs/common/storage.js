@@ -14,6 +14,16 @@ var files = elements.directory('0755', {
   })
 });
 
+var getElement = function (path) {
+  var current = files;
+
+  storage.parse(path).forEach(function (element) {
+    current = current.get('content')[element];
+  });
+
+  return current;
+};
+
 describe('common/storage', function () {
 
   it('should expose storage function', function () {
@@ -41,20 +51,20 @@ describe('common/storage', function () {
 
     it('should return the element', function () {
       expect(storage.get(files, 'test', '/')).to.equal(files);
-      expect(storage.get(files, 'test', '/dir')).to.equal(files.dir);
-      expect(storage.get(files, 'test', '/dir/file')).to.equal(files.dir.file);
+      expect(storage.get(files, 'test', '/dir')).to.equal(getElement('/dir'));
+      expect(storage.get(files, 'test', '/dir/file')).to.equal(getElement('/dir/file'));
     });
 
     it('should follow symlinks', function () {
-      expect(storage.get(files, 'test', '/dir/link')).to.equal(files.dir.file);
+      expect(storage.get(files, 'test', '/dir/link')).to.equal(getElement('/dir/file'));
     });
 
     it('should not follow symlinks', function () {
-      expect(storage.get(files, 'test', '/dir/link', false)).to.equal(files.dir.link);
+      expect(storage.get(files, 'test', '/dir/link', false)).to.equal(getElement('/dir/link'));
     });
 
     it('should slice the path', function () {
-      expect(storage.get(files, 'test', '/dir/file', 1)).to.equal(files.dir);
+      expect(storage.get(files, 'test', '/dir/file', 1)).to.equal(getElement('/dir'));
     });
 
     it('should set parameters on error', function () {
@@ -102,8 +112,8 @@ describe('common/storage', function () {
 
       storage.set(files, 'test', '/dir/test', file);
 
-      expect(files.dir).to.contain.keys('test');
-      expect(files.dir.test).to.equal(file);
+      expect(getElement('/dir').get('content')).to.contain.keys('test');
+      expect(getElement('/dir/test')).to.equal(file);
     });
 
     it('should set parameters on error', function () {
@@ -143,7 +153,7 @@ describe('common/storage', function () {
     it('should unset the element', function () {
       storage.unset(files, 'test', '/dir/test');
 
-      expect(files.dir).to.not.contain.keys('test');
+      expect(getElement('/dir')).to.not.contain.keys('test');
     });
 
     it('should set parameters on error', function () {

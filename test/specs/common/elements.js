@@ -25,7 +25,7 @@ describe('common/elements', function () {
     directory = elements.directory(parseInt(mode, 8), children);
 
     expect(directory).to.be.an.avfs.directory.with.mode(mode);
-    expect(directory).to.deep.equal(children);
+    expect(directory.get('content')).to.deep.equal(children);
   });
 
   it('should expose a file factory', function () {

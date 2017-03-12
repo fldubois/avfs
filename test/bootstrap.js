@@ -25,7 +25,7 @@ require('chai').use(function (chai, utils) {
       };
 
       for (var i = 0; i < elements.length; i++) {
-        object = object[elements[i]];
+        object = object.get('content')[elements[i]];
 
         this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
       }
@@ -33,9 +33,9 @@ require('chai').use(function (chai, utils) {
       return new Assertion(object).to.be.an.avfs.file();
     }
 
-    new Assertion(this._obj).to.deep.equal({});
+    new Assertion(this._obj).to.have.keys(['get', 'set']);
 
-    var type = this._obj['@type'];
+    var type = this._obj.get('type');
 
     this.assert(type === 'file', 'expected #{this} to be an avfs file', 'expected #{this} not to be an avfs file');
   }, function () {
@@ -56,7 +56,7 @@ require('chai').use(function (chai, utils) {
       };
 
       for (var i = 0; i < elements.length; i++) {
-        object = object[elements[i]];
+        object = object.get('content')[elements[i]];
 
         this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
       }
@@ -64,9 +64,9 @@ require('chai').use(function (chai, utils) {
       return new Assertion(object).to.be.an.avfs.symlink();
     }
 
-    new Assertion(this._obj).to.deep.equal({});
+    new Assertion(this._obj).to.have.keys(['get', 'set']);
 
-    var isLink = (this._obj['@type'] === 'symlink');
+    var isLink = (this._obj.get('type') === 'symlink');
 
     this.assert(isLink, 'expected #{this} to be an avfs symlink', 'expected #{this} not to be an avfs symlink');
   }, function () {
@@ -89,7 +89,7 @@ require('chai').use(function (chai, utils) {
       };
 
       for (var i = 0; i < elements.length; i++) {
-        object = object[elements[i]];
+        object = object.get('content')[elements[i]];
 
         this.assert(utils.type(object) === 'object', messages.fail, messages.negate);
       }
@@ -97,9 +97,9 @@ require('chai').use(function (chai, utils) {
       return new Assertion(object).to.be.an.avfs.directory();
     }
 
-    new Assertion(this._obj).to.deep.equal({});
+    new Assertion(this._obj).to.have.keys(['get', 'set']);
 
-    var type = this._obj['@type'];
+    var type = this._obj.get('type');
 
     messages = {
       fail:   'expected #{this} to be an avfs directory',
@@ -114,7 +114,7 @@ require('chai').use(function (chai, utils) {
   Assertion.addMethod('mode', function (mode) {
     utils.expectTypes(this, ['object']);
 
-    var actual   = this._obj['@mode'];
+    var actual   = this._obj.get('mode');
     var expected = parseInt(mode, 8);
 
     var messages = {
@@ -129,8 +129,8 @@ require('chai').use(function (chai, utils) {
     utils.expectTypes(this, ['object']);
 
     var actual   = {
-      uid: this._obj['@uid'],
-      gid: this._obj['@gid']
+      uid: this._obj.get('uid'),
+      gid: this._obj.get('gid')
     };
 
     var messages = {
@@ -150,7 +150,7 @@ require('chai').use(function (chai, utils) {
       throw new Error('target() should be called on avfs symlink');
     }
 
-    var actual = this._obj['@target'];
+    var actual = this._obj.get('target');
 
     var messages = {
       fail:   'expected avfs symlink to target #{exp}',
@@ -166,7 +166,7 @@ require('chai').use(function (chai, utils) {
     var messages = null;
 
     if (utils.flag(this, 'avfs.file')) {
-      var actual   = this._obj['@content'].toString();
+      var actual   = this._obj.get('content').toString();
       var expected = '';
 
       messages = {
@@ -176,7 +176,7 @@ require('chai').use(function (chai, utils) {
 
       this.assert(actual === expected, messages.fail, messages.negate, expected, actual, true);
     } else if (utils.flag(this, 'avfs.directory')) {
-      var children = Object.keys(this._obj);
+      var children = Object.keys(this._obj.get('content'));
 
       messages = {
         fail:   'expected avfs folder to be empty',
@@ -194,7 +194,7 @@ require('chai').use(function (chai, utils) {
       if (utils.flag(this, 'avfs.file')) {
         new Assertion(this._obj).to.be.an.avfs.file();
 
-        var actual = this._obj['@content'];
+        var actual = this._obj.get('content');
 
         var equal = (actual.toString() === content.toString());
 

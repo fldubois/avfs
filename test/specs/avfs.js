@@ -7,6 +7,7 @@ var PassThrough = require('stream').PassThrough;
 
 var elements = require('lib/common/elements');
 var flags    = require('lib/common/flags');
+var storage  = require('lib/common/storage');
 
 var AVFS       = require('lib/avfs');
 var Descriptor = require('lib/common/descriptor');
@@ -15,6 +16,16 @@ var fs = new AVFS();
 
 var noop = function () {
   return null;
+};
+
+var getElement = function (path) {
+  var current = fs.files;
+
+  storage.parse(path).forEach(function (element) {
+    current = current.get('content')[element];
+  });
+
+  return current;
 };
 
 describe('avfs', function () {
@@ -233,7 +244,7 @@ describe('avfs', function () {
     it('should close the file handle', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       expect(fs.handles[fd].closed).to.equal(false);
 
@@ -288,7 +299,7 @@ describe('avfs', function () {
     it('should accept fd option', function (callback) {
       var fd = 12;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 7;
 
@@ -435,7 +446,7 @@ describe('avfs', function () {
     it('should close the file descriptor with autoClose option', function (callback) {
       var fd = 12;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 7;
 
@@ -455,7 +466,7 @@ describe('avfs', function () {
     it('should not close the file descriptor without autoClose option', function (callback) {
       var fd = 12;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.WO);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.WO);
 
       fs.handles[fd].read = 7;
 
@@ -600,7 +611,7 @@ describe('avfs', function () {
     it('should accept fd option', function (callback) {
       var fd = 12;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var stream = fs.createWriteStream('/tmp/file2', {fd: fd});
 
@@ -610,7 +621,7 @@ describe('avfs', function () {
 
       stream.on('finish', function () {
         expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
-        expect(fs.files.tmp.file2).to.be.an('undefined');
+        expect(getElement('/tmp/file2')).to.be.an('undefined');
 
         return callback();
       });
@@ -738,7 +749,7 @@ describe('avfs', function () {
     it('should change the mode', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(fs.files.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var result = fs.fchmodSync(fd, '0700');
 
@@ -771,7 +782,7 @@ describe('avfs', function () {
     it('should change the owner and group', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(fs.files.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var result = fs.fchownSync(fd, 1001, 1001);
 
@@ -810,7 +821,7 @@ describe('avfs', function () {
     it('should truncate file', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var result = fs.ftruncateSync(fd);
 
@@ -822,7 +833,7 @@ describe('avfs', function () {
       var content = new Buffer('Hello, friend.');
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var result = fs.ftruncateSync(fd, 3);
 
@@ -833,7 +844,7 @@ describe('avfs', function () {
     it('should throw on non writing file descriptor', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RO);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RO);
 
       expect(function () {
         fs.ftruncateSync(fd);
@@ -865,7 +876,7 @@ describe('avfs', function () {
     it('should return undefined', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       expect(fs.fsyncSync(fd)).to.be.an('undefined');
     });
@@ -994,16 +1005,16 @@ describe('avfs', function () {
       var result = fs.linkSync('/tmp/file', '/dir/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file).to.equal(fs.files.dir.file);
+      expect(getElement('/tmp/file')).to.equal(getElement('/dir/file'));
     });
 
     it('should increment the number of links', function () {
-      expect(fs.files.tmp.file['@nlink']).to.equal(1);
+      expect(getElement('/tmp/file').get('nlink')).to.equal(1);
 
       var result = fs.linkSync('/tmp/file', '/dir/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp.file['@nlink']).to.equal(2);
+      expect(getElement('/tmp/file').get('nlink')).to.equal(2);
     });
 
     it('should throw on directory source', function () {
@@ -1243,7 +1254,7 @@ describe('avfs', function () {
     it('should read the file', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var buffer = new Buffer(5);
 
@@ -1256,7 +1267,7 @@ describe('avfs', function () {
     it('should read the file from position', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var buffer = new Buffer(5);
 
@@ -1269,7 +1280,7 @@ describe('avfs', function () {
     it('should read the file from current position', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 5;
 
@@ -1285,7 +1296,7 @@ describe('avfs', function () {
     it('should fill the buffer from offset', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var buffer = new Buffer('Hello, world!');
 
@@ -1298,7 +1309,7 @@ describe('avfs', function () {
     it('should not read file beyond his length', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       fs.handles[fd].read = 14;
 
@@ -1341,7 +1352,7 @@ describe('avfs', function () {
     it('should fail on directory', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp, '/tmp', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp'), '/tmp', flags.RW);
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
@@ -1684,18 +1695,18 @@ describe('avfs', function () {
       var result = fs.unlinkSync('/tmp/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files.tmp).to.not.contain.keys('file');
+      expect(getElement('/tmp')).to.not.contain.keys('file');
     });
 
     it('should decrement the number of links', function () {
-      var file = fs.files.tmp.file;
+      var file = getElement('/tmp/file');
 
-      file['@nlink'] = 5;
+      file.set('nlink', 5);
 
       var result = fs.unlinkSync('/tmp/file');
 
       expect(result).to.be.an('undefined');
-      expect(file['@nlink']).to.equal(4);
+      expect(file.get('nlink')).to.equal(4);
     });
 
     it('should throw on non existing path', function () {
@@ -1723,7 +1734,7 @@ describe('avfs', function () {
     it('should write in the file', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.empty, '/tmp/empty', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
 
@@ -1735,7 +1746,7 @@ describe('avfs', function () {
     it('should write the file from position', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.empty, '/tmp/empty', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend.'), 0, 5, 7);
 
@@ -1747,7 +1758,7 @@ describe('avfs', function () {
     it('should always append data to the end in append mode', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW | flags.APPEND);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW | flags.APPEND);
 
       expect(fs.writeSync(fd, new Buffer(' Hello,'),  0, 7, 2)).to.equal(7);
       expect(fs.writeSync(fd, new Buffer(' world !'), 0, 8, 2)).to.equal(8);
@@ -1758,7 +1769,7 @@ describe('avfs', function () {
     it('should write the file from current position', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       fs.handles[fd].write = 7;
 
@@ -1774,7 +1785,7 @@ describe('avfs', function () {
     it('should read the buffer from offset', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.empty, '/tmp/empty', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('Hello, friend'), 7, 6, null);
 
@@ -1786,7 +1797,7 @@ describe('avfs', function () {
     it('should fill unwritten parts with white spaces', function () {
       var fd = 0;
 
-      fs.handles[fd] = new Descriptor(fs.files.tmp.file, '/tmp/file', flags.RW);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', flags.RW);
 
       var written = fs.writeSync(fd, new Buffer('OK'), 0, 2, 20);
 
