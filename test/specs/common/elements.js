@@ -46,4 +46,59 @@ describe('common/elements', function () {
     expect(link).to.be.an.avfs.symlink.with.mode(mode).that.target(target);
   });
 
+  it('should update ctime', function (done) {
+    var file = elements.file(parseInt('0666', 8), 'Hello, friend.');
+
+    var before = file.get('mtime');
+
+    setTimeout(function () {
+      file.set('atime', new Date());
+
+      var after = file.get('mtime');
+
+      expect(before.getTime()).to.equal(after.getTime());
+
+      var values = [
+        {name: 'content', value: 'Hello, world !'},
+        {name: 'mode',    value: parseInt('0777', 8)},
+        {name: 'gid',     value: 1000},
+        {name: 'uid',     value: 1000},
+        {name: 'nlink',   value: 5}
+      ];
+
+      var interval = setInterval(function () {
+        var property = values.pop();
+
+        if (typeof property !== 'undefined') {
+          clearInterval(interval);
+          return done();
+        }
+
+        var before = file.get('ctime');
+
+        file.set(property.name, property.value);
+
+        var after = file.get('ctime');
+
+        expect(before.getTime()).to.be.below(after.getTime());
+      }, 50);
+    }, 50);
+  });
+
+  it('should update mtime', function (done) {
+    var file = elements.file(parseInt('0666', 8), 'Hello, friend.');
+
+    var before = file.get('mtime');
+
+    setTimeout(function () {
+      file.set('content', 'Hello, world !');
+
+      var after = file.get('mtime');
+
+      expect(before.getTime()).to.be.below(after.getTime());
+
+      done();
+    }, 50);
+  });
+
 });
