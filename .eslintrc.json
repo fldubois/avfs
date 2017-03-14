@@ -137,7 +137,7 @@
     // disallow function declarations and expressions inside loop statements
     "no-loop-func": "off",
     // disallow magic numbers
-    "no-magic-numbers": ["warn", {"ignore": [-1, 0, 1, 2]}],
+    "no-magic-numbers": ["warn", {"ignore": [-1, 0, 1, 2, 1000]}],
     // disallow multiple spaces
     "no-multi-spaces": "off",
     // disallow multiline strings

@@ -49,12 +49,15 @@ describe('common/elements', function () {
   it('should update ctime', function (done) {
     var file = elements.file(parseInt('0666', 8), 'Hello, friend.');
 
-    var before = file.get('mtime');
+    var before = null;
+    var after  = null;
 
     setTimeout(function () {
+      before = file.get('mtime');
+
       file.set('atime', new Date());
 
-      var after = file.get('mtime');
+      after = file.get('mtime');
 
       expect(before.getTime()).to.equal(after.getTime());
 
@@ -71,14 +74,15 @@ describe('common/elements', function () {
 
         if (typeof property !== 'undefined') {
           clearInterval(interval);
+
           return done();
         }
 
-        var before = file.get('ctime');
+        before = file.get('ctime');
 
         file.set(property.name, property.value);
 
-        var after = file.get('ctime');
+        after = file.get('ctime');
 
         expect(before.getTime()).to.be.below(after.getTime());
       }, 50);
