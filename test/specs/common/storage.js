@@ -11,6 +11,9 @@ var files = elements.directory('0755', {
     file: elements.file('0666', new Buffer('Hello, friend')),
     link: elements.symlink('0777', '/dir/file'),
     miss: elements.symlink('0777', '/dir/not')
+  }),
+  tmp: elements.directory('0777', {
+    link: elements.symlink('0777', '../dir/file')
   })
 });
 
@@ -57,6 +60,10 @@ describe('common/storage', function () {
 
     it('should follow symlinks', function () {
       expect(storage.get(files, 'test', '/dir/link')).to.equal(getElement('/dir/file'));
+    });
+
+    it('should support relative symlinks', function () {
+      expect(storage.get(files, 'test', '/tmp/link')).to.equal(getElement('/dir/file'));
     });
 
     it('should not follow symlinks', function () {
