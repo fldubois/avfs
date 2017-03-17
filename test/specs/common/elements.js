@@ -46,6 +46,16 @@ describe('common/elements', function () {
     expect(link).to.be.an.avfs.symlink.with.mode(mode).that.target(target);
   });
 
+  it('should set an inode number', function () {
+    var fileA = elements.file(parseInt('0666', 8), 'Hello, friend.');
+    var fileB = elements.file(parseInt('0666', 8), 'Hello, friend.');
+
+    expect(fileA.get('inode')).to.be.a('number').above(0);
+    expect(fileB.get('inode')).to.be.a('number').above(0);
+
+    expect(fileB.get('inode')).to.equal(fileA.get('inode') + 1);
+  });
+
   it('should update ctime', function (done) {
     var file = elements.file(parseInt('0666', 8), 'Hello, friend.');
 
