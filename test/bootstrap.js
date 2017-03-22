@@ -2,6 +2,8 @@
 
 var path = require('path');
 
+var constants = require('../lib/common/constants');
+
 require('app-module-path').addPath(path.join(__dirname, '..'));
 
 require('chai').use(function (chai, utils) {
@@ -35,9 +37,9 @@ require('chai').use(function (chai, utils) {
 
     new Assertion(this._obj).to.have.keys(['get', 'set']);
 
-    var type = this._obj.get('type');
+    var isFile = (this._obj.get('type') === constants.S_IFREG);
 
-    this.assert(type === 'file', 'expected #{this} to be an avfs file', 'expected #{this} not to be an avfs file');
+    this.assert(isFile, 'expected #{this} to be an avfs file', 'expected #{this} not to be an avfs file');
   }, function () {
     utils.flag(this, 'avfs.file', true);
   });
@@ -66,7 +68,7 @@ require('chai').use(function (chai, utils) {
 
     new Assertion(this._obj).to.have.keys(['get', 'set']);
 
-    var isLink = (this._obj.get('type') === 'symlink');
+    var isLink = (this._obj.get('type') === constants.S_IFLNK);
 
     this.assert(isLink, 'expected #{this} to be an avfs symlink', 'expected #{this} not to be an avfs symlink');
   }, function () {
@@ -99,14 +101,9 @@ require('chai').use(function (chai, utils) {
 
     new Assertion(this._obj).to.have.keys(['get', 'set']);
 
-    var type = this._obj.get('type');
+    var isDir = (this._obj.get('type') === constants.S_IFDIR);
 
-    messages = {
-      fail:   'expected #{this} to be an avfs directory',
-      negate: 'expected #{this} not to be an avfs directory'
-    };
-
-    this.assert(type === 'directory', messages.fail, messages.negate);
+    this.assert(isDir, 'expected #{this} to be an avfs directory', 'expected #{this} not to be an avfs directory');
   }, function () {
     utils.flag(this, 'avfs.directory', true);
   });
