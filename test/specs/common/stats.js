@@ -3,7 +3,7 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements = require('lib/common/elements');
+var elements  = require('lib/common/elements');
 
 var Stats = require('lib/common/stats');
 
@@ -21,21 +21,27 @@ describe('common/stats', function () {
   });
 
   it('should create stats from element', function () {
-    var stats = new Stats(elems.file);
+    Object.keys(elems).forEach(function (key) {
+      var element = elems[key];
 
-    expect(stats.dev).to.equal(1);
-    expect(stats.ino).to.equal(elems.file.get('inode'));
-    expect(stats.mode).to.equal(elems.file.get('mode'));
-    expect(stats.nlink).to.equal(elems.file.get('nlink'));
-    expect(stats.uid).to.equal(elems.file.get('uid'));
-    expect(stats.gid).to.equal(elems.file.get('gid'));
-    expect(stats.rdev).to.equal(0);
-    expect(stats.size).to.equal(0);
-    expect(stats.blksize).to.equal(512);
-    expect(stats.blocks).to.equal(0);
-    expect(stats.atime).to.equal(elems.file.get('atime'));
-    expect(stats.mtime).to.equal(elems.file.get('mtime'));
-    expect(stats.ctime).to.equal(elems.file.get('ctime'));
+      var stats = new Stats(element);
+
+      expect(stats).to.be.an.instanceOf(Stats);
+
+      expect(stats.dev).to.equal(1);
+      expect(stats.ino).to.equal(element.get('inode'));
+      expect(stats.mode).to.equal(element.get('mode') + element.get('type'));
+      expect(stats.nlink).to.equal(element.get('nlink'));
+      expect(stats.uid).to.equal(element.get('uid'));
+      expect(stats.gid).to.equal(element.get('gid'));
+      expect(stats.rdev).to.equal(0);
+      expect(stats.size).to.equal(0);
+      expect(stats.blksize).to.equal(512);
+      expect(stats.blocks).to.equal(0);
+      expect(stats.atime).to.equal(element.get('atime'));
+      expect(stats.mtime).to.equal(element.get('mtime'));
+      expect(stats.ctime).to.equal(element.get('ctime'));
+    });
   });
 
   describe('isDirectory()', function () {

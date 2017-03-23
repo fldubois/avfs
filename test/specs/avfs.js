@@ -1155,7 +1155,7 @@ describe('avfs', function () {
 
       expect(stats.dev).to.equal(1);
       expect(stats.ino).to.equal(file.get('inode'));
-      expect(stats.mode).to.equal(file.get('mode'));
+      expect(stats.mode).to.equal(file.get('mode') + file.get('type'));
       expect(stats.nlink).to.equal(file.get('nlink'));
       expect(stats.uid).to.equal(file.get('uid'));
       expect(stats.gid).to.equal(file.get('gid'));
@@ -1729,7 +1729,7 @@ describe('avfs', function () {
 
       expect(stats.dev).to.equal(1);
       expect(stats.ino).to.equal(file.get('inode'));
-      expect(stats.mode).to.equal(file.get('mode'));
+      expect(stats.mode).to.equal(file.get('mode') + file.get('type'));
       expect(stats.nlink).to.equal(file.get('nlink'));
       expect(stats.uid).to.equal(file.get('uid'));
       expect(stats.gid).to.equal(file.get('gid'));
