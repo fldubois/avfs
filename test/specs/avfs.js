@@ -9,9 +9,10 @@ var constants = require('lib/common/constants');
 var elements  = require('lib/common/elements');
 var storage   = require('lib/common/storage');
 
-var AVFS       = require('lib/avfs');
-var Descriptor = require('lib/common/descriptor');
-var Stats      = require('lib/common/stats');
+var AVFS        = require('lib/avfs');
+var Descriptor  = require('lib/common/descriptor');
+var Stats       = require('lib/common/stats');
+var WriteStream = require('lib/common/write-stream');
 
 var fs = new AVFS();
 
@@ -596,10 +597,10 @@ describe('avfs', function () {
 
   describe('createWriteStream()', function () {
 
-    it('should return a writable stream', function (callback) {
+    it('should create a WriteStream instance', function (callback) {
       var stream = fs.createWriteStream('/tmp/file');
 
-      expect(stream.writable).to.equal(true);
+      expect(stream).to.be.an.instanceof(WriteStream);
 
       stream.on('error', callback);
 
@@ -611,121 +612,6 @@ describe('avfs', function () {
 
       stream.write('Hello, ');
       stream.end('world !');
-    });
-
-    it('should accept fd option', function (callback) {
-      var fd = 12;
-
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
-
-      var stream = fs.createWriteStream('/tmp/file2', {fd: fd});
-
-      expect(stream.writable).to.equal(true);
-
-      stream.on('error', callback);
-
-      stream.on('finish', function () {
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
-        expect(getElement('/tmp/file2')).to.be.an('undefined');
-
-        return callback();
-      });
-
-      stream.end('Hello, world !');
-    });
-
-    it('should accept flags option', function (callback) {
-      var stream = fs.createWriteStream('/tmp/file', {flags: 'a'});
-
-      expect(stream.writable).to.equal(true);
-
-      stream.on('error', callback);
-
-      stream.on('finish', function () {
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
-
-        return callback();
-      });
-
-      stream.end(' Hello, world !');
-    });
-
-    it('should accept mode option', function (callback) {
-      var stream = fs.createWriteStream('/tmp/new', {mode: '0700'});
-
-      expect(stream.writable).to.equal(true);
-
-      stream.on('error', callback);
-
-      stream.on('finish', function () {
-        try {
-          expect(fs.files).to.contain.an.avfs.file('/tmp/new').with.mode('0700');
-        } catch (error) {
-          return callback(error);
-        }
-
-        return callback();
-      });
-
-      stream.end('Hello, world !');
-    });
-
-    it('should accept start option', function (callback) {
-      var stream = fs.createWriteStream('/tmp/file', {flags: 'r+', start: 5});
-
-      expect(stream.writable).to.equal(true);
-
-      stream.on('error', callback);
-
-      stream.on('finish', function () {
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
-
-        return callback();
-      });
-
-      stream.end(', world !');
-    });
-
-    it('should emit an error on open error', function (callback) {
-      var stream = fs.createWriteStream('/tmp/file', {flags: 'wx'});
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EEXIST, open \'/tmp/file\'');
-
-        return callback();
-      });
-
-      stream.on('finish', function () {
-        return callback(new Error('Event `finish` emitted on open error'));
-      });
-    });
-
-    it('should emit an error on directory', function (callback) {
-      var stream = fs.createWriteStream('/tmp');
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EISDIR, open \'/tmp\'');
-
-        return callback();
-      });
-
-      stream.on('finish', function () {
-        return callback(new Error('Event `finish` emitted on directory'));
-      });
-    });
-
-    it('should throw on non number start option', function () {
-      expect(function () {
-        fs.createWriteStream('/tmp/file', {start: false});
-      }).to.throw(TypeError, 'start must be a Number');
-    });
-
-    it('should throw on negative start option', function () {
-      expect(function () {
-        fs.createWriteStream('/tmp/file', {start: -1});
-      }).to.throw(Error, 'start must be >= zero');
     });
 
   });
