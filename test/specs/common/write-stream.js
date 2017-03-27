@@ -2,34 +2,29 @@
 
 var chai   = require('chai');
 var expect = chai.expect;
+var sinon  = require('sinon');
 
-var constants = require('lib/common/constants');
-var elements  = require('lib/common/elements');
-var storage   = require('lib/common/storage');
+var errors = require('lib/common/errors');
 
-var AVFS        = require('lib/avfs');
-var Descriptor  = require('lib/common/descriptor');
 var WriteStream = require('lib/common/write-stream');
 
-var fs = new AVFS();
+chai.use(require('sinon-chai'));
 
-var getElement = function (path) {
-  var current = fs.files;
-
-  storage.parse(path).forEach(function (element) {
-    current = current.get('content')[element];
-  });
-
-  return current;
+var fs = {
+  openSync:  sinon.stub(),
+  writeSync: sinon.stub(),
+  closeSync: sinon.stub()
 };
 
 describe('common/write-stream', function () {
 
-  beforeEach('reset virtual file system', function () {
-    fs.files = elements.directory(parseInt('0755', 8), {
-      empty: elements.file(parseInt('0666', 8), new Buffer(0)),
-      file:  elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'))
-    });
+  beforeEach(function () {
+    fs.openSync.reset();
+    fs.writeSync.reset();
+    fs.closeSync.reset();
+
+    fs.openSync.returns(1);
+    fs.writeSync.returnsArg(3);
   });
 
   it('should expose a constructor', function () {
@@ -38,125 +33,282 @@ describe('common/write-stream', function () {
     expect(WriteStream(fs, '/file')).to.be.an.instanceOf(WriteStream);
   });
 
-  it('should return a writable stream', function (callback) {
+  it('should return a writable stream', function (done) {
     var stream = new WriteStream(fs, '/file');
 
-    expect(stream.writable).to.equal(true);
+    expect(stream).to.be.an.instanceOf(WriteStream);
 
-    stream.on('error', callback);
+    stream.on('error', done);
 
     stream.on('finish', function () {
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, world !');
+      try {
+        expect(fs.openSync).to.have.callCount(1);
+        expect(fs.openSync).to.have.been.calledWith('/file', 'w', null);
 
-      return callback();
+        expect(fs.writeSync).to.have.callCount(2);
+        expect(fs.writeSync.getCall(0)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 7, null);
+        expect(fs.writeSync.getCall(1)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 7, null);
+
+        return done();
+      } catch (error) {
+        return done(error);
+      }
     });
 
     stream.write('Hello, ');
     stream.end('world !');
   });
 
-  it('should accept fd option', function (callback) {
-    var fd = 12;
+  it('should accept fd option', function (done) {
+    var stream = new WriteStream(fs, '/file', {fd: 10});
 
-    fs.handles[fd] = new Descriptor(getElement('/file'), '/file', constants.O_RDWR);
+    expect(stream).to.be.an.instanceOf(WriteStream);
 
-    var stream = new WriteStream(fs, '/file2', {fd: fd});
-
-    expect(stream.writable).to.equal(true);
-
-    stream.on('error', callback);
-
-    stream.on('finish', function () {
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, world !');
-      expect(getElement('/file2')).to.be.an('undefined');
-
-      return callback();
-    });
-
-    stream.end('Hello, world !');
-  });
-
-  it('should accept flags option', function (callback) {
-    var stream = new WriteStream(fs, '/file', {flags: 'a'});
-
-    expect(stream.writable).to.equal(true);
-
-    stream.on('error', callback);
-
-    stream.on('finish', function () {
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend. Hello, world !');
-
-      return callback();
-    });
-
-    stream.end(' Hello, world !');
-  });
-
-  it('should accept mode option', function (callback) {
-    var stream = new WriteStream(fs, '/new', {mode: '0700'});
-
-    expect(stream.writable).to.equal(true);
-
-    stream.on('error', callback);
+    stream.on('error', done);
 
     stream.on('finish', function () {
       try {
-        expect(fs.files).to.contain.an.avfs.file('/new').with.mode('0700');
-      } catch (error) {
-        return callback(error);
-      }
+        expect(fs.openSync).to.have.callCount(0);
 
-      return callback();
+        expect(fs.writeSync).to.have.callCount(1);
+        expect(fs.writeSync.getCall(0)).to.have.been.calledWith(10);
+
+        return done();
+      } catch (error) {
+        return done(error);
+      }
     });
 
-    stream.end('Hello, world !');
+    stream.end('Hello');
   });
 
-  it('should accept start option', function (callback) {
-    var stream = new WriteStream(fs, '/file', {flags: 'r+', start: 5});
+  it('should accept flags option', function (done) {
+    var stream = new WriteStream(fs, '/file', {flags: 'a'});
 
-    expect(stream.writable).to.equal(true);
+    expect(stream).to.be.an.instanceOf(WriteStream);
 
-    stream.on('error', callback);
+    stream.on('error', done);
+
+    stream.on('open', function (fd) {
+      try {
+        expect(fd).to.equal(1);
+
+        expect(fs.openSync).to.have.callCount(1);
+        expect(fs.openSync).to.have.been.calledWith('/file', 'a', null);
+
+        return done();
+      } catch (error) {
+        return done(error);
+      }
+    });
+  });
+
+  it('should accept mode option', function (done) {
+    var stream = new WriteStream(fs, '/file', {mode: '0700'});
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', done);
+
+    stream.on('open', function (fd) {
+      try {
+        expect(fd).to.equal(1);
+
+        expect(fs.openSync).to.have.callCount(1);
+        expect(fs.openSync).to.have.been.calledWith('/file', 'w', '0700');
+
+        return done();
+      } catch (error) {
+        return done(error);
+      }
+    });
+  });
+
+  it('should accept start option', function (done) {
+    var stream = new WriteStream(fs, '/file', {flags: 'r+', start: 12});
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', done);
+
+    stream.on('open', function (fd) {
+      expect(fd).to.equal(1);
+
+      expect(fs.openSync).to.have.callCount(1);
+      expect(fs.openSync).to.have.been.calledWith('/file', 'r+', null);
+    });
 
     stream.on('finish', function () {
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, world !');
+      expect(fs.writeSync).to.have.callCount(1);
+      expect(fs.writeSync.getCall(0)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 5, 12);
 
-      return callback();
+      return done();
     });
 
-    stream.end(', world !');
+    stream.end('Hello');
   });
 
-  it('should emit an error on open error', function (callback) {
+  it('should accept callback on close', function (done) {
+    var stream = new WriteStream(fs, '/file');
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', done);
+
+    stream.close(done);
+  });
+
+  it('should reemit close event on each close call', function (done) {
+    var stream = new WriteStream(fs, '/file');
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', done);
+
+    stream.on('open', function () {
+      stream.once('close', function () {
+        stream.once('close', done);
+
+        stream.close();
+      });
+
+      stream.close();
+    });
+  });
+
+  it('should close the descriptor on destroy', function (done) {
+    var stream = new WriteStream(fs, '/file');
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', done);
+
+    stream.on('open', function (fd) {
+      try {
+        expect(fd).to.equal(1);
+
+        stream.destroy();
+
+        expect(stream.closed).to.equal(true);
+
+        stream.destroy();
+
+        return done();
+      } catch (error) {
+        return done(error);
+      }
+    });
+  });
+
+  it('should emit an error on open fs error', function (done) {
+    fs.openSync.resetBehavior();
+    fs.openSync.throws(new errors.EEXIST('open', '/file'));
+
     var stream = new WriteStream(fs, '/file', {flags: 'wx'});
 
     stream.on('error', function (error) {
       expect(error).to.be.an('error');
       expect(error.message).to.equal('EEXIST, open \'/file\'');
 
-      return callback();
+      return done();
     });
 
     stream.on('finish', function () {
-      return callback(new Error('Event `finish` emitted on open error'));
+      return done(new Error('Event `finish` emitted with open error'));
     });
   });
 
-  it('should emit an error on directory', function (callback) {
-    var stream = new WriteStream(fs, '/');
+  it('should emit an error on open error', function (done) {
+    fs.openSync.resetBehavior();
+    fs.openSync.throws(new Error('Fake open error'));
+
+    var stream = new WriteStream(fs, '/file', {flags: 'wx'});
 
     stream.on('error', function (error) {
       expect(error).to.be.an('error');
-      expect(error.message).to.equal('EISDIR, open \'/\'');
+      expect(error.message).to.equal('Fake open error');
 
-      return callback();
+      return done();
     });
 
     stream.on('finish', function () {
-      return callback(new Error('Event `finish` emitted on directory'));
+      return done(new Error('Event `finish` emitted with open error'));
     });
   });
+
+  it('should emit an error on non Buffer data', function () {
+    var stream = new WriteStream(fs, '/file', {flags: 'wx'});
+
+    expect(function () {
+      stream._write(false);
+    }).to.throws(Error, 'Invalid data');
+  });
+
+  it('should emit an error on write error', function (done) {
+    fs.writeSync.resetBehavior();
+    fs.writeSync.throws(new Error('Fake write error'));
+
+    var stream = new WriteStream(fs, '/file');
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', function (error) {
+      expect(error).to.be.an.instanceOf(Error);
+      expect(error.message).to.equal('Fake write error');
+
+      return done();
+    });
+
+    stream.on('open', function (fd) {
+      expect(fd).to.equal(1);
+
+      expect(fs.openSync).to.have.callCount(1);
+      expect(fs.openSync).to.have.been.calledWith('/file', 'w', null);
+    });
+
+    stream.on('finish', function () {
+      return done(new Error('Event `finish` emitted with write error'));
+    });
+
+    stream.end('Hello');
+  });
+
+  it('should emit an error on close error', function (done) {
+    fs.closeSync.resetBehavior();
+    fs.closeSync.throws(new Error('Fake close error'));
+
+    var stream = new WriteStream(fs, '/file');
+
+    expect(stream).to.be.an.instanceOf(WriteStream);
+
+    stream.on('error', function (error) {
+      expect(error).to.be.an.instanceOf(Error);
+      expect(error.message).to.equal('Fake close error');
+
+      return done();
+    });
+
+    stream.on('close', function () {
+      return done(new Error('Event `close` emitted with close error'));
+    });
+
+    stream.end('Hello');
+  });
+
+  // it('should emit an error on directory', function (done) {
+  //   var stream = new WriteStream(fs, '/');
+
+  //   stream.on('error', function (error) {
+  //     expect(error).to.be.an('error');
+  //     expect(error.message).to.equal('EISDIR, open \'/\'');
+
+  //     return done();
+  //   });
+
+  //   stream.on('finish', function () {
+  //     return done(new Error('Event `finish` emitted with directory'));
+  //   });
+  // });
 
   it('should throw on non number start option', function () {
     expect(function () {
