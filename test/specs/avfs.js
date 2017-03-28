@@ -53,6 +53,23 @@ describe('avfs', function () {
     expect(fs.Stats).to.equal(Stats);
   });
 
+  it('should expose WriteStream', function (callback) {
+    var stream = new fs.WriteStream('/tmp/file');
+
+    expect(stream).to.be.an.instanceof(WriteStream);
+
+    stream.on('error', callback);
+
+    stream.on('finish', function () {
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
+
+      return callback();
+    });
+
+    stream.write('Hello, ');
+    stream.end('world !');
+  });
+
   describe('appendFileSync()', function () {
 
     it('should append buffer to file', function () {
