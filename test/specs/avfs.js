@@ -3,8 +3,6 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var PassThrough = require('stream').PassThrough;
-
 var constants = require('lib/common/constants');
 var elements  = require('lib/common/elements');
 var storage   = require('lib/common/storage');
@@ -12,6 +10,8 @@ var storage   = require('lib/common/storage');
 var AVFS        = require('lib/avfs');
 var Descriptor  = require('lib/common/descriptor');
 var Stats       = require('lib/common/stats');
+
+var ReadStream  = require('lib/common/read-stream');
 var WriteStream = require('lib/common/write-stream');
 
 var fs = new AVFS();
@@ -51,6 +51,31 @@ describe('avfs', function () {
 
   it('should expose Stats', function () {
     expect(fs.Stats).to.equal(Stats);
+  });
+
+  it('should expose ReadStream', function (callback) {
+    var stream  = new fs.ReadStream('/tmp/file');
+    var content = '';
+
+    expect(stream).to.be.an.instanceof(ReadStream);
+
+    stream.on('readable', function () {
+      var chunk = null;
+
+      while ((chunk = stream.read()) !== null) {
+        expect(chunk).to.be.an.instanceof(Buffer);
+
+        content += chunk.toString();
+      }
+    });
+
+    stream.on('error', callback);
+
+    stream.on('end', function () {
+      expect(content).to.equal('Hello, friend.');
+
+      return callback();
+    });
   });
 
   it('should expose WriteStream', function (callback) {
@@ -293,12 +318,11 @@ describe('avfs', function () {
 
   describe('createReadStream()', function () {
 
-    it('should return a readable stream', function (callback) {
-      var stream = fs.createReadStream('/tmp/file');
-
-      expect(stream.readable).to.equal(true);
-
+    it('should create a ReadStream instance', function (callback) {
+      var stream  = fs.createReadStream('/tmp/file');
       var content = '';
+
+      expect(stream).to.be.an.instanceof(ReadStream);
 
       stream.on('readable', function () {
         var chunk = null;
@@ -317,297 +341,6 @@ describe('avfs', function () {
 
         return callback();
       });
-    });
-
-    it('should accept fd option', function (callback) {
-      var fd = 12;
-
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
-
-      fs.handles[fd].read = 7;
-
-      var stream = fs.createReadStream('/tmp/file2', {fd: fd});
-
-      expect(stream.readable).to.equal(true);
-
-      var content = '';
-
-      stream.on('readable', function () {
-        var chunk = null;
-
-        while ((chunk = stream.read()) !== null) {
-          expect(chunk).to.be.an.instanceof(Buffer);
-
-          content += chunk.toString();
-        }
-      });
-
-      stream.on('error', callback);
-
-      stream.on('end', function () {
-        expect(content).to.equal('friend.');
-
-        return callback();
-      });
-    });
-
-    it('should accept flags option', function (callback) {
-      var stream = fs.createReadStream('/tmp/file', {flags: 'a'});
-
-      expect(stream.readable).to.equal(true);
-
-      stream.on('readable', function () {
-        return callback(new Error('Event `readable` emitted on non readable file'));
-      });
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, bad file descriptor');
-
-        return callback();
-      });
-
-      stream.on('end', function () {
-        return callback(new Error('Event `end` emitted on non readable file'));
-      });
-    });
-
-    it('should accept mode option', function (callback) {
-      var stream = fs.createReadStream('/file', {flags: 'w+', mode: '0700'});
-
-      expect(stream.readable).to.equal(true);
-
-      stream.on('error', callback);
-
-      stream.on('end', function () {
-        expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0700');
-
-        return callback();
-      });
-
-      stream.pipe(new PassThrough());
-    });
-
-    it('should accept start option', function (callback) {
-      var stream = fs.createReadStream('/tmp/file', {start: 2});
-
-      expect(stream.readable).to.equal(true);
-
-      var content = '';
-
-      stream.on('readable', function () {
-        var chunk = null;
-
-        while ((chunk = stream.read()) !== null) {
-          expect(chunk).to.be.an.instanceof(Buffer);
-
-          content += chunk.toString();
-        }
-      });
-
-      stream.on('error', callback);
-
-      stream.on('end', function () {
-        expect(content).to.equal('llo, friend.');
-
-        return callback();
-      });
-    });
-
-    it('should accept end option', function (callback) {
-      var stream = fs.createReadStream('/tmp/file', {start: 2, end: 8});
-
-      expect(stream.readable).to.equal(true);
-
-      var content = '';
-
-      stream.on('readable', function () {
-        var chunk = null;
-
-        while ((chunk = stream.read()) !== null) {
-          expect(chunk).to.be.an.instanceof(Buffer);
-
-          content += chunk.toString();
-        }
-      });
-
-      stream.on('error', callback);
-
-      stream.on('end', function () {
-        expect(content).to.equal('llo, fr');
-
-        return callback();
-      });
-    });
-
-    it('should accept encoding option', function (callback) {
-      var stream = fs.createReadStream('/tmp/file', {encoding: 'base64'});
-
-      expect(stream.readable).to.equal(true);
-
-      var content = '';
-
-      stream.on('readable', function () {
-        var chunk = null;
-
-        while ((chunk = stream.read()) !== null) {
-          expect(chunk).to.be.a('string');
-
-          content += chunk.toString();
-        }
-      });
-
-      stream.on('error', callback);
-
-      stream.on('end', function () {
-        expect(content).to.equal(content.toString('base64'));
-
-        return callback();
-      });
-    });
-
-    it('should close the file descriptor with autoClose option', function (callback) {
-      var fd = 12;
-
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
-
-      fs.handles[fd].read = 7;
-
-      var stream = fs.createReadStream('/tmp/file', {fd: fd});
-
-      stream.on('error', callback);
-
-      stream.on('end', function () {
-        expect(fs.handles[fd].closed).to.equal(true);
-
-        return callback();
-      });
-
-      stream.pipe(new PassThrough());
-    });
-
-    it('should not close the file descriptor without autoClose option', function (callback) {
-      var fd = 12;
-
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_WRONLY);
-
-      fs.handles[fd].read = 7;
-
-      var stream = fs.createReadStream('/tmp/file', {fd: fd, autoClose: false});
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(fs.handles[fd]).to.be.an('object');
-
-        return callback();
-      });
-
-      stream.on('end', function () {
-        return callback(new Error('Event `end` emitted on non readable file'));
-      });
-
-      stream.pipe(new PassThrough());
-    });
-
-    it('should emit open event', function (callback) {
-      var opened = false;
-      var stream = fs.createReadStream('/tmp/file', {autoClose: true});
-
-      expect(stream.readable).to.equal(true);
-
-      stream.on('open', function (fd) {
-        expect(fd).to.be.a('number');
-        expect(fs.handles[fd]).to.be.an('object');
-        expect(fs.handles[fd].path).to.equal('/tmp/file');
-
-        opened = true;
-
-        return callback();
-      });
-
-      stream.on('end', function () {
-        if (opened === false) {
-          return callback(new Error('Event `end` emitted before `open`'));
-        }
-      });
-
-      stream.pipe(new PassThrough());
-    });
-
-    it('should emit an error on non existing file', function (callback) {
-      var stream = fs.createReadStream('/not/file');
-
-      stream.on('readable', function () {
-        return callback(new Error('Event `readable` emitted on non existing file'));
-      });
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('ENOENT, open \'/not/file\'');
-
-        return callback();
-      });
-
-      stream.on('end', function () {
-        return callback(new Error('Event `end` emitted on non existing file'));
-      });
-    });
-
-    it('should emit an error on directory', function (callback) {
-      var stream = fs.createReadStream('/tmp');
-
-      stream.on('readable', function () {
-        return callback(new Error('Event `readable` emitted on non existing file'));
-      });
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EISDIR, open \'/tmp\'');
-
-        return callback();
-      });
-
-      stream.on('end', function () {
-        return callback(new Error('Event `end` emitted on non existing file'));
-      });
-    });
-
-    it('should emit an error on close error', function (callback) {
-      var fd = 12;
-
-      var stream = fs.createReadStream('/tmp/file', {fd: fd, start: 8, end: 8});
-
-      stream.on('error', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('EBADF, bad file descriptor');
-        expect(error.syscall).to.equal('close');
-
-        return callback();
-      });
-
-      stream.on('end', function () {
-        return callback(new Error('Event `end` emitted with close error'));
-      });
-
-      stream.pipe(new PassThrough());
-    });
-
-    it('should throw on non number start option', function () {
-      expect(function () {
-        fs.createReadStream('/tmp/file', {start: false});
-      }).to.throw(TypeError, 'start must be a Number');
-    });
-
-    it('should throw on non number end option', function () {
-      expect(function () {
-        fs.createReadStream('/tmp/file', {start: 0, end: false});
-      }).to.throw(TypeError, 'end must be a Number');
-    });
-
-    it('should throw on end option less then start option', function () {
-      expect(function () {
-        fs.createReadStream('/tmp/file', {start: 10, end: 5});
-      }).to.throw(Error, 'start must be <= end');
     });
 
   });
