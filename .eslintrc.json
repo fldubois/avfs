@@ -12,7 +12,7 @@
     // disallow assignment operators in conditional expressions
     "no-cond-assign": ["error", "except-parens"],
     // disallow the use of console
-    "no-console": "warn",
+    "no-console": ["warn", {"allow": ["error"]}],
     // disallow constant expressions in conditions
     "no-constant-condition": "error",
     // disallow control characters in regular expressions
