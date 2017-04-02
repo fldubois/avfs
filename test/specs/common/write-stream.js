@@ -15,20 +15,27 @@ var WriteStream = require('lib/common/write-stream');
 chai.use(require('sinon-chai'));
 
 var fs = {
-  openSync:  sinon.stub(),
-  writeSync: sinon.stub(),
-  closeSync: sinon.stub()
+  open:  sinon.stub(),
+  write: sinon.stub(),
+  close: sinon.stub()
 };
 
 describe('common/write-stream', function () {
 
   beforeEach(function () {
-    fs.openSync.reset();
-    fs.writeSync.reset();
-    fs.closeSync.reset();
+    fs.open.reset();
+    fs.write.reset();
+    fs.close.reset();
 
-    fs.openSync.returns(1);
-    fs.writeSync.returnsArg(3);
+    fs.open.yieldsAsync(null, 1);
+
+    fs.write.callsFake(function (fd, buffer, offset, length, position, callback) {
+      return callback(null, length - offset, buffer);
+    });
+
+    fs.close.callsFake(function (fd, callback) {
+      return callback();
+    });
   });
 
   it('should expose a constructor', function () {
@@ -46,12 +53,12 @@ describe('common/write-stream', function () {
 
     writable.on('finish', function () {
       try {
-        expect(fs.openSync).to.have.callCount(1);
-        expect(fs.openSync).to.have.been.calledWith('/file', 'w', null);
+        expect(fs.open).to.have.callCount(1);
+        expect(fs.open).to.have.been.calledWith('/file', 'w', null);
 
-        expect(fs.writeSync).to.have.callCount(2);
-        expect(fs.writeSync.getCall(0)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 7, null);
-        expect(fs.writeSync.getCall(1)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 7, null);
+        expect(fs.write).to.have.callCount(2);
+        expect(fs.write.getCall(0)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 7, null);
+        expect(fs.write.getCall(1)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 7, null);
 
         return done();
       } catch (error) {
@@ -72,10 +79,10 @@ describe('common/write-stream', function () {
 
     writable.on('finish', function () {
       try {
-        expect(fs.openSync).to.have.callCount(0);
+        expect(fs.open).to.have.callCount(0);
 
-        expect(fs.writeSync).to.have.callCount(1);
-        expect(fs.writeSync.getCall(0)).to.have.been.calledWith(10);
+        expect(fs.write).to.have.callCount(1);
+        expect(fs.write.getCall(0)).to.have.been.calledWith(10);
 
         return done();
       } catch (error) {
@@ -97,8 +104,8 @@ describe('common/write-stream', function () {
       try {
         expect(fd).to.equal(1);
 
-        expect(fs.openSync).to.have.callCount(1);
-        expect(fs.openSync).to.have.been.calledWith('/file', 'a', null);
+        expect(fs.open).to.have.callCount(1);
+        expect(fs.open).to.have.been.calledWith('/file', 'a', null);
 
         return done();
       } catch (error) {
@@ -118,8 +125,8 @@ describe('common/write-stream', function () {
       try {
         expect(fd).to.equal(1);
 
-        expect(fs.openSync).to.have.callCount(1);
-        expect(fs.openSync).to.have.been.calledWith('/file', 'w', '0700');
+        expect(fs.open).to.have.callCount(1);
+        expect(fs.open).to.have.been.calledWith('/file', 'w', '0700');
 
         return done();
       } catch (error) {
@@ -138,13 +145,13 @@ describe('common/write-stream', function () {
     writable.on('open', function (fd) {
       expect(fd).to.equal(1);
 
-      expect(fs.openSync).to.have.callCount(1);
-      expect(fs.openSync).to.have.been.calledWith('/file', 'r+', null);
+      expect(fs.open).to.have.callCount(1);
+      expect(fs.open).to.have.been.calledWith('/file', 'r+', null);
     });
 
     writable.on('finish', function () {
-      expect(fs.writeSync).to.have.callCount(1);
-      expect(fs.writeSync.getCall(0)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 5, 12);
+      expect(fs.write).to.have.callCount(1);
+      expect(fs.write.getCall(0)).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 5, 12);
 
       return done();
     });
@@ -205,8 +212,8 @@ describe('common/write-stream', function () {
   });
 
   it('should emit an error on open fs error', function (done) {
-    fs.openSync.resetBehavior();
-    fs.openSync.throws(new errors.EEXIST('open', '/file'));
+    fs.open.resetBehavior();
+    fs.open.yieldsAsync(new errors.EEXIST('open', '/file'), null);
 
     var writable = new WriteStream(fs, '/file', {flags: 'wx'});
 
@@ -223,8 +230,8 @@ describe('common/write-stream', function () {
   });
 
   it('should emit an error on open error', function (done) {
-    fs.openSync.resetBehavior();
-    fs.openSync.throws(new Error('Fake open error'));
+    fs.open.resetBehavior();
+    fs.open.yieldsAsync(new Error('Fake open error'), null);
 
     var writable = new WriteStream(fs, '/file', {flags: 'wx'});
 
@@ -249,8 +256,8 @@ describe('common/write-stream', function () {
   });
 
   it('should emit an error on write error', function (done) {
-    fs.writeSync.resetBehavior();
-    fs.writeSync.throws(new Error('Fake write error'));
+    fs.write.resetBehavior();
+    fs.write.yieldsAsync(new Error('Fake write error'), 0, null);
 
     var writable = new WriteStream(fs, '/file');
 
@@ -266,8 +273,8 @@ describe('common/write-stream', function () {
     writable.on('open', function (fd) {
       expect(fd).to.equal(1);
 
-      expect(fs.openSync).to.have.callCount(1);
-      expect(fs.openSync).to.have.been.calledWith('/file', 'w', null);
+      expect(fs.open).to.have.callCount(1);
+      expect(fs.open).to.have.been.calledWith('/file', 'w', null);
     });
 
     writable.on('finish', function () {
@@ -278,8 +285,8 @@ describe('common/write-stream', function () {
   });
 
   it('should emit an error on close error', function (done) {
-    fs.closeSync.resetBehavior();
-    fs.closeSync.throws(new Error('Fake close error'));
+    fs.close.resetBehavior();
+    fs.close.yieldsAsync(new Error('Fake close error'));
 
     var writable = new WriteStream(fs, '/file');
 

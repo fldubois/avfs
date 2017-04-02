@@ -16,9 +16,9 @@ var ReadStream = require('lib/common/read-stream');
 chai.use(require('sinon-chai'));
 
 var fs = {
-  openSync:  sinon.stub(),
-  readSync:  sinon.stub(),
-  closeSync: sinon.stub()
+  open:  sinon.stub(),
+  read:  sinon.stub(),
+  close: sinon.stub()
 };
 
 describe('common/read-stream', function () {
@@ -27,11 +27,13 @@ describe('common/read-stream', function () {
     var content = new Buffer('Hello, friend.');
     var read    = 0;
 
-    fs.openSync.reset();
-    fs.openSync.returns(1);
+    fs.open.reset();
+    fs.read.reset();
+    fs.close.reset();
 
-    fs.readSync.reset();
-    fs.readSync.callsFake(function (fd, buffer, offset, length, position) {
+    fs.open.yieldsAsync(null, 1);
+
+    fs.read.callsFake(function (fd, buffer, offset, length, position, callback) {
       var pos = (position !== null) ? position : read;
 
       var bytesRead = Math.min(length, Math.max(content.length - pos, 0));
@@ -44,10 +46,12 @@ describe('common/read-stream', function () {
         read += bytesRead;
       }
 
-      return bytesRead;
+      return callback(null, bytesRead, buffer);
     });
 
-    fs.closeSync.reset();
+    fs.close.callsFake(function (fd, callback) {
+      return callback();
+    });
   });
 
   it('should expose a constructor', function () {
@@ -92,9 +96,9 @@ describe('common/read-stream', function () {
 
     readable.on('end', function () {
       try {
-        expect(fs.openSync).to.have.callCount(1);
-        expect(fs.readSync.callCount).to.be.at.least(1, 'readSync should have been called at least one time');
-        expect(fs.openSync).to.have.been.calledBefore(fs.readSync);
+        expect(fs.open).to.have.callCount(1);
+        expect(fs.read.callCount).to.be.at.least(1, 'read should have been called at least one time');
+        expect(fs.open).to.have.been.calledBefore(fs.read);
 
         return done();
       } catch (error) {
@@ -113,8 +117,8 @@ describe('common/read-stream', function () {
     readable.on('error', done);
 
     readable.on('end', function () {
-      expect(fs.openSync).to.have.callCount(0);
-      expect(fs.readSync).to.have.always.been.calledWith(10);
+      expect(fs.open).to.have.callCount(0);
+      expect(fs.read).to.have.always.been.calledWith(10);
 
       return done();
     });
@@ -132,8 +136,8 @@ describe('common/read-stream', function () {
     readable.on('open', function (fd) {
       expect(fd).to.equal(1);
 
-      expect(fs.openSync).to.have.callCount(1);
-      expect(fs.openSync).to.have.been.calledWith('/file', 'a', 438);
+      expect(fs.open).to.have.callCount(1);
+      expect(fs.open).to.have.been.calledWith('/file', 'a', 438);
 
       return done();
     });
@@ -149,8 +153,8 @@ describe('common/read-stream', function () {
     readable.on('open', function (fd) {
       expect(fd).to.equal(1);
 
-      expect(fs.openSync).to.have.callCount(1);
-      expect(fs.openSync).to.have.been.calledWith('/file', 'r', '0777');
+      expect(fs.open).to.have.callCount(1);
+      expect(fs.open).to.have.been.calledWith('/file', 'r', '0777');
 
       return done();
     });
@@ -165,9 +169,9 @@ describe('common/read-stream', function () {
 
     readable.on('end', function () {
       try {
-        expect(fs.readSync.callCount).to.be.at.least(1, 'readSync should have been called at least one time');
+        expect(fs.read.callCount).to.be.at.least(1, 'read should have been called at least one time');
 
-        var firstCall = fs.readSync.firstCall;
+        var firstCall = fs.read.firstCall;
 
         expect(firstCall).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, sinon.match.number, 12);
 
@@ -189,9 +193,9 @@ describe('common/read-stream', function () {
 
     readable.on('end', function () {
       try {
-        expect(fs.readSync.callCount).to.be.at.least(1, 'readSync should have been called at least one time');
+        expect(fs.read.callCount).to.be.at.least(1, 'read should have been called at least one time');
 
-        var firstCall = fs.readSync.firstCall;
+        var firstCall = fs.read.firstCall;
 
         expect(firstCall).to.have.been.calledWith(1, sinon.match.instanceOf(Buffer), 0, 3, 0);
 
@@ -229,7 +233,7 @@ describe('common/read-stream', function () {
     readable.on('error', done);
 
     readable.on('close', function () {
-      expect(fs.closeSync).to.have.callCount(1);
+      expect(fs.close).to.have.callCount(1);
 
       return done();
     });
@@ -245,7 +249,7 @@ describe('common/read-stream', function () {
 
     setTimeout(function () {
       expect(end).to.have.callCount(1);
-      expect(fs.closeSync).to.have.callCount(0);
+      expect(fs.close).to.have.callCount(0);
 
       return done();
     }, 250);
@@ -261,8 +265,8 @@ describe('common/read-stream', function () {
   it('should not close the descriptor on open error with autoClose option set to false', function (done) {
     this.slow(1000);
 
-    fs.openSync.resetBehavior();
-    fs.openSync.throws(new Error('Fake open error'));
+    fs.open.resetBehavior();
+    fs.open.yieldsAsync(new Error('Fake open error'), null);
 
     var readable = new ReadStream(fs, '/file', {autoClose: false});
 
@@ -271,7 +275,7 @@ describe('common/read-stream', function () {
       expect(error.message).to.equal('Fake open error');
 
       setTimeout(function () {
-        expect(fs.closeSync).to.have.callCount(0);
+        expect(fs.close).to.have.callCount(0);
 
         return done();
       }, 250);
@@ -285,8 +289,8 @@ describe('common/read-stream', function () {
   it('should not close the descriptor on read error with autoClose option set to false', function (done) {
     this.slow(1000);
 
-    fs.readSync.resetBehavior();
-    fs.readSync.throws(new Error('Fake read error'));
+    fs.read.resetBehavior();
+    fs.read.yieldsAsync(new Error('Fake read error'), 0, null);
 
     var readable = new ReadStream(fs, '/file', {autoClose: false});
 
@@ -297,7 +301,7 @@ describe('common/read-stream', function () {
       expect(error.message).to.equal('Fake read error');
 
       setTimeout(function () {
-        expect(fs.closeSync).to.have.callCount(0);
+        expect(fs.close).to.have.callCount(0);
 
         return done();
       }, 250);
@@ -336,25 +340,21 @@ describe('common/read-stream', function () {
     readable.on('error', done);
 
     readable.on('open', function (fd) {
-      try {
-        expect(fd).to.equal(1);
+      expect(fd).to.equal(1);
 
-        readable.destroy();
+      readable.destroy();
 
-        expect(readable.closed).to.equal(true);
+      expect(readable.closed).to.equal(true);
 
-        readable.destroy();
+      readable.destroy();
 
-        return done();
-      } catch (error) {
-        return done(error);
-      }
+      return done();
     });
   });
 
   it('should emit an error on open fs error', function (done) {
-    fs.openSync.resetBehavior();
-    fs.openSync.throws(new errors.EEXIST('open', '/file'));
+    fs.open.resetBehavior();
+    fs.open.yieldsAsync(new errors.EEXIST('open', '/file'), null);
 
     var readable = new ReadStream(fs, '/file', {flags: 'wx'});
 
@@ -371,8 +371,8 @@ describe('common/read-stream', function () {
   });
 
   it('should emit an error on open error', function (done) {
-    fs.openSync.resetBehavior();
-    fs.openSync.throws(new Error('Fake open error'));
+    fs.open.resetBehavior();
+    fs.open.yieldsAsync(new Error('Fake open error'), null);
 
     var readable = new ReadStream(fs, '/file');
 
@@ -389,8 +389,8 @@ describe('common/read-stream', function () {
   });
 
   it('should emit an error on read error', function (done) {
-    fs.readSync.resetBehavior();
-    fs.readSync.throws(new Error('Fake read error'));
+    fs.read.resetBehavior();
+    fs.read.yieldsAsync(new Error('Fake read error'), 0, null);
 
     var readable = new ReadStream(fs, '/file');
 
@@ -406,8 +406,8 @@ describe('common/read-stream', function () {
     readable.on('open', function (fd) {
       expect(fd).to.equal(1);
 
-      expect(fs.openSync).to.have.callCount(1);
-      expect(fs.openSync).to.have.been.calledWith('/file', 'r', 438);
+      expect(fs.open).to.have.callCount(1);
+      expect(fs.open).to.have.been.calledWith('/file', 'r', 438);
     });
 
     readable.on('end', function () {
@@ -418,8 +418,8 @@ describe('common/read-stream', function () {
   });
 
   it('should emit an error on close error', function (done) {
-    fs.closeSync.resetBehavior();
-    fs.closeSync.throws(new Error('Fake close error'));
+    fs.close.resetBehavior();
+    fs.close.yieldsAsync(new Error('Fake close error'));
 
     var readable = new ReadStream(fs, '/file');
 
