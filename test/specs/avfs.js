@@ -249,7 +249,7 @@ describe('avfs', function () {
       var result = fs.chownSync('/dir/link', 1001, 1001);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(0, 0);
+      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(process.getuid(), process.getgid());
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
     });
 
@@ -717,7 +717,7 @@ describe('avfs', function () {
 
       expect(result).to.be.an('undefined');
       expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(1001, 1001);
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(0, 0);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgid());
     });
 
     it('should throw on bad path parameter type', function () {

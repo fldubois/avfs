@@ -56,6 +56,13 @@ describe('common/elements', function () {
     expect(fileB.get('inode')).to.equal(fileA.get('inode') + 1);
   });
 
+  it('should set element owner and group', function () {
+    var file = elements.file(parseInt('0666', 8), 'Hello, friend.');
+
+    expect(file.get('uid')).to.equal(process.getuid());
+    expect(file.get('gid')).to.equal(process.getgid());
+  });
+
   it('should update ctime', function (done) {
     var file = elements.file(parseInt('0666', 8), 'Hello, friend.');
 
