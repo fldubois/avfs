@@ -953,6 +953,17 @@ describe('avfs', function () {
       expect(fs.handles[key].path).to.equal('/tmp/file');
     });
 
+    it('should open directory in read mode', function () {
+      var fd = fs.openSync('/tmp', 'r');
+
+      expect(fd).to.be.a('number');
+
+      var key = fd.toString();
+
+      expect(fs.handles).to.contain.keys(key);
+      expect(fs.handles[key].path).to.equal('/tmp');
+    });
+
     it('should throw on bad path type', function () {
       expect(function () {
         fs.openSync(false, 'r');
@@ -987,10 +998,12 @@ describe('avfs', function () {
       });
     });
 
-    it('should throw on directory', function () {
-      expect(function () {
-        fs.openSync('/tmp', 'r');
-      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
+    it('should throw on directory in write mode', function () {
+      ['r+', 'rs+', 'w', 'w+', 'a', 'a+'].forEach(function (fgs) {
+        expect(function () {
+          fs.openSync('/tmp', fgs);
+        }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'', 'with flags \'' + fgs + '\'');
+      });
     });
 
     it('should throw on non existing parent directory', function () {
