@@ -35,7 +35,7 @@ require('chai').use(function (chai, utils) {
       return new Assertion(object).to.be.an.avfs.file();
     }
 
-    new Assertion(this._obj).to.have.keys(['get', 'set']);
+    new Assertion(this._obj).to.have.keys(['get', 'set', 'isReadable', 'isWritable', 'isExecutable']);
 
     var isFile = (this._obj.get('type') === constants.S_IFREG);
 
@@ -66,7 +66,7 @@ require('chai').use(function (chai, utils) {
       return new Assertion(object).to.be.an.avfs.symlink();
     }
 
-    new Assertion(this._obj).to.have.keys(['get', 'set']);
+    new Assertion(this._obj).to.have.keys(['get', 'set', 'isReadable', 'isWritable', 'isExecutable']);
 
     var isLink = (this._obj.get('type') === constants.S_IFLNK);
 
@@ -99,7 +99,7 @@ require('chai').use(function (chai, utils) {
       return new Assertion(object).to.be.an.avfs.directory();
     }
 
-    new Assertion(this._obj).to.have.keys(['get', 'set']);
+    new Assertion(this._obj).to.have.keys(['get', 'set', 'isReadable', 'isWritable', 'isExecutable']);
 
     var isDir = (this._obj.get('type') === constants.S_IFDIR);
 

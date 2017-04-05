@@ -122,4 +122,64 @@ describe('common/elements', function () {
     }, 50);
   });
 
+  describe('element', function () {
+
+    var file = elements.file(parseInt('0770', 8));
+
+    file.set('uid', 0);
+    file.set('gid', 0);
+
+    describe('isReadable()', function () {
+
+      it('should return true if the user has read permission', function () {
+        expect(elements.file(parseInt('0400', 8)).isReadable()).to.equal(true);
+        expect(elements.file(parseInt('0060', 8)).isReadable()).to.equal(true);
+        expect(elements.file(parseInt('0007', 8)).isReadable()).to.equal(true);
+      });
+
+      it('should return false if the user has not read permission', function () {
+        expect(elements.file(parseInt('0100', 8)).isReadable()).to.equal(false);
+        expect(elements.file(parseInt('0020', 8)).isReadable()).to.equal(false);
+        expect(elements.file(parseInt('0003', 8)).isReadable()).to.equal(false);
+        expect(file.isReadable()).to.equal(false);
+      });
+
+    });
+
+    describe('isWritable()', function () {
+
+      it('should return true if the user has write permission', function () {
+        expect(elements.file(parseInt('0200', 8)).isWritable()).to.equal(true);
+        expect(elements.file(parseInt('0060', 8)).isWritable()).to.equal(true);
+        expect(elements.file(parseInt('0007', 8)).isWritable()).to.equal(true);
+      });
+
+      it('should return false if the user has not write permission', function () {
+        expect(elements.file(parseInt('0100', 8)).isWritable()).to.equal(false);
+        expect(elements.file(parseInt('0040', 8)).isWritable()).to.equal(false);
+        expect(elements.file(parseInt('0005', 8)).isWritable()).to.equal(false);
+        expect(file.isWritable()).to.equal(false);
+      });
+
+    });
+
+    describe('isExecutable()', function () {
+
+      it('should return true if the user has execute permission', function () {
+        expect(elements.file(parseInt('0100', 8)).isExecutable()).to.equal(true);
+        expect(elements.file(parseInt('0030', 8)).isExecutable()).to.equal(true);
+        expect(elements.file(parseInt('0007', 8)).isExecutable()).to.equal(true);
+      });
+
+      it('should return false if the user has not execute permission', function () {
+        expect(elements.file(parseInt('0200', 8)).isExecutable()).to.equal(false);
+        expect(elements.file(parseInt('0040', 8)).isExecutable()).to.equal(false);
+        expect(elements.file(parseInt('0006', 8)).isExecutable()).to.equal(false);
+        expect(file.isExecutable()).to.equal(false);
+      });
+
+    });
+
+  });
+
 });
