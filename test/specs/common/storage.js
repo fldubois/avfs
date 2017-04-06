@@ -6,14 +6,17 @@ var expect = chai.expect;
 var elements = require('lib/common/elements');
 var storage  = require('lib/common/storage');
 
-var files = elements.directory('0755', {
-  dir: elements.directory('0777', {
-    file: elements.file('0666', new Buffer('Hello, friend')),
-    link: elements.symlink('0777', '/dir/file'),
-    miss: elements.symlink('0777', '/dir/not')
+var files = elements.directory(parseInt('0755', 8), {
+  dir: elements.directory(parseInt('0777', 8), {
+    file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend')),
+    link: elements.symlink(parseInt('0777', 8), '/dir/file'),
+    miss: elements.symlink(parseInt('0777', 8), '/dir/not')
   }),
-  tmp: elements.directory('0777', {
-    link: elements.symlink('0777', '../dir/file')
+  tmp: elements.directory(parseInt('0777', 8), {
+    link: elements.symlink(parseInt('0777', 8), '../dir/file')
+  }),
+  restricted: elements.directory(parseInt('0666', 8), {
+    file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend'))
   })
 });
 
@@ -92,19 +95,25 @@ describe('common/storage', function () {
       }
     });
 
-    it('should throw on missing directory in path', function () {
+    it('should throw EACCES on missing directory in path', function () {
+      expect(function () {
+        storage.get(files, 'test', '/restricted/file');
+      }).to.throw(Error, 'EACCES, permission denied \'/restricted/file\'');
+    });
+
+    it('should throw ENOENT on missing directory in path', function () {
       expect(function () {
         storage.get(files, 'test', '/not/file');
       }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
     });
 
-    it('should throw on not directory element in path', function () {
+    it('should throw ENOTDIR on not directory element in path', function () {
       expect(function () {
         storage.get(files, 'test', '/dir/file/test');
       }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
     });
 
-    it('should throw on missing symlink target', function () {
+    it('should throw ENOENT on missing symlink target', function () {
       expect(function () {
         storage.get(files, 'test', '/dir/miss');
       }).to.throw(Error, 'ENOENT, no such file or directory \'/dir/miss\'');

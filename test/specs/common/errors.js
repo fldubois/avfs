@@ -21,6 +21,7 @@ describe('common/errors', function () {
     expect(errors).to.be.an('object');
 
     expect(errors).to.have.keys([
+      'EACCES',
       'EBADF',
       'EINVAL',
       'ENOTDIR',
@@ -32,6 +33,15 @@ describe('common/errors', function () {
 
     Object.keys(errors).forEach(function (code) {
       expect(errors[code]).to.be.a('function');
+    });
+  });
+
+  it('should expose EACCES factory', function () {
+    expectError(errors.EACCES('open', '/path/to/file'), 'EACCES, permission denied \'/path/to/file\'', {
+      errno:   3,
+      code:    'EACCES',
+      path:    '/path/to/file',
+      syscall: 'open'
     });
   });
 
