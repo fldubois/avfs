@@ -37,6 +37,10 @@ var getElement = function (path) {
 describe('avfs', function () {
 
   beforeEach('reset virtual file system', function () {
+    var other = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));
+
+    other.set('uid', process.getuid() + 1);
+
     fs.files = elements.directory(parseInt('0755', 8), {
       tmp: elements.directory(parseInt('0777', 8), {
         ascii: elements.file(parseInt('0666', 8), new Buffer('Hello, friend.')),
@@ -45,7 +49,8 @@ describe('avfs', function () {
       }),
       dir: elements.directory(parseInt('0777', 8), {
         link:  elements.symlink(parseInt('0777', 8), '/tmp/file'),
-        dlink: elements.symlink(parseInt('0777', 8), '/dir')
+        dlink: elements.symlink(parseInt('0777', 8), '/dir'),
+        other: other
       })
     });
 
@@ -232,6 +237,12 @@ describe('avfs', function () {
       expect(function () {
         fs.chmodSync('/tmp/file/new', '0700');
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+    });
+
+    it('should throw on not owned files', function () {
+      expect(function () {
+        fs.chmodSync('/dir/other', '0700');
+      }).to.throw(Error, 'EPERM, operation not permitted \'/dir/other\'');
     });
 
   });
@@ -699,6 +710,12 @@ describe('avfs', function () {
       expect(function () {
         fs.lchmodSync('/tmp/file/new', '0700');
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+    });
+
+    it('should throw on not owned files', function () {
+      expect(function () {
+        fs.lchmodSync('/dir/other', '0700');
+      }).to.throw(Error, 'EPERM, operation not permitted \'/dir/other\'');
     });
 
   });
