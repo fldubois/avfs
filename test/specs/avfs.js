@@ -250,18 +250,18 @@ describe('avfs', function () {
   describe('chownSync()', function () {
 
     it('should change the owner and group', function () {
-      var result = fs.chownSync('/tmp/file', 1001, 1001);
+      var result = fs.chownSync('/tmp/file', process.getuid(), process.getgroups()[0]);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgroups()[0]);
     });
 
     it('should follow symlinks', function () {
-      var result = fs.chownSync('/dir/link', 1001, 1001);
+      var result = fs.chownSync('/dir/link', process.getuid(), process.getgroups()[0]);
 
       expect(result).to.be.an('undefined');
       expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(process.getuid(), process.getgid());
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgroups()[0]);
     });
 
     it('should throw on bad path parameter type', function () {
@@ -298,6 +298,16 @@ describe('avfs', function () {
       expect(function () {
         fs.chownSync('/tmp/file/new', 1001, 1001);
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+    });
+
+    it('should throw on permission denied', function () {
+      expect(function () {
+        fs.chownSync('/dir/other', 0, 0);
+      }).to.throw(Error, 'EPERM, operation not permitted \'/dir/other\'');
+
+      expect(function () {
+        fs.chownSync('/tmp/file', process.getuid(), 0);
+      }).to.throw(Error, 'EPERM, operation not permitted \'/tmp/file\'');
     });
 
   });
@@ -440,10 +450,10 @@ describe('avfs', function () {
 
       fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
-      var result = fs.fchownSync(fd, 1001, 1001);
+      var result = fs.fchownSync(fd, process.getuid(), process.getgroups()[0]);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgroups()[0]);
     });
 
     it('should throw on non existing file descriptor', function () {
@@ -723,17 +733,17 @@ describe('avfs', function () {
   describe('lchownSync()', function () {
 
     it('should change the owner and group', function () {
-      var result = fs.lchownSync('/tmp/file', 1001, 1001);
+      var result = fs.lchownSync('/tmp/file', process.getuid(), process.getgroups()[0]);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(1001, 1001);
+      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgroups()[0]);
     });
 
     it('should follow symlinks', function () {
-      var result = fs.lchownSync('/dir/link', 1001, 1001);
+      var result = fs.lchownSync('/dir/link', process.getuid(), process.getgroups()[0]);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(1001, 1001);
+      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(process.getuid(), process.getgroups()[0]);
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgid());
     });
 
@@ -771,6 +781,16 @@ describe('avfs', function () {
       expect(function () {
         fs.lchownSync('/tmp/file/new', 1001, 1001);
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+    });
+
+    it('should throw on permission denied', function () {
+      expect(function () {
+        fs.lchownSync('/dir/other', 0, 0);
+      }).to.throw(Error, 'EPERM, operation not permitted \'/dir/other\'');
+
+      expect(function () {
+        fs.lchownSync('/tmp/file', process.getuid(), 0);
+      }).to.throw(Error, 'EPERM, operation not permitted \'/tmp/file\'');
     });
 
   });
