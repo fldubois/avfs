@@ -37,9 +37,9 @@ var getElement = function (path) {
 describe('avfs', function () {
 
   beforeEach('reset virtual file system', function () {
-    var other = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));
+    var otherFile = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));
 
-    other.set('uid', process.getuid() + 1);
+    otherFile.set('uid', process.getuid() + 1);
 
     fs.files = elements.directory(parseInt('0755', 8), {
       tmp: elements.directory(parseInt('0777', 8), {
@@ -50,7 +50,12 @@ describe('avfs', function () {
       dir: elements.directory(parseInt('0777', 8), {
         link:  elements.symlink(parseInt('0777', 8), '/tmp/file'),
         dlink: elements.symlink(parseInt('0777', 8), '/dir'),
-        other: other
+        perm:  elements.file(parseInt('0111', 8), new Buffer('Hello, friend.')),
+        other: otherFile
+      }),
+      perm: elements.directory(parseInt('0111', 8), {
+        file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend.')),
+        dir:  elements.directory(parseInt('0777', 8))
       })
     });
 
@@ -1055,6 +1060,14 @@ describe('avfs', function () {
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/file\'');
     });
 
+    it('should throw on permission denied', function () {
+      ['r', 'r+', 'w', 'w+', 'a', 'a+'].forEach(function (fgs) {
+        expect(function () {
+          fs.openSync('/dir/perm', fgs);
+        }).to.throw(Error, 'EACCES, permission denied \'/dir/perm\'');
+      });
+    });
+
     it('should create non existing file in create mode', function () {
       [
         'w',  'wx',  'xw',
@@ -1419,6 +1432,18 @@ describe('avfs', function () {
       }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/file\'');
     });
 
+    it('should throw on not writable parent directory', function () {
+      expect(function () {
+        fs.renameSync('/perm/file', '/tmp/new');
+      }).to.throw(Error, 'EACCES, permission denied \'/perm/file\'');
+    });
+
+    it('should throw on not writable destination directory', function () {
+      expect(function () {
+        fs.renameSync('/tmp/file', '/perm/new');
+      }).to.throw(Error, 'EACCES, permission denied \'/tmp/file\'');
+    });
+
   });
 
   describe('rmdirSync()', function () {
@@ -1446,6 +1471,12 @@ describe('avfs', function () {
       expect(function () {
         fs.rmdirSync(true);
       }).to.throw(TypeError, 'path must be a string');
+    });
+
+    it('should throw on not writable parent directory', function () {
+      expect(function () {
+        fs.rmdirSync('/perm/dir');
+      }).to.throw(Error, 'EACCES, permission denied \'/perm/dir\'');
     });
 
   });
@@ -1554,6 +1585,12 @@ describe('avfs', function () {
       }).to.throw(TypeError, 'src path must be a string');
     });
 
+    it('should throw on not writable destination directory', function () {
+      expect(function () {
+        fs.symlinkSync('/tmp/file', '/perm/link');
+      }).to.throw(Error, 'EACCES, permission denied \'/perm/link\'');
+    });
+
   });
 
   describe('truncateSync()', function () {
@@ -1636,6 +1673,12 @@ describe('avfs', function () {
       expect(function () {
         fs.unlinkSync(true);
       }).to.throw(TypeError, 'path must be a string');
+    });
+
+    it('should throw on not writable parent directory', function () {
+      expect(function () {
+        fs.unlinkSync('/perm/file');
+      }).to.throw(Error, 'EACCES, permission denied \'/perm/file\'');
     });
 
   });
