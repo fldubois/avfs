@@ -66,14 +66,8 @@ describe('common/read-stream', function () {
 
     expect(readable).to.be.an.instanceOf(Readable);
 
-    readable.on('readable', function () {
-      var chunk = null;
-
-      while ((chunk = readable.read()) !== null) {
-        expect(chunk).to.be.an.instanceof(Buffer);
-
-        content += chunk.toString();
-      }
+    readable.on('data', function (chunk) {
+      content += chunk.toString();
     });
 
     readable.on('error', done);

@@ -58,4 +58,34 @@ describe('common/descriptor', function () {
 
   });
 
+  describe('isClosed()', function () {
+
+    it('should return true for closed descriptor', function () {
+      var descriptor = new Descriptor({}, '', constants.O_RDWR);
+
+      descriptor.closed = true;
+
+      expect(descriptor.isClosed()).to.equal(true);
+    });
+
+    it('should return false for open descriptor', function () {
+      expect(new Descriptor({}, '', constants.O_RDWR).isClosed()).to.equal(false);
+    });
+
+  });
+
+  describe('close()', function () {
+
+    it('should close the descriptor', function () {
+      var descriptor = new Descriptor({}, '', constants.O_RDWR);
+
+      expect(descriptor.closed).to.equal(false);
+
+      descriptor.close();
+
+      expect(descriptor.closed).to.equal(true);
+    });
+
+  });
+
 });

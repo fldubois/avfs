@@ -71,19 +71,27 @@ describe('common/errors', function () {
     });
   });
 
-  it('should expose EISDIR factory with path', function () {
+  it('should expose EISDIR factory', function () {
+    expectError(errors.EISDIR('read'), 'EISDIR, read', {
+      errno: 28,
+      code:  'EISDIR'
+    });
+  });
+
+  it('should expose EISDIR factory with syscall', function () {
+    expectError(errors.EISDIR('read', true), 'EISDIR, illegal operation on a directory', {
+      errno:   28,
+      code:    'EISDIR',
+      syscall: 'read'
+    });
+  });
+
+  it('should expose EISDIR factory with syscall and path', function () {
     expectError(errors.EISDIR('open', '/path/to/file'), 'EISDIR, illegal operation on a directory \'/path/to/file\'', {
       errno:   28,
       code:    'EISDIR',
       path:    '/path/to/file',
       syscall: 'open'
-    });
-  });
-
-  it('should expose EISDIR factory without path', function () {
-    expectError(errors.EISDIR('read'), 'EISDIR, read', {
-      errno: 28,
-      code:  'EISDIR'
     });
   });
 

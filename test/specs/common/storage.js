@@ -17,6 +17,9 @@ var files = elements.directory(parseInt('0755', 8), {
   }),
   restricted: elements.directory(parseInt('0666', 8), {
     file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend'))
+  }),
+  perm: elements.directory(parseInt('555', 8), {
+    file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend'))
   })
 });
 
@@ -162,6 +165,12 @@ describe('common/storage', function () {
       }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
     });
 
+    it('should throw on not writable parent directory', function () {
+      expect(function () {
+        storage.set(files, 'test', '/perm/test', elements.file(438, new Buffer(0)));
+      }).to.throw(Error, 'EACCES, permission denied \'/perm/test\'');
+    });
+
   });
 
   describe('unset()', function () {
@@ -200,6 +209,12 @@ describe('common/storage', function () {
       expect(function () {
         storage.unset(files, 'test', '/dir/file/test');
       }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
+    });
+
+    it('should throw on not writable parent directory', function () {
+      expect(function () {
+        storage.unset(files, 'test', '/perm/file');
+      }).to.throw(Error, 'EACCES, permission denied \'/perm/file\'');
     });
 
   });
