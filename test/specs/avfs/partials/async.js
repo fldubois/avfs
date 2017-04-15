@@ -6,8 +6,6 @@ var sinon  = require('sinon');
 
 var errors = require('lib/common/errors');
 
-var AVFS = require('lib/avfs');
-
 chai.use(require('sinon-chai'));
 
 module.exports = function (fs) {
@@ -24,37 +22,37 @@ module.exports = function (fs) {
     });
 
     it('should expose asynchronous methods', function () {
-      expect(AVFS).to.respondTo('appendFile');
-      expect(AVFS).to.respondTo('chmod');
-      expect(AVFS).to.respondTo('chown');
-      expect(AVFS).to.respondTo('close');
-      expect(AVFS).to.respondTo('exists');
-      expect(AVFS).to.respondTo('fchmod');
-      expect(AVFS).to.respondTo('fchown');
-      expect(AVFS).to.respondTo('ftruncate');
-      expect(AVFS).to.respondTo('fstat');
-      expect(AVFS).to.respondTo('fsync');
-      expect(AVFS).to.respondTo('futimes');
-      expect(AVFS).to.respondTo('lchmod');
-      expect(AVFS).to.respondTo('lchown');
-      expect(AVFS).to.respondTo('link');
-      expect(AVFS).to.respondTo('lstat');
-      expect(AVFS).to.respondTo('mkdir');
-      expect(AVFS).to.respondTo('open');
-      expect(AVFS).to.respondTo('read');
-      expect(AVFS).to.respondTo('readdir');
-      expect(AVFS).to.respondTo('readFile');
-      expect(AVFS).to.respondTo('readlink');
-      expect(AVFS).to.respondTo('realpath');
-      expect(AVFS).to.respondTo('rename');
-      expect(AVFS).to.respondTo('rmdir');
-      expect(AVFS).to.respondTo('stat');
-      expect(AVFS).to.respondTo('symlink');
-      expect(AVFS).to.respondTo('truncate');
-      expect(AVFS).to.respondTo('unlink');
-      expect(AVFS).to.respondTo('utimes');
-      expect(AVFS).to.respondTo('write');
-      expect(AVFS).to.respondTo('writeFile');
+      expect(fs).to.respondTo('appendFile');
+      expect(fs).to.respondTo('chmod');
+      expect(fs).to.respondTo('chown');
+      expect(fs).to.respondTo('close');
+      expect(fs).to.respondTo('exists');
+      expect(fs).to.respondTo('fchmod');
+      expect(fs).to.respondTo('fchown');
+      expect(fs).to.respondTo('ftruncate');
+      expect(fs).to.respondTo('fstat');
+      expect(fs).to.respondTo('fsync');
+      expect(fs).to.respondTo('futimes');
+      expect(fs).to.respondTo('lchmod');
+      expect(fs).to.respondTo('lchown');
+      expect(fs).to.respondTo('link');
+      expect(fs).to.respondTo('lstat');
+      expect(fs).to.respondTo('mkdir');
+      expect(fs).to.respondTo('open');
+      expect(fs).to.respondTo('read');
+      expect(fs).to.respondTo('readdir');
+      expect(fs).to.respondTo('readFile');
+      expect(fs).to.respondTo('readlink');
+      expect(fs).to.respondTo('realpath');
+      expect(fs).to.respondTo('rename');
+      expect(fs).to.respondTo('rmdir');
+      expect(fs).to.respondTo('stat');
+      expect(fs).to.respondTo('symlink');
+      expect(fs).to.respondTo('truncate');
+      expect(fs).to.respondTo('unlink');
+      expect(fs).to.respondTo('utimes');
+      expect(fs).to.respondTo('write');
+      expect(fs).to.respondTo('writeFile');
     });
 
     it('should call the synchronous couterpart', function (done) {

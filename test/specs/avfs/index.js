@@ -49,7 +49,7 @@ var specs = [
 
 describe('avfs', function () {
 
-  if (['v0.10'].indexOf(version) === -1) {
+  if (['v0.10', 'v0.12'].indexOf(version) === -1) {
 
     it('should throw unsupported version error', function () {
       expect(function () {
