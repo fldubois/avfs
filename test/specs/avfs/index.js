@@ -11,6 +11,7 @@ var version = (parseInt(matches[2], 10) > 0) ? matches[1] : matches[0];
 
 var specs = [
   './partials/members',
+  './partials/methods/accessSync',
   './partials/methods/appendFileSync',
   './partials/methods/chmodSync',
   './partials/methods/chownSync',
@@ -87,10 +88,10 @@ describe('avfs', function () {
         dir: elements.directory(parseInt('0777', 8), {
           link:  elements.symlink(parseInt('0777', 8), '/tmp/file'),
           dlink: elements.symlink(parseInt('0777', 8), '/dir'),
-          perm:  elements.file(parseInt('0111', 8), new Buffer('Hello, friend.')),
+          perm:  elements.file(parseInt('0000', 8), new Buffer('Hello, friend.')),
           other: otherFile
         }),
-        perm: elements.directory(parseInt('0111', 8), {
+        perm: elements.directory(parseInt('0000', 8), {
           file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend.')),
           dir:  elements.directory(parseInt('0777', 8))
         })
@@ -101,7 +102,7 @@ describe('avfs', function () {
     });
 
     specs.forEach(function (spec) {
-      require(spec)(fs, getElement);
+      require(spec)(fs, getElement, version);
     });
 
   }

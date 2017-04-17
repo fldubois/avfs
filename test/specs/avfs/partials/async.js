@@ -22,37 +22,11 @@ module.exports = function (fs) {
     });
 
     it('should expose asynchronous methods', function () {
-      expect(fs).to.respondTo('appendFile');
-      expect(fs).to.respondTo('chmod');
-      expect(fs).to.respondTo('chown');
-      expect(fs).to.respondTo('close');
-      expect(fs).to.respondTo('exists');
-      expect(fs).to.respondTo('fchmod');
-      expect(fs).to.respondTo('fchown');
-      expect(fs).to.respondTo('ftruncate');
-      expect(fs).to.respondTo('fstat');
-      expect(fs).to.respondTo('fsync');
-      expect(fs).to.respondTo('futimes');
-      expect(fs).to.respondTo('lchmod');
-      expect(fs).to.respondTo('lchown');
-      expect(fs).to.respondTo('link');
-      expect(fs).to.respondTo('lstat');
-      expect(fs).to.respondTo('mkdir');
-      expect(fs).to.respondTo('open');
-      expect(fs).to.respondTo('read');
-      expect(fs).to.respondTo('readdir');
-      expect(fs).to.respondTo('readFile');
-      expect(fs).to.respondTo('readlink');
-      expect(fs).to.respondTo('realpath');
-      expect(fs).to.respondTo('rename');
-      expect(fs).to.respondTo('rmdir');
-      expect(fs).to.respondTo('stat');
-      expect(fs).to.respondTo('symlink');
-      expect(fs).to.respondTo('truncate');
-      expect(fs).to.respondTo('unlink');
-      expect(fs).to.respondTo('utimes');
-      expect(fs).to.respondTo('write');
-      expect(fs).to.respondTo('writeFile');
+      for (var method in fs) {
+        if (/Sync$/.test(method)) {
+          expect(fs).to.respondTo(method.replace('Sync', ''));
+        }
+      }
     });
 
     it('should call the synchronous couterpart', function (done) {
