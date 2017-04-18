@@ -11,11 +11,11 @@ var noop = function () {
   return null;
 };
 
-module.exports = function (fs, getElement) {
+module.exports = function (fs, getElement, version) {
 
   describe('writeSync()', function () {
 
-    it('should write in the file', function () {
+    it('should write the buffer in the file', function () {
       var fd = 0;
 
       fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', constants.O_RDWR);
@@ -27,7 +27,7 @@ module.exports = function (fs, getElement) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
     });
 
-    it('should write the file from position', function () {
+    it('should write the buffer in the file from position', function () {
       var fd = 0;
 
       fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', constants.O_RDWR);
@@ -39,7 +39,7 @@ module.exports = function (fs, getElement) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
     });
 
-    it('should always append data to the end in append mode', function () {
+    it('should always append the buffer to the end in append mode', function () {
       var fd = 0;
 
       fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR | constants.O_APPEND);
@@ -50,7 +50,7 @@ module.exports = function (fs, getElement) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
     });
 
-    it('should write the file from current position', function () {
+    it('should write the buffer from current position', function () {
       var fd = 0;
 
       fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
@@ -78,7 +78,7 @@ module.exports = function (fs, getElement) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('friend');
     });
 
-    it('should fill unwritten parts with white spaces', function () {
+    it('should fill unwritten parts before buffer with white spaces', function () {
       var fd = 0;
 
       fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
@@ -120,7 +120,7 @@ module.exports = function (fs, getElement) {
 
     it('should throw on bad fd type', function () {
       expect(function () {
-        fs.writeSync(true);
+        fs.writeSync(true, new Buffer('Hello, friend'), 0, 5, 0);
       }).to.throw(TypeError, 'Bad arguments');
     });
 
@@ -135,6 +135,111 @@ module.exports = function (fs, getElement) {
         fs.writeSync(0, new Buffer('Hello, friend'), 0, 1000, 0, noop);
       }).to.throw(Error, 'off + len > buffer.length');
     });
+
+    if (['v0.12'].indexOf(version) !== -1) {
+
+      // fs.writeSync(fd, data[, position[, encoding]]);
+
+      it('should write the string in the file', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', constants.O_RDWR);
+
+        expect(fs.writeSync(fd, 'Hello')).to.equal(5);
+
+        expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
+      });
+
+      it('should write the string in the file from position', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', constants.O_RDWR);
+
+        expect(fs.writeSync(fd, 'Hello', 7)).to.equal(5);
+
+        expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
+      });
+
+      it('should write the string with the correct encoding', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor(getElement('/tmp/empty'), '/tmp/empty', constants.O_RDWR);
+
+        expect(fs.writeSync(fd, 'aàâä', 0, 'ascii')).to.equal(4);
+
+        expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain(new Buffer('aàâä', 'ascii').toString());
+      });
+
+      it('should always append the string to the end in append mode', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR | constants.O_APPEND);
+
+        expect(fs.writeSync(fd, ' Hello,',  0)).to.equal(7);
+        expect(fs.writeSync(fd, ' world !', 0)).to.equal(8);
+
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+      });
+
+      it('should write the string from current position', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+
+        fs.handles[fd].write = 7;
+
+        expect(fs.writeSync(fd, 'world !')).to.equal(7);
+
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
+
+        expect(fs.handles[fd].write).to.equal(14);
+      });
+
+      it('should fill unwritten parts before string with white spaces', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+
+        expect(fs.writeSync(fd, 'OK', 20)).to.equal(2);
+
+        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
+      });
+
+      it('should fail on non existing fd', function () {
+        expect(function () {
+          fs.writeSync(0, 'Hello, friend');
+        }).to.throw(Error, 'EBADF, bad file descriptor');
+      });
+
+      it('should fail on closed fd', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDWR);
+
+        fs.handles[fd].close();
+
+        expect(function () {
+          fs.writeSync(fd, 'Hello, friend');
+        }).to.throw(Error, 'EBADF, bad file descriptor');
+      });
+
+      it('should fail on non writing fd', function () {
+        var fd = 0;
+
+        fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDONLY);
+
+        expect(function () {
+          fs.writeSync(fd, 'Hello, friend');
+        }).to.throw(Error, 'EBADF, bad file descriptor');
+      });
+
+      it('should throw on bad fd type', function () {
+        expect(function () {
+          fs.writeSync(true);
+        }).to.throw(TypeError, 'First argument must be file descriptor');
+      });
+
+    }
 
   });
 
