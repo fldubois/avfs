@@ -5,9 +5,7 @@ var expect = chai.expect;
 
 var elements = require('lib/common/elements');
 var storage  = require('lib/common/storage');
-
-var matches = /^(v(\d+))\.\d+/.exec(process.version);
-var version = (parseInt(matches[2], 10) > 0) ? matches[1] : matches[0];
+var version  = require('lib/common/version');
 
 var specs = [
   './partials/members',
