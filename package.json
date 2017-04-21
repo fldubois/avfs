@@ -23,8 +23,8 @@
     "test": "npm run test:lint && npm run test:unit && npm run test:coverage",
     "test:lint": "eslint lib test",
     "test:unit": "rm -Rf coverage && istanbul cover -x lib/avfs.js -x lib/common/constants.js -x lib/common/version.js _mocha -- -r test/bootstrap.js test/index.js",
-    "test:coverage": "if [ -e 'coverage/coverage.json' ]; then istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100; fi",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "test:coverage": "if ./test/bin/check-version; then istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100; else echo 'Unsupported version, skip coverage'; fi",
+    "coveralls": "if ./test/bin/check-version; then cat ./coverage/lcov.info | coveralls; fi"
   },
   "devDependencies": {
     "app-module-path": "^2.2.0",

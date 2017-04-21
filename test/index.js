@@ -6,7 +6,7 @@ var path = require('path');
 var chai   = require('chai');
 var expect = chai.expect;
 
-var version = require('../lib/common/version');
+var version = require('lib/common/version');
 
 var supported = fs.readdirSync(path.join(__dirname, '../lib'));
 
