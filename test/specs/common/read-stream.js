@@ -348,7 +348,7 @@ describe('common/read-stream', function () {
 
   it('should emit an error on open fs error', function (done) {
     fs.open.resetBehavior();
-    fs.open.yieldsAsync(new errors.EEXIST('open', '/file'), null);
+    fs.open.yieldsAsync(new errors.EEXIST({syscall: 'open', path: '/file'}), null);
 
     var readable = new ReadStream(fs, '/file', {flags: 'wx'});
 

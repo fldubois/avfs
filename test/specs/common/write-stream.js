@@ -213,7 +213,7 @@ describe('common/write-stream', function () {
 
   it('should emit an error on open fs error', function (done) {
     fs.open.resetBehavior();
-    fs.open.yieldsAsync(new errors.EEXIST('open', '/file'), null);
+    fs.open.yieldsAsync(new errors.EEXIST({syscall: 'open', path: '/file'}), null);
 
     var writable = new WriteStream(fs, '/file', {flags: 'wx'});
 

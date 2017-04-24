@@ -82,7 +82,7 @@ describe('common/storage', function () {
 
     it('should set parameters on error', function () {
       try {
-        storage.get(files, {syscall: 'test', filepath: '/other/path'}, '/not/file');
+        storage.get(files, {syscall: 'test', path: '/other/path'}, '/not/file');
       } catch (error) {
         expect(error.code).to.equal('ENOENT');
         expect(error.path).to.equal('/other/path');
@@ -137,7 +137,7 @@ describe('common/storage', function () {
 
     it('should set parameters on error', function () {
       try {
-        storage.set(files, {syscall: 'test', filepath: '/other/path'}, '/not/file', elements.file(438, new Buffer(0)));
+        storage.set(files, {syscall: 'test', path: '/other/path'}, '/not/file', elements.file(438, new Buffer(0)));
       } catch (error) {
         expect(error.code).to.equal('ENOENT');
         expect(error.path).to.equal('/other/path');
@@ -183,7 +183,7 @@ describe('common/storage', function () {
 
     it('should set parameters on error', function () {
       try {
-        storage.unset(files, {syscall: 'test', filepath: '/other/path'}, '/not/file');
+        storage.unset(files, {syscall: 'test', path: '/other/path'}, '/not/file');
       } catch (error) {
         expect(error.code).to.equal('ENOENT');
         expect(error.path).to.equal('/other/path');

@@ -139,7 +139,7 @@ module.exports = function (fs) {
       });
 
       it('should pass fs error to the callback', function (done) {
-        var error = errors.EBADF('read');
+        var error = errors.EBADF({syscall: 'read'});
 
         fs.readSync.throws(error);
 
@@ -246,7 +246,7 @@ module.exports = function (fs) {
       });
 
       it('should pass fs error to the callback', function (done) {
-        var error = errors.EBADF('write');
+        var error = errors.EBADF({syscall: 'write'});
 
         fs.writeSync.throws(error);
 
@@ -264,7 +264,7 @@ module.exports = function (fs) {
       });
 
       it('should log fs error without callback', function (done) {
-        fs.writeSync.throws(errors.EBADF('write'));
+        fs.writeSync.throws(errors.EBADF({syscall: 'write'}));
 
         fs.write(fd, inBuffer, offset, length, position);
 
