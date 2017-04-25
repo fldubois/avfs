@@ -24,31 +24,31 @@ module.exports = function (fs) {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.renameSync('/tmp/not', '/tmp/new');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/not\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on new path under old path', function () {
       expect(function () {
         fs.renameSync('/tmp/file', '/tmp/file/new');
-      }).to.throw(Error, 'EINVAL, invalid argument \'/tmp/file\'');
+      }).to.throw(Error, {code: 'EINVAL'});
     });
 
     it('should throw on not directory parent', function () {
       expect(function () {
         fs.renameSync('/tmp/file/file', '/dir/file');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/file\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on not writable parent directory', function () {
       expect(function () {
         fs.renameSync('/perm/file', '/tmp/new');
-      }).to.throw(Error, 'EACCES, permission denied \'/perm/file\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
     it('should throw on not writable destination directory', function () {
       expect(function () {
         fs.renameSync('/tmp/file', '/perm/new');
-      }).to.throw(Error, 'EACCES, permission denied \'/tmp/file\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
   });

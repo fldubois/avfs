@@ -31,13 +31,13 @@ module.exports = function (fs) {
     it('should throw on non existing file', function () {
       expect(function () {
         fs.readFileSync('/not/file');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on directory', function () {
       expect(function () {
         fs.readFileSync('/tmp');
-      }).to.throw(Error, 'EISDIR, illegal operation on a directory');
+      }).to.throw(Error, {code: 'EISDIR'});
     });
 
     it('should throw on unknown encoding', function () {

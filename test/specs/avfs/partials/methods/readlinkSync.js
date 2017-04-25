@@ -14,19 +14,19 @@ module.exports = function (fs) {
     it('should throw on non symlink', function () {
       expect(function () {
         fs.readlinkSync('/tmp/file');
-      }).to.throw(Error, 'EINVAL, invalid argument \'/tmp/file\'');
+      }).to.throw(Error, {code: 'EINVAL'});
     });
 
     it('should throw on non existing parent directory', function () {
       expect(function () {
         fs.readlinkSync('/not/link');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/link\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on non directory parent', function () {
       expect(function () {
         fs.readlinkSync('/tmp/file/link');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/link\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string path', function () {

@@ -31,19 +31,19 @@ module.exports = function (fs) {
     it('should throw on existing destination', function () {
       expect(function () {
         fs.symlinkSync('/tmp/file', '/tmp/ascii');
-      }).to.throw(Error, 'EEXIST, file already exists \'/tmp/file\'');
+      }).to.throw(Error, {code: 'EEXIST'});
     });
 
     it('should throw on non existing parent directory in destination path', function () {
       expect(function () {
         fs.symlinkSync('/tmp/file', '/not/link');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/link\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory parent in destination path', function () {
       expect(function () {
         fs.symlinkSync('/tmp/file', '/tmp/ascii/link');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/ascii/link\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string source path', function () {
@@ -61,7 +61,7 @@ module.exports = function (fs) {
     it('should throw on not writable destination directory', function () {
       expect(function () {
         fs.symlinkSync('/tmp/file', '/perm/link');
-      }).to.throw(Error, 'EACCES, permission denied \'/perm/link\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
   });

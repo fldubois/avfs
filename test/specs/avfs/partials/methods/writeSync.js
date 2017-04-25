@@ -93,7 +93,7 @@ module.exports = function (fs, getElement, version) {
     it('should fail on non existing fd', function () {
       expect(function () {
         fs.writeSync(0, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should fail on closed fd', function () {
@@ -105,7 +105,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should fail on non writing fd', function () {
@@ -115,7 +115,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(function () {
         fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should throw on bad fd type', function () {
@@ -208,7 +208,7 @@ module.exports = function (fs, getElement, version) {
       it('should fail on non existing fd', function () {
         expect(function () {
           fs.writeSync(0, 'Hello, friend');
-        }).to.throw(Error, 'EBADF, bad file descriptor');
+        }).to.throw(Error, {code: 'EBADF'});
       });
 
       it('should fail on closed fd', function () {
@@ -220,7 +220,7 @@ module.exports = function (fs, getElement, version) {
 
         expect(function () {
           fs.writeSync(fd, 'Hello, friend');
-        }).to.throw(Error, 'EBADF, bad file descriptor');
+        }).to.throw(Error, {code: 'EBADF'});
       });
 
       it('should fail on non writing fd', function () {
@@ -230,7 +230,7 @@ module.exports = function (fs, getElement, version) {
 
         expect(function () {
           fs.writeSync(fd, 'Hello, friend');
-        }).to.throw(Error, 'EBADF, bad file descriptor');
+        }).to.throw(Error, {code: 'EBADF'});
       });
 
       it('should throw on bad fd type', function () {

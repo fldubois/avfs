@@ -37,25 +37,25 @@ module.exports = function (fs) {
     it('should throw on non existing file', function () {
       expect(function () {
         fs.chmodSync('/file', '0700');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on non existing parent directory', function () {
       expect(function () {
         fs.chmodSync('/not/file', '0700');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory parent', function () {
       expect(function () {
         fs.chmodSync('/tmp/file/new', '0700');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on not owned files', function () {
       expect(function () {
         fs.chmodSync('/dir/other', '0700');
-      }).to.throw(Error, 'EPERM, operation not permitted \'/dir/other\'');
+      }).to.throw(Error, {code: 'EPERM'});
     });
 
   });

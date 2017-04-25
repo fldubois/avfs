@@ -9,7 +9,7 @@ var errors    = require('lib/common/errors');
 function expectError(error, message, data) {
   expect(error).to.be.an('error');
 
-  expect(error.message).to.equal(message);
+  expect(error.message).to.match(message);
 
   Object.keys(data).forEach(function (property) {
     expect(error[property]).to.equal(data[property]);
@@ -41,7 +41,7 @@ describe('common/errors', function () {
     expectError(errors.EACCES({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'EACCES, permission denied \'/path/to/file\'', {
+    }), /^EACCES/, {
       errno:   constants.EACCES,
       code:    'EACCES',
       path:    '/path/to/file',
@@ -52,7 +52,7 @@ describe('common/errors', function () {
   it('should expose EBADF factory', function () {
     expectError(errors.EBADF({
       syscall: 'open'
-    }), 'EBADF, bad file descriptor', {
+    }), /^EBADF/, {
       errno:   constants.EBADF,
       code:    'EBADF',
       syscall: 'open'
@@ -63,7 +63,7 @@ describe('common/errors', function () {
     expectError(errors.EINVAL({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'EINVAL, invalid argument \'/path/to/file\'', {
+    }), /^EINVAL/, {
       errno:   constants.EINVAL,
       code:    'EINVAL',
       path:    '/path/to/file',
@@ -75,7 +75,7 @@ describe('common/errors', function () {
     expectError(errors.ENOTDIR({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'ENOTDIR, not a directory \'/path/to/file\'', {
+    }), /^ENOTDI/, {
       errno:   constants.ENOTDIR,
       code:    'ENOTDIR',
       path:    '/path/to/file',
@@ -83,20 +83,10 @@ describe('common/errors', function () {
     });
   });
 
-  it('should expose EISDIR factory', function () {
-    expectError(errors.EISDIR({
-      syscall: 'read'
-    }), 'EISDIR, read', {
-      errno: constants.EISDIR,
-      code:  'EISDIR'
-    });
-  });
-
   it('should expose EISDIR factory with syscall', function () {
     expectError(errors.EISDIR({
-      syscall: 'read',
-      path:    true
-    }), 'EISDIR, illegal operation on a directory', {
+      syscall: 'read'
+    }), /^EISDIR/, {
       errno:   constants.EISDIR,
       code:    'EISDIR',
       syscall: 'read'
@@ -107,7 +97,7 @@ describe('common/errors', function () {
     expectError(errors.EISDIR({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'EISDIR, illegal operation on a directory \'/path/to/file\'', {
+    }), /^EISDIR/, {
       errno:   constants.EISDIR,
       code:    'EISDIR',
       path:    '/path/to/file',
@@ -119,7 +109,7 @@ describe('common/errors', function () {
     expectError(errors.ENOENT({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'ENOENT, no such file or directory \'/path/to/file\'', {
+    }), /^ENOENT/, {
       errno:   constants.ENOENT,
       code:    'ENOENT',
       path:    '/path/to/file',
@@ -131,7 +121,7 @@ describe('common/errors', function () {
     expectError(errors.EEXIST({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'EEXIST, file already exists \'/path/to/file\'', {
+    }), /^EEXIST/, {
       errno:   constants.EEXIST,
       code:    'EEXIST',
       path:    '/path/to/file',
@@ -143,7 +133,7 @@ describe('common/errors', function () {
     expectError(errors.EPERM({
       syscall: 'open',
       path:    '/path/to/file'
-    }), 'EPERM, operation not permitted \'/path/to/file\'', {
+    }), /^EPERM/, {
       errno:   constants.EPERM,
       code:    'EPERM',
       path:    '/path/to/file',

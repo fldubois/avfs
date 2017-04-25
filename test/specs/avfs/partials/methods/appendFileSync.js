@@ -45,7 +45,7 @@ module.exports = function (fs) {
     it('should accept flag option', function () {
       expect(function () {
         fs.appendFileSync('/tmp/file', 'OK', {flag: 'r'});
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should create non existing file', function () {
@@ -58,19 +58,19 @@ module.exports = function (fs) {
     it('should throw on non existing parent directory', function () {
       expect(function () {
         fs.appendFileSync('/not/file', 'Hello, friend.');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory parent', function () {
       expect(function () {
         fs.appendFileSync('/tmp/file/new', 'Hello, friend.');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on directory path', function () {
       expect(function () {
         fs.appendFileSync('/tmp', 'Hello, friend.');
-      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
+      }).to.throw(Error, {code: 'EISDIR'});
     });
 
     it('should throw on unknown encoding', function () {

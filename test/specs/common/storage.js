@@ -101,25 +101,25 @@ describe('common/storage', function () {
     it('should throw EACCES on missing directory in path', function () {
       expect(function () {
         storage.get(files, 'test', '/restricted/file');
-      }).to.throw(Error, 'EACCES, permission denied \'/restricted/file\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
     it('should throw ENOENT on missing directory in path', function () {
       expect(function () {
         storage.get(files, 'test', '/not/file');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw ENOTDIR on not directory element in path', function () {
       expect(function () {
         storage.get(files, 'test', '/dir/file/test');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw ENOENT on missing symlink target', function () {
       expect(function () {
         storage.get(files, 'test', '/dir/miss');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/dir/miss\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
   });
@@ -156,19 +156,19 @@ describe('common/storage', function () {
     it('should throw on missing directory in path', function () {
       expect(function () {
         storage.set(files, 'test', '/not/file', elements.file(438, new Buffer(0)));
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory element in path', function () {
       expect(function () {
         storage.set(files, 'test', '/dir/file/test', elements.file(438, new Buffer(0)));
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on not writable parent directory', function () {
       expect(function () {
         storage.set(files, 'test', '/perm/test', elements.file(438, new Buffer(0)));
-      }).to.throw(Error, 'EACCES, permission denied \'/perm/test\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
   });
@@ -202,19 +202,19 @@ describe('common/storage', function () {
     it('should throw on missing directory in path', function () {
       expect(function () {
         storage.unset(files, 'test', '/not/file');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory element in path', function () {
       expect(function () {
         storage.unset(files, 'test', '/dir/file/test');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/dir/file/test\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on not writable parent directory', function () {
       expect(function () {
         storage.unset(files, 'test', '/perm/file');
-      }).to.throw(Error, 'EACCES, permission denied \'/perm/file\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
   });

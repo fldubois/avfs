@@ -41,13 +41,13 @@ module.exports = function (fs, getElement) {
 
       expect(function () {
         fs.ftruncateSync(fd);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should throw on non existing file descriptor', function () {
       expect(function () {
         fs.ftruncateSync(0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should throw on non integer file descriptor', function () {

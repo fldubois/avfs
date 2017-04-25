@@ -39,13 +39,13 @@ module.exports = function (fs, getElement) {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.lstatSync('/not/test.txt');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/test.txt\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on non directory parent', function () {
       expect(function () {
         fs.lstatSync('/tmp/file/file');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/file\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string path', function () {

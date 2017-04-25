@@ -53,7 +53,7 @@ module.exports = function (fs) {
       ['r', 'r+', 'rs', 'rs+'].forEach(function (fgs) {
         expect(function () {
           fs.openSync('/tmp/not', fgs);
-        }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/not\'', 'with flags \'' + fgs + '\'');
+        }).to.throw(Error, {code: 'ENOENT'});
       });
     });
 
@@ -61,7 +61,7 @@ module.exports = function (fs) {
       ['wx', 'xw', 'wx+', 'xw+', 'ax', 'xa', 'ax+', 'xa+'].forEach(function (fgs) {
         expect(function () {
           fs.openSync('/tmp/file', fgs);
-        }).to.throw(Error, 'EEXIST, file already exists \'/tmp/file\'', 'with flags \'' + fgs + '\'');
+        }).to.throw(Error, {code: 'EEXIST'});
       });
     });
 
@@ -69,27 +69,27 @@ module.exports = function (fs) {
       ['r+', 'rs+', 'w', 'w+', 'a', 'a+'].forEach(function (fgs) {
         expect(function () {
           fs.openSync('/tmp', fgs);
-        }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'', 'with flags \'' + fgs + '\'');
+        }).to.throw(Error, {code: 'EISDIR'});
       });
     });
 
     it('should throw on non existing parent directory', function () {
       expect(function () {
         fs.openSync('/not/file', 'w');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on non directory parent', function () {
       expect(function () {
         fs.openSync('/tmp/file/file', 'w');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/file\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on permission denied', function () {
       ['r', 'r+', 'w', 'w+', 'a', 'a+'].forEach(function (fgs) {
         expect(function () {
           fs.openSync('/dir/perm', fgs);
-        }).to.throw(Error, 'EACCES, permission denied \'/dir/perm\'');
+        }).to.throw(Error, {code: 'EACCES'});
       });
     });
 

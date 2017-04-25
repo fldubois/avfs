@@ -264,12 +264,14 @@ module.exports = function (fs) {
       });
 
       it('should log fs error without callback', function (done) {
-        fs.writeSync.throws(errors.EBADF({syscall: 'write'}));
+        var error = errors.EBADF({syscall: 'write'});
+
+        fs.writeSync.throws(error);
 
         fs.write(fd, inBuffer, offset, length, position);
 
         setImmediate(function () {
-          expect(console.error).to.have.been.calledWithExactly('fs: missing callback EBADF, bad file descriptor');
+          expect(console.error).to.have.been.calledWithExactly('fs: missing callback ' + error.message);
 
           return done();
         });

@@ -45,19 +45,19 @@ module.exports = function (fs, getElement) {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.utimesSync('/not/file', 0, 0);
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on non existing parent directory', function () {
       expect(function () {
         fs.chownSync('/not/file', 0, 0);
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory parent', function () {
       expect(function () {
         fs.chownSync('/tmp/file/new', 0, 0);
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/new\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string path', function () {

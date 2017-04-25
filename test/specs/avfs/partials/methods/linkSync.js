@@ -26,37 +26,37 @@ module.exports = function (fs, getElement) {
     it('should throw on directory source', function () {
       expect(function () {
         fs.linkSync('/tmp', '/dir');
-      }).to.throw(Error, 'EPERM, operation not permitted \'/dir\'');
+      }).to.throw(Error, {code: 'EPERM'});
     });
 
     it('should throw on existing destination', function () {
       expect(function () {
         fs.linkSync('/tmp/file', '/tmp/ascii');
-      }).to.throw(Error, 'EEXIST, file already exists \'/tmp/ascii\'');
+      }).to.throw(Error, {code: 'EEXIST'});
     });
 
     it('should throw on non existing parent directory in source path', function () {
       expect(function () {
         fs.linkSync('/not/file', '/dir/file');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory parent in source path', function () {
       expect(function () {
         fs.linkSync('/tmp/file/link', '/dir/file');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file/link\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non existing parent directory in destination path', function () {
       expect(function () {
         fs.linkSync('/tmp/file', '/not/file');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/tmp/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory parent in destination path', function () {
       expect(function () {
         fs.linkSync('/tmp/file', '/tmp/ascii/link');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string source path', function () {

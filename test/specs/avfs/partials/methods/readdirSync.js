@@ -21,13 +21,13 @@ module.exports = function (fs) {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.readdirSync('/not');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on file', function () {
       expect(function () {
         fs.readdirSync('/tmp/file');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string path', function () {

@@ -17,13 +17,13 @@ module.exports = function (fs) {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.rmdirSync('/not');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on file', function () {
       expect(function () {
         fs.rmdirSync('/tmp/file');
-      }).to.throw(Error, 'ENOTDIR, not a directory \'/tmp/file\'');
+      }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on non string path', function () {
@@ -35,7 +35,7 @@ module.exports = function (fs) {
     it('should throw on not writable parent directory', function () {
       expect(function () {
         fs.rmdirSync('/perm/dir');
-      }).to.throw(Error, 'EACCES, permission denied \'/perm/dir\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
   });

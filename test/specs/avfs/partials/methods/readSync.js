@@ -88,7 +88,7 @@ module.exports = function (fs, getElement) {
     it('should fail on non existing fd', function () {
       expect(function () {
         fs.readSync(0, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should fail on closed fd', function () {
@@ -100,7 +100,7 @@ module.exports = function (fs, getElement) {
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should fail on non reading fd', function () {
@@ -110,7 +110,7 @@ module.exports = function (fs, getElement) {
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should fail on directory', function () {
@@ -120,7 +120,7 @@ module.exports = function (fs, getElement) {
 
       expect(function () {
         fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, 'EISDIR, read');
+      }).to.throw(Error, {code: 'EISDIR'});
     });
 
     it('should throw on bad fd type', function () {

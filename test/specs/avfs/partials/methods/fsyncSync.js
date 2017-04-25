@@ -22,7 +22,7 @@ module.exports = function (fs, getElement) {
     it('should throw on non existing file descriptor', function () {
       expect(function () {
         fs.fsyncSync(0);
-      }).to.throw(Error, 'EBADF, bad file descriptor');
+      }).to.throw(Error, {code: 'EBADF'});
     });
 
     it('should throw on non integer file descriptor', function () {

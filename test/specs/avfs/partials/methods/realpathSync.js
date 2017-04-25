@@ -14,7 +14,7 @@ module.exports = function (fs) {
     it('should throw on non existing element', function () {
       expect(function () {
         fs.realpathSync('/not/test.txt');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not string path', function () {

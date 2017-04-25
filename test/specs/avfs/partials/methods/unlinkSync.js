@@ -28,13 +28,13 @@ module.exports = function (fs, getElement) {
     it('should throw on non existing path', function () {
       expect(function () {
         fs.unlinkSync('/not/file');
-      }).to.throw(Error, 'ENOENT, no such file or directory \'/not/file\'');
+      }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on directory', function () {
       expect(function () {
         fs.unlinkSync('/tmp');
-      }).to.throw(Error, 'EISDIR, illegal operation on a directory \'/tmp\'');
+      }).to.throw(Error, {code: 'EISDIR'});
     });
 
     it('should throw on non string path', function () {
@@ -46,7 +46,7 @@ module.exports = function (fs, getElement) {
     it('should throw on not writable parent directory', function () {
       expect(function () {
         fs.unlinkSync('/perm/file');
-      }).to.throw(Error, 'EACCES, permission denied \'/perm/file\'');
+      }).to.throw(Error, {code: 'EACCES'});
     });
 
   });
