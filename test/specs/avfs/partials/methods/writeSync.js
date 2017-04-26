@@ -136,7 +136,7 @@ module.exports = function (fs, getElement, version) {
       }).to.throw(Error, 'off + len > buffer.length');
     });
 
-    if (['v0.12', 'v4'].indexOf(version) !== -1) {
+    if (['v0.12', 'v4', 'v5'].indexOf(version) !== -1) {
 
       // fs.writeSync(fd, data[, position[, encoding]]);
 

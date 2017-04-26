@@ -5,7 +5,7 @@ var expect = chai.expect;
 
 module.exports = function (fs, getElement, version) {
 
-  if (['v0.12', 'v4'].indexOf(version) !== -1) {
+  if (['v0.12', 'v4', 'v5'].indexOf(version) !== -1) {
 
     describe('accessSync()', function () {
 
