@@ -8,7 +8,7 @@ var expect = chai.expect;
 
 var version = require('lib/common/version');
 
-var supported = fs.readdirSync(path.join(__dirname, '../lib'));
+var supported = fs.readdirSync(path.join(__dirname, '../../lib'));
 
 if (supported.indexOf(version) === -1) {
 
@@ -24,10 +24,10 @@ if (supported.indexOf(version) === -1) {
 
 } else {
   var specs = fs.readdirSync(path.join(__dirname, 'specs/common')).map(function (filename) {
-    return path.join('test/specs/common', filename);
+    return path.join(__dirname, 'specs/common', filename);
   });
 
-  specs.unshift('test/specs/avfs');
+  specs.unshift(path.join(__dirname, 'specs/avfs'));
 
   specs.forEach(require);
 }
