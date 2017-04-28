@@ -80,6 +80,34 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('chmodSync()', function () {
+
+      it('should throw on bad path parameter type', function () {
+        check('chmodSync', [false, '0700']);
+      });
+
+      it('should throw on bad mode parameter type', function () {
+        check('chmodSync', ['/tmp/dir/file', false]);
+      });
+
+      it('should throw on non existing file', function () {
+        check('chmodSync', ['/tmp/dir/not', '0700']);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('chmodSync', ['/tmp/dir/not/file', '0700']);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('chmodSync', ['/tmp/dir/file/file', '0700']);
+      });
+
+      it('should throw on not owned files', function () {
+        check('chmodSync', ['/', '0777']);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });

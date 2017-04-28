@@ -25,13 +25,13 @@ module.exports = function (fs) {
     it('should throw on bad path parameter type', function () {
       expect(function () {
         fs.chmodSync(false, '0700');
-      }).to.throw(Error, 'Bad argument');
+      }).to.throw(Error);
     });
 
     it('should throw on bad mode parameter type', function () {
       expect(function () {
         fs.chmodSync('/file', false);
-      }).to.throw(Error, 'Bad argument');
+      }).to.throw(Error);
     });
 
     it('should throw on non existing file', function () {
