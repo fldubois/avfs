@@ -108,6 +108,38 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('chownSync()', function () {
+
+      it('should throw on bad path parameter type', function () {
+        check('chownSync', [false, 1001, 1001]);
+      });
+
+      it('should throw on bad uid parameter type', function () {
+        check('chownSync', ['/tmp/dir/file', false, 1001]);
+      });
+
+      it('should throw on bad gid parameter type', function () {
+        check('chownSync', ['/tmp/dir/file', 1001, false]);
+      });
+
+      it('should throw on non existing file', function () {
+        check('chownSync', ['/tmp/dir/not', 1001, 1001]);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('chownSync', ['/tmp/dir/not/file', 1001, 1001]);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('chownSync', ['/tmp/dir/file/file', 1001, 1001]);
+      });
+
+      it('should throw on permission denied', function () {
+        check('chownSync', ['/', 1001, 1001]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
