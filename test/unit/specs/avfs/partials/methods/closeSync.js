@@ -33,7 +33,7 @@ module.exports = function (fs, getElement) {
     it('should throw on non integer file descriptor', function () {
       expect(function () {
         fs.closeSync('Hello');
-      }).to.throw(Error, 'Bad argument');
+      }).to.throw(Error);
     });
 
   });

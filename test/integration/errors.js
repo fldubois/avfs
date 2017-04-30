@@ -140,6 +140,18 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('closeSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('closeSync', [Number.MAX_VALUE]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('closeSync', [false]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
