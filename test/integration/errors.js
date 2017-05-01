@@ -20,13 +20,13 @@ if (supported.indexOf(version) !== -1) {
     var errors = {};
 
     try {
-      fs[method].apply(fs, params);
+      fs[method].apply(fs, params.hasOwnProperty('fs') ? params.fs : params);
     } catch (error) {
       errors.fs = error;
     }
 
     try {
-      avfs[method].apply(avfs, params);
+      avfs[method].apply(avfs, params.hasOwnProperty('avfs') ? params.avfs : params);
     } catch (error) {
       errors.avfs = error;
     }
@@ -42,6 +42,8 @@ if (supported.indexOf(version) !== -1) {
 
   describe('errors', function () {
 
+    var fd = null;
+
     before('create files', function () {
       avfs.mkdirSync('/tmp');
 
@@ -50,6 +52,11 @@ if (supported.indexOf(version) !== -1) {
 
       fs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
       avfs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
+
+      fd = {
+        fs:   fs.openSync('/tmp/dir/file', 'r'),
+        avfs: avfs.openSync('/tmp/dir/file', 'r')
+      };
     });
 
     describe('appendFileSync()', function () {
@@ -148,6 +155,25 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on non integer file descriptor', function () {
         check('closeSync', [false]);
+      });
+
+    });
+
+    describe('fchmodSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('fchmodSync', [Number.MAX_VALUE]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('fchmodSync', [false]);
+      });
+
+      it('should throw on bad mode parameter type', function () {
+        check('fchmodSync', {
+          fs:   [fd.fs, false],
+          avfs: [fd.avfs, false]
+        });
       });
 
     });

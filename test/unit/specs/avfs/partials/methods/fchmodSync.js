@@ -31,13 +31,13 @@ module.exports = function (fs, getElement) {
     it('should throw on non integer file descriptor', function () {
       expect(function () {
         fs.fchmodSync(true, '0700');
-      }).to.throw(TypeError, 'Bad argument');
+      }).to.throw(TypeError);
     });
 
     it('should throw on bad mode parameter type', function () {
       expect(function () {
         fs.fchmodSync(0, false);
-      }).to.throw(Error, 'Bad argument');
+      }).to.throw(Error);
     });
 
   });
