@@ -31,19 +31,31 @@ module.exports = function (fs, getElement) {
     it('should throw on non integer file descriptor', function () {
       expect(function () {
         fs.fchownSync(true, 1001, 1001);
-      }).to.throw(TypeError, 'Bad argument');
+      }).to.throw(TypeError);
+    });
+
+    it('should throw on negative uid parameter', function () {
+      expect(function () {
+        fs.fchownSync(0, -1, 1001);
+      }).to.throw(TypeError);
+    });
+
+    it('should throw on negative gid parameter', function () {
+      expect(function () {
+        fs.fchownSync(0, 1001, -1);
+      }).to.throw(TypeError);
     });
 
     it('should throw on bad uid parameter type', function () {
       expect(function () {
         fs.fchownSync(0, false, 1001);
-      }).to.throw(TypeError, 'uid must be an unsigned int');
+      }).to.throw(TypeError);
     });
 
     it('should throw on bad gid parameter type', function () {
       expect(function () {
         fs.fchownSync(0, 1001, false);
-      }).to.throw(TypeError, 'gid must be an unsigned int');
+      }).to.throw(TypeError);
     });
 
   });

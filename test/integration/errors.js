@@ -171,8 +171,48 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on bad mode parameter type', function () {
         check('fchmodSync', {
-          fs:   [fd.fs, false],
+          fs:   [fd.fs,   false],
           avfs: [fd.avfs, false]
+        });
+      });
+
+    });
+
+    describe('fchownSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('fchownSync', [Number.MAX_VALUE, 1001, 1001]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('fchownSync', [true, 1001, 1001]);
+      });
+
+      it('should throw on negative uid parameter', function () {
+        check('fchownSync', {
+          fs:   [fd.fs,   -1, 1001],
+          avfs: [fd.avfs, -1, 1001]
+        });
+      });
+
+      it('should throw on negative gid parameter', function () {
+        check('fchownSync', {
+          fs:   [fd.fs,   1001, -1],
+          avfs: [fd.avfs, 1001, -1]
+        });
+      });
+
+      it('should throw on bad uid parameter type', function () {
+        check('fchownSync', {
+          fs:   [fd.fs,   false, 1001],
+          avfs: [fd.avfs, false, 1001]
+        });
+      });
+
+      it('should throw on bad gid parameter type', function () {
+        check('fchownSync', {
+          fs:   [fd.fs,   1001, false],
+          avfs: [fd.avfs, 1001, false]
         });
       });
 
