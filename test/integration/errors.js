@@ -218,6 +218,18 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('fstatSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('fstatSync', [Number.MAX_VALUE]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('fstatSync', [true]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
