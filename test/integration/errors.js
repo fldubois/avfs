@@ -54,8 +54,8 @@ if (supported.indexOf(version) !== -1) {
       avfs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
 
       fd = {
-        fs:   fs.openSync('/tmp/dir/file', 'r'),
-        avfs: avfs.openSync('/tmp/dir/file', 'r')
+        fs:   fs.openSync('/tmp/dir/file', 'r+'),
+        avfs: avfs.openSync('/tmp/dir/file', 'r+')
       };
     });
 
@@ -238,6 +238,25 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on non integer file descriptor', function () {
         check('fsyncSync', [true]);
+      });
+
+    });
+
+    describe('ftruncateSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('ftruncateSync', [Number.MAX_VALUE]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('ftruncateSync', [true]);
+      });
+
+      it('should throw on non integer length', function () {
+        check('ftruncateSync', {
+          fs:   [fd.fs,   {}],
+          avfs: [fd.avfs, {}]
+        });
       });
 
     });

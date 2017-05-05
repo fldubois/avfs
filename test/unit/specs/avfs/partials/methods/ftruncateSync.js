@@ -53,7 +53,7 @@ module.exports = function (fs, getElement) {
     it('should throw on non integer file descriptor', function () {
       expect(function () {
         fs.ftruncateSync(true);
-      }).to.throw(TypeError, 'Bad argument');
+      }).to.throw(TypeError);
     });
 
     it('should throw on non integer length', function () {
