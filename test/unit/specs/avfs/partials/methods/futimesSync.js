@@ -64,19 +64,19 @@ module.exports = function (fs, getElement) {
     it('should throw on non integer file descriptor', function () {
       expect(function () {
         fs.futimesSync(false, 0, 0);
-      }).to.throw(TypeError, 'Bad argument');
+      }).to.throw(TypeError);
     });
 
-    it('should throw bad atime parameter type', function () {
+    it('should throw on bad atime parameter type', function () {
       expect(function () {
         fs.futimesSync(0, false, 0);
-      }).to.throw(Error, 'Cannot parse time: false');
+      }).to.throw(Error);
     });
 
-    it('should throw bad mtime parameter type', function () {
+    it('should throw on bad mtime parameter type', function () {
       expect(function () {
         fs.futimesSync(0, 0, false);
-      }).to.throw(Error, 'Cannot parse time: false');
+      }).to.throw(Error);
     });
 
   });

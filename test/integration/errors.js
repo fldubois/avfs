@@ -261,6 +261,39 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('futimesSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('futimesSync', [Number.MAX_VALUE, 0, 0]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('futimesSync', [true, 0, 0]);
+      });
+
+      it('should throw on bad atime parameter type', function () {
+        check('futimesSync', {
+          fs:   [fd.fs,   false, 0],
+          avfs: [fd.avfs, false, 0]
+        });
+      });
+
+      it('should throw on bad mtime parameter type', function () {
+        check('futimesSync', {
+          fs:   [fd.fs,   0, false],
+          avfs: [fd.avfs, 0, false]
+        });
+      });
+
+      it('should throw on bad time parameter type first', function () {
+        check('futimesSync', {
+          fs:   [true, true, true],
+          avfs: [true, true, true]
+        });
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
