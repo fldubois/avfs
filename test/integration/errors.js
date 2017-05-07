@@ -294,6 +294,42 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('linkSync()', function () {
+
+      it('should throw on directory source', function () {
+        check('linkSync', ['/tmp/dir', '/tmp/link']);
+      });
+
+      it('should throw on existing destination', function () {
+        check('linkSync', ['/tmp/dir/file', '/tmp/dir/file']);
+      });
+
+      it('should throw on non existing parent directory in source path', function () {
+        check('linkSync', ['/tmp/dir/not/file', '/tmp/dir/link']);
+      });
+
+      it('should throw on not directory parent in source path', function () {
+        check('linkSync', ['/tmp/dir/file/file', '/tmp/dir/link']);
+      });
+
+      it('should throw on non existing parent directory in destination path', function () {
+        check('linkSync', ['/tmp/dir/file', '/tmp/dir/not/link']);
+      });
+
+      it('should throw on not directory parent in destination path', function () {
+        check('linkSync', ['/tmp/dir/file', '/tmp/dir/file/link']);
+      });
+
+      it('should throw on non string source path', function () {
+        check('linkSync', [true, '/tmp/dir/link']);
+      });
+
+      it('should throw on non string destination path', function () {
+        check('linkSync', ['/tmp/dir/file', true]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
