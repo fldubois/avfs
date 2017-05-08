@@ -63,7 +63,7 @@ module.exports = function (fs) {
     it('should throw on non string path', function () {
       expect(function () {
         fs.mkdirSync(true);
-      }).to.throw(TypeError, 'Bad argument');
+      }).to.throw(TypeError);
     });
 
   });

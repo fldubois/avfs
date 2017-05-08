@@ -330,6 +330,26 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('mkdirSync()', function () {
+
+      it('should throw on existing path', function () {
+        check('mkdirSync', ['/tmp/dir']);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('mkdirSync', ['/tmp/not/dir']);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('mkdirSync', ['/tmp/file/dir']);
+      });
+
+      it('should throw on non string path', function () {
+        check('mkdirSync', [true]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
