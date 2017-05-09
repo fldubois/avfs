@@ -53,6 +53,9 @@ if (supported.indexOf(version) !== -1) {
       fs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
       avfs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
 
+      fs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
+      avfs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
+
       fd = {
         fs:   fs.openSync('/tmp/dir/file', 'r+'),
         avfs: avfs.openSync('/tmp/dir/file', 'r+')
@@ -346,6 +349,52 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on non string path', function () {
         check('mkdirSync', [true]);
+      });
+
+    });
+
+    describe('openSync()', function () {
+
+      it('should throw on bad path type', function () {
+        check('openSync', [false, 'r']);
+      });
+
+      it('should throw on bad flags type', function () {
+        check('openSync', ['/tmp/dir/file', false]);
+      });
+
+      it('should throw on non unknown flags', function () {
+        check('openSync', ['/tmp/dir/file', 'p']);
+      });
+
+      it('should throw on non existing file in read mode', function () {
+        ['r', 'r+', 'rs', 'rs+'].forEach(function (flags) {
+          check('openSync', ['/tmp/dir/not', flags]);
+        });
+      });
+
+      it('should throw on existing file in exclusive mode', function () {
+        ['wx', 'xw', 'wx+', 'xw+', 'ax', 'xa', 'ax+', 'xa+'].forEach(function (flags) {
+          check('openSync', ['/tmp/dir/file', flags]);
+        });
+      });
+
+      it('should throw on directory in write mode', function () {
+        ['r+', 'rs+', 'w', 'w+', 'a', 'a+'].forEach(function (flags) {
+          check('openSync', ['/tmp/dir', flags]);
+        });
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('openSync', ['/tmp/not/file', 'w']);
+      });
+
+      it('should throw on non directory parent', function () {
+        check('openSync', ['/tmp/dir/file/file', 'w']);
+      });
+
+      it('should throw on permission denied', function () {
+        check('openSync', ['/tmp/dir/perm', 'r']);
       });
 
     });
