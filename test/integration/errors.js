@@ -399,6 +399,22 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('readdirSync()', function () {
+
+      it('should throw on non existing path', function () {
+        check('readdirSync', ['/tmp/dir/not']);
+      });
+
+      it('should throw on file', function () {
+        check('readdirSync', ['/tmp/dir/file']);
+      });
+
+      it('should throw on non string path', function () {
+        check('readdirSync', [true]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
