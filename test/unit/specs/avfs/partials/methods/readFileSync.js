@@ -55,7 +55,7 @@ module.exports = function (fs) {
     it('should throw on bad options type', function () {
       expect(function () {
         fs.readFileSync('/tmp/file', true);
-      }).to.throw(TypeError, 'Bad arguments');
+      }).to.throw(TypeError);
     });
 
   });

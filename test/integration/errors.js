@@ -415,6 +415,30 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('readFileSync()', function () {
+
+      it('should throw on non existing file', function () {
+        check('readFileSync', ['/tmp/dir/not']);
+      });
+
+      it('should throw on directory', function () {
+        check('readFileSync', ['/tmp/dir']);
+      });
+
+      it('should throw on unknown encoding', function () {
+        check('readFileSync', ['/tmp/dir/file', 'utf5']);
+      });
+
+      it('should throw on non string path', function () {
+        check('readFileSync', [true]);
+      });
+
+      it('should throw on bad options type', function () {
+        check('readFileSync', ['/tmp/dir/file', true]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
