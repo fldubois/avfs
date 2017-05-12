@@ -53,6 +53,9 @@ if (supported.indexOf(version) !== -1) {
       fs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
       avfs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
 
+      fs.symlinkSync('/tmp/dir/file', '/tmp/dir/link');
+      avfs.symlinkSync('/tmp/dir/file', '/tmp/dir/link');
+
       fs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
       avfs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
 
@@ -435,6 +438,26 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on bad options type', function () {
         check('readFileSync', ['/tmp/dir/file', true]);
+      });
+
+    });
+
+    describe('readlinkSync()', function () {
+
+      it('should throw on non symlink', function () {
+        check('readlinkSync', ['/tmp/dir/file']);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('readlinkSync', ['/tmp/not/file']);
+      });
+
+      it('should throw on non directory parent', function () {
+        check('readlinkSync', ['/tmp/dir/file/link']);
+      });
+
+      it('should throw on non string path', function () {
+        check('readlinkSync', [true]);
       });
 
     });
