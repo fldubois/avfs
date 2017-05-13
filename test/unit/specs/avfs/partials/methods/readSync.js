@@ -126,7 +126,7 @@ module.exports = function (fs, getElement) {
     it('should throw on bad fd type', function () {
       expect(function () {
         fs.readSync(true);
-      }).to.throw(TypeError, 'Bad arguments');
+      }).to.throw(TypeError);
     });
 
     it('should throw on offset out of bounds', function () {

@@ -60,9 +60,26 @@ if (supported.indexOf(version) !== -1) {
       avfs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
 
       fd = {
-        fs:   fs.openSync('/tmp/dir/file', 'r+'),
-        avfs: avfs.openSync('/tmp/dir/file', 'r+')
+        read: {
+          fs:   fs.openSync('/tmp/dir/file', 'r'),
+          avfs: avfs.openSync('/tmp/dir/file', 'r')
+        },
+        write: {
+          fs:   fs.openSync('/tmp/dir/file', 'a'),
+          avfs: avfs.openSync('/tmp/dir/file', 'a')
+        },
+        closed: {
+          fs:   fs.openSync('/tmp/dir/file', 'r'),
+          avfs: avfs.openSync('/tmp/dir/file', 'r')
+        },
+        dir: {
+          fs:   fs.openSync('/tmp/dir', 'r'),
+          avfs: avfs.openSync('/tmp/dir', 'r')
+        }
       };
+
+      fs.closeSync(fd.closed.fs);
+      avfs.closeSync(fd.closed.avfs);
     });
 
     describe('appendFileSync()', function () {
@@ -177,8 +194,8 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on bad mode parameter type', function () {
         check('fchmodSync', {
-          fs:   [fd.fs,   false],
-          avfs: [fd.avfs, false]
+          fs:   [fd.read.fs,   false],
+          avfs: [fd.read.avfs, false]
         });
       });
 
@@ -196,29 +213,29 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on negative uid parameter', function () {
         check('fchownSync', {
-          fs:   [fd.fs,   -1, 1001],
-          avfs: [fd.avfs, -1, 1001]
+          fs:   [fd.read.fs,   -1, 1001],
+          avfs: [fd.read.avfs, -1, 1001]
         });
       });
 
       it('should throw on negative gid parameter', function () {
         check('fchownSync', {
-          fs:   [fd.fs,   1001, -1],
-          avfs: [fd.avfs, 1001, -1]
+          fs:   [fd.read.fs,   1001, -1],
+          avfs: [fd.read.avfs, 1001, -1]
         });
       });
 
       it('should throw on bad uid parameter type', function () {
         check('fchownSync', {
-          fs:   [fd.fs,   false, 1001],
-          avfs: [fd.avfs, false, 1001]
+          fs:   [fd.read.fs,   false, 1001],
+          avfs: [fd.read.avfs, false, 1001]
         });
       });
 
       it('should throw on bad gid parameter type', function () {
         check('fchownSync', {
-          fs:   [fd.fs,   1001, false],
-          avfs: [fd.avfs, 1001, false]
+          fs:   [fd.read.fs,   1001, false],
+          avfs: [fd.read.avfs, 1001, false]
         });
       });
 
@@ -260,8 +277,8 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on non integer length', function () {
         check('ftruncateSync', {
-          fs:   [fd.fs,   {}],
-          avfs: [fd.avfs, {}]
+          fs:   [fd.read.fs,   {}],
+          avfs: [fd.read.avfs, {}]
         });
       });
 
@@ -279,15 +296,15 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on bad atime parameter type', function () {
         check('futimesSync', {
-          fs:   [fd.fs,   false, 0],
-          avfs: [fd.avfs, false, 0]
+          fs:   [fd.read.fs,   false, 0],
+          avfs: [fd.read.avfs, false, 0]
         });
       });
 
       it('should throw on bad mtime parameter type', function () {
         check('futimesSync', {
-          fs:   [fd.fs,   0, false],
-          avfs: [fd.avfs, 0, false]
+          fs:   [fd.read.fs,   0, false],
+          avfs: [fd.read.avfs, 0, false]
         });
       });
 
@@ -458,6 +475,53 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on non string path', function () {
         check('readlinkSync', [true]);
+      });
+
+    });
+
+    describe('readSync()', function () {
+
+      it('should fail on non existing fd', function () {
+        check('readSync', [Number.MAX_VALUE, new Buffer(5), 0, 5, 0]);
+      });
+
+      it('should fail on closed fd', function () {
+        check('readSync', {
+          fs:   [fd.closed.fs,   new Buffer(5), 0, 5, 0],
+          avfs: [fd.closed.avfs, new Buffer(5), 0, 5, 0]
+        });
+      });
+
+      it('should fail on non reading fd', function () {
+        check('readSync', {
+          fs:   [fd.write.fs,   new Buffer(5), 0, 5, 0],
+          avfs: [fd.write.avfs, new Buffer(5), 0, 5, 0]
+        });
+      });
+
+      it('should fail on directory', function () {
+        check('readSync', {
+          fs:   [fd.dir.fs,   new Buffer(5), 0, 5, 0],
+          avfs: [fd.dir.avfs, new Buffer(5), 0, 5, 0]
+        });
+      });
+
+      it('should throw on bad fd type', function () {
+        check('readSync', [true, new Buffer(5), 0, 5, 0]);
+      });
+
+      it('should throw on offset out of bounds', function () {
+        check('readSync', {
+          fs:   [fd.read.fs,   new Buffer(5), 1000, 5, 0],
+          avfs: [fd.read.avfs, new Buffer(5), 1000, 5, 0]
+        });
+      });
+
+      it('should throw on length beyond buffer', function () {
+        check('readSync', {
+          fs:   [fd.read.fs,   new Buffer(5), 0, 1000, 0],
+          avfs: [fd.read.avfs, new Buffer(5), 0, 1000, 0]
+        });
       });
 
     });
