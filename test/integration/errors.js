@@ -526,6 +526,22 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('realpathSync()', function () {
+
+      it('should throw on non existing element', function () {
+        check('realpathSync', ['/tmp/dir/not']);
+      });
+
+      it('should throw on not string path', function () {
+        check('realpathSync', [false]);
+      });
+
+      it('should throw on not string path in cache', function () {
+        check('realpathSync', ['/tmp/dir/file', {'/tmp/dir': false}]);
+      });
+
+    });
+
     after('clean files', function () {
       rimraf.sync('/tmp/dir');
     });
