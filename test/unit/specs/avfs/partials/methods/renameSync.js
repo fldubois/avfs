@@ -51,6 +51,18 @@ module.exports = function (fs) {
       }).to.throw(Error, {code: 'EACCES'});
     });
 
+    it('should throw on not string source', function () {
+      expect(function () {
+        fs.renameSync(true, '/tmp/new');
+      }).to.throw(TypeError);
+    });
+
+    it('should throw on not string destination', function () {
+      expect(function () {
+        fs.renameSync('/tmp/file', true);
+      }).to.throw(TypeError);
+    });
+
   });
 
 };

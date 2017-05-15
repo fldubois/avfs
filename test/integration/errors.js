@@ -59,6 +59,12 @@ if (supported.indexOf(version) !== -1) {
       fs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
       avfs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
 
+      fs.mkdirSync('/tmp/dir/dperm');
+      avfs.mkdirSync('/tmp/dir/dperm');
+
+      fs.chmodSync('/tmp/dir/dperm', parseInt('000', 8));
+      avfs.chmodSync('/tmp/dir/dperm', parseInt('000', 8));
+
       fd = {
         read: {
           fs:   fs.openSync('/tmp/dir/file', 'r'),
@@ -542,7 +548,45 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('renameSync()', function () {
+
+      it('should throw on non existing source', function () {
+        check('renameSync', ['/tmp/dir/not', '/tmp/dir/new']);
+      });
+
+      it('should throw on non existing destination', function () {
+        check('renameSync', ['/tmp/dir/file', '/tmp/dir/not/new']);
+      });
+
+      it('should throw on new path under old path', function () {
+        check('renameSync', ['/tmp/dir/file', '/tmp/dir/file/new']);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('renameSync', ['/tmp/dir/file/file', '/tmp/dir/new']);
+      });
+
+      it('should throw on not writable parent directory', function () {
+        check('renameSync', ['/tmp/dir/dperm/file', '/tmp/dir/new']);
+      });
+
+      it('should throw on not writable destination directory', function () {
+        check('renameSync', ['/tmp/dir/file', '/tmp/dir/dperm/new']);
+      });
+
+      it('should throw on not string source', function () {
+        check('renameSync', [true, '/tmp/dir/new']);
+      });
+
+      it('should throw on not string destination', function () {
+        check('renameSync', ['/tmp/dir/new', true]);
+      });
+
+    });
+
     after('clean files', function () {
+      fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
+
       rimraf.sync('/tmp/dir');
     });
 
