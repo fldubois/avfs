@@ -604,6 +604,22 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('statSync()', function () {
+
+      it('should throw on non existing path', function () {
+        check('statSync', ['/tmp/dir/not']);
+      });
+
+      it('should throw on non directory parent', function () {
+        check('statSync', ['/tmp/dir/file/file']);
+      });
+
+      it('should throw on non string path', function () {
+        check('statSync', [true]);
+      });
+
+    });
+
     after('clean files', function () {
       fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
 
