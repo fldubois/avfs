@@ -53,6 +53,9 @@ if (supported.indexOf(version) !== -1) {
       fs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
       avfs.writeFileSync('/tmp/dir/file', 'Hello, friend.');
 
+      fs.writeFileSync('/tmp/dir/foo', 'Hello, friend.');
+      avfs.writeFileSync('/tmp/dir/foo', 'Hello, friend.');
+
       fs.symlinkSync('/tmp/dir/file', '/tmp/dir/link');
       avfs.symlinkSync('/tmp/dir/file', '/tmp/dir/link');
 
@@ -559,7 +562,7 @@ if (supported.indexOf(version) !== -1) {
       });
 
       it('should throw on new path under old path', function () {
-        check('renameSync', ['/tmp/dir/file', '/tmp/dir/file/new']);
+        check('renameSync', ['/tmp', '/tmp/new']);
       });
 
       it('should throw on not directory parent', function () {
@@ -616,6 +619,34 @@ if (supported.indexOf(version) !== -1) {
 
       it('should throw on non string path', function () {
         check('statSync', [true]);
+      });
+
+    });
+
+    describe('symlinkSync()', function () {
+
+      it('should throw on existing destination', function () {
+        check('symlinkSync', ['/tmp/dir/file', '/tmp/dir/foo']);
+      });
+
+      it('should throw on non existing parent directory in destination path', function () {
+        check('symlinkSync', ['/tmp/dir/file', '/tmp/dir/not/link']);
+      });
+
+      it('should throw on not directory parent in destination path', function () {
+        check('symlinkSync', ['/tmp/dir/file', '/tmp/dir/foo/link']);
+      });
+
+      it('should throw on non string source path', function () {
+        check('symlinkSync', [true, '/tmp/dir/link']);
+      });
+
+      it('should throw on non string destination path', function () {
+        check('symlinkSync', ['/tmp/dir/file', true]);
+      });
+
+      it('should throw on not writable destination directory', function () {
+        check('symlinkSync', ['/tmp/dir/file', '/tmp/dir/dperm/link']);
       });
 
     });

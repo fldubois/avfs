@@ -49,13 +49,13 @@ module.exports = function (fs) {
     it('should throw on non string source path', function () {
       expect(function () {
         fs.symlinkSync(true, '/dir/file');
-      }).to.throw(TypeError, 'dest path must be a string');
+      }).to.throw(TypeError);
     });
 
     it('should throw on non string destination path', function () {
       expect(function () {
         fs.symlinkSync('/tmp/file', true);
-      }).to.throw(TypeError, 'src path must be a string');
+      }).to.throw(TypeError);
     });
 
     it('should throw on not writable destination directory', function () {
