@@ -671,6 +671,26 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('unlinkSync()', function () {
+
+      it('should throw on non existing path', function () {
+        check('unlinkSync', ['/tmp/dir/not']);
+      });
+
+      it('should throw on directory', function () {
+        check('unlinkSync', ['/tmp/dir']);
+      });
+
+      it('should throw on non string path', function () {
+        check('unlinkSync', [true]);
+      });
+
+      it('should throw on not writable parent directory', function () {
+        check('unlinkSync', ['/tmp/dir/dperm/not']);
+      });
+
+    });
+
     after('clean files', function () {
       fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
 
