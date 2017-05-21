@@ -691,6 +691,34 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('utimesSync()', function () {
+
+      it('should throw on non existing path', function () {
+        check('chownSync', ['/tmp/dir/not', 0, 0]);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('chownSync', ['/tmp/dir/not/file', 0, 0]);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('chownSync', ['/tmp/dir/file/new', 0, 0]);
+      });
+
+      it('should throw on non string path', function () {
+        check('chownSync', [true, 0, 0]);
+      });
+
+      it('should throw bad atime parameter type', function () {
+        check('chownSync', ['/tmp/dir/file', false, 0]);
+      });
+
+      it('should throw bad mtime parameter type', function () {
+        check('chownSync', ['/tmp/dir/file', 0, false]);
+      });
+
+    });
+
     after('clean files', function () {
       fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
 
