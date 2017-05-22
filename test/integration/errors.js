@@ -719,6 +719,34 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('writeFileSync()', function () {
+
+      it('should throw on non existing parent directory', function () {
+        check('writeFileSync', ['/tmp/dir/not/file', 'Hello, friend.']);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('writeFileSync', ['/tmp/dir/file/file', 'Hello, friend.']);
+      });
+
+      it('should throw on directory path', function () {
+        check('writeFileSync', ['/tmp/dir', 'Hello, friend.']);
+      });
+
+      it('should throw on unknown encoding', function () {
+        check('writeFileSync', ['/tmp/dir/file', 'Hello, friend.', 'utf5']);
+      });
+
+      it('should throw on non string path', function () {
+        check('writeFileSync', [true]);
+      });
+
+      it('should throw on bad options type', function () {
+        check('writeFileSync', ['/tmp/dir/file', 'Hello, friend.', true]);
+      });
+
+    });
+
     after('clean files', function () {
       fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
 
