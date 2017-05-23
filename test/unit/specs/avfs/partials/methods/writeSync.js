@@ -121,19 +121,19 @@ module.exports = function (fs, getElement, version) {
     it('should throw on bad fd type', function () {
       expect(function () {
         fs.writeSync(true, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(TypeError, 'Bad arguments');
+      }).to.throw(TypeError);
     });
 
     it('should throw on offset out of bounds', function () {
       expect(function () {
         fs.writeSync(0, new Buffer('Hello, friend'), 1000, 0, 0, noop);
-      }).to.throw(Error, 'Offset is out of bounds');
+      }).to.throw(Error);
     });
 
     it('should throw on length beyond buffer', function () {
       expect(function () {
         fs.writeSync(0, new Buffer('Hello, friend'), 0, 1000, 0, noop);
-      }).to.throw(Error, 'off + len > buffer.length');
+      }).to.throw(Error);
     });
 
     if (['v0.12', 'v4', 'v5'].indexOf(version) !== -1) {
@@ -236,7 +236,7 @@ module.exports = function (fs, getElement, version) {
       it('should throw on bad fd type', function () {
         expect(function () {
           fs.writeSync(true);
-        }).to.throw(TypeError, 'First argument must be file descriptor');
+        }).to.throw(TypeError);
       });
 
     }

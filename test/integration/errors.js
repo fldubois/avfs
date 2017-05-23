@@ -747,6 +747,94 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('writeSync()', function () {
+
+      // Critical error in node v0.12
+      // See https://github.com/nodejs/node/issues/1550
+      if (version !== 'v0.12') {
+
+        it('should throw on non existing file descriptor', function () {
+          check('writeSync', [Number.MAX_VALUE, new Buffer('Hello, friend'), 0, 5, 0]);
+        });
+
+        it('should throw on non integer file descriptor', function () {
+          check('writeSync', {
+            fs:   [true, new Buffer('Hello, friend'), 0, 5, 0],
+            avfs: [true, new Buffer('Hello, friend'), 0, 5, 0]
+          });
+        });
+
+      }
+
+      it('should throw on closed file descriptor', function () {
+        check('writeSync', {
+          fs:   [fd.closed.fs,   new Buffer('Hello, friend'), 0, 5, 0],
+          avfs: [fd.closed.avfs, new Buffer('Hello, friend'), 0, 5, 0]
+        });
+      });
+
+      it('should throw on non writing file descriptor', function () {
+        check('writeSync', {
+          fs:   [fd.read.fs,   new Buffer('Hello, friend'), 0, 5, 0],
+          avfs: [fd.read.avfs, new Buffer('Hello, friend'), 0, 5, 0]
+        });
+      });
+
+      if (version !== 'v0.10') {
+
+        it('should throw on offset out of bounds', function () {
+          check('writeSync', {
+            fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0],
+            avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0]
+          });
+        });
+
+      }
+
+      it('should throw on length beyond buffer', function () {
+        check('writeSync', {
+          fs:   [fd.write.fs,   new Buffer('Hello, friend'), 0, 1000, 0],
+          avfs: [fd.write.avfs, new Buffer('Hello, friend'), 0, 1000, 0]
+        });
+      });
+
+      if (version !== 'v0.10') {
+
+        // fs.writeSync(fd, data[, position[, encoding]]);
+
+        if (version !== 'v0.12') {
+
+          it('should throw on non existing file descriptor', function () {
+            check('writeSync', [Number.MAX_VALUE, 'Hello, friend']);
+          });
+
+          it('should throw on non integer file descriptor', function () {
+            check('writeSync', {
+              fs:   [true, 'Hello, friend'],
+              avfs: [true, 'Hello, friend']
+            });
+          });
+
+        }
+
+        it('should throw on closed file descriptor', function () {
+          check('writeSync', {
+            fs:   [fd.closed.fs,   'Hello, friend'],
+            avfs: [fd.closed.avfs, 'Hello, friend']
+          });
+        });
+
+        it('should throw on non writing file descriptor', function () {
+          check('writeSync', {
+            fs:   [fd.read.fs,   'Hello, friend'],
+            avfs: [fd.read.avfs, 'Hello, friend']
+          });
+        });
+
+      }
+
+    });
+
     after('clean files', function () {
       fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
 
