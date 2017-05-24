@@ -33,6 +33,8 @@ if (supported.indexOf(version) !== -1) {
 
     expect(errors.avfs.message).to.equal(errors.fs.message);
 
+    expect(errors.avfs.constructor).to.equal(errors.fs.constructor);
+
     expect(Object.keys(errors.avfs)).to.deep.equal(Object.keys(errors.fs));
 
     Object.keys(errors.avfs).forEach(function (key) {
