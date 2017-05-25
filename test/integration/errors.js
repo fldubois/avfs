@@ -384,6 +384,14 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('mkdtemp()', function () {
+
+      it('should throw on non function callback', function () {
+        check('mkdtemp', ['test-', false]);
+      });
+
+    });
+
     describe('openSync()', function () {
 
       it('should throw on bad path type', function () {
