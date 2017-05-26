@@ -1,0 +1,17 @@
+{
+  "include": [
+    "lib/**/*.js"
+  ],
+  "exclude": [
+    "lib/avfs.js",
+    "lib/common/constants.js",
+    "lib/common/version.js"
+  ],
+  "lines": 100,
+  "statements": 100,
+  "functions": 100,
+  "branches": 100,
+  "temp-directory": "coverage/.nyc_output",
+  "clean": false,
+  "silent": true
+}

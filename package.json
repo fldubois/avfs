@@ -20,20 +20,22 @@
   },
   "main": "lib/avfs.js",
   "scripts": {
-    "test": "npm run test:lint && npm run test:unit && npm run test:integration && npm run test:coverage",
+    "test": "npm run test:lint && npm run test:clean && npm run test:unit && npm run test:integration && npm run test:report && npm run test:coverage",
     "test:lint": "eslint lib test",
-    "test:unit": "rm -Rf coverage && istanbul cover -x lib/avfs.js -x lib/common/constants.js -x lib/common/version.js _mocha -- -r test/bootstrap.js test/unit/index.js",
-    "test:integration": "mocha --recursive -r test/bootstrap.js test/integration",
-    "test:coverage": "if [ -e 'coverage/coverage.json' ]; then istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100; else echo 'Unsupported version, skip coverage'; fi",
-    "coveralls": "if [ -e 'coverage/coverage.json' ]; then cat ./coverage/lcov.info | coveralls; else echo 'Unsupported version, skip coveralls'; fi"
+    "test:clean": "rm -Rf coverage && mkdir -p coverage/.nyc_output",
+    "test:unit": "nyc mocha --require test/bootstrap.js test/unit/index.js",
+    "test:integration": "nyc mocha --recursive --require test/bootstrap.js test/integration",
+    "test:report": "nyc report",
+    "test:coverage": "nyc check-coverage",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "devDependencies": {
     "app-module-path": "^2.2.0",
     "chai": "^3.5.0",
     "coveralls": "^2.11.16",
     "eslint": "^2.13.1",
-    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
+    "nyc": "^10.3.2",
     "rimraf": "^2.6.1",
     "sinon": "^2.1.0",
     "sinon-chai": "^2.9.0"
