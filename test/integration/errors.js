@@ -11,6 +11,8 @@ var version = require('lib/common/version');
 
 var supported = fs.readdirSync(path.join(__dirname, '../../lib'));
 
+var BAD_FD = 1000000000;
+
 if (supported.indexOf(version) !== -1) {
   var AVFS = require('lib/avfs');
 
@@ -184,7 +186,7 @@ if (supported.indexOf(version) !== -1) {
     describe('closeSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('closeSync', [Number.MAX_VALUE]);
+        check('closeSync', [BAD_FD]);
       });
 
       it('should throw on non integer file descriptor', function () {
@@ -196,11 +198,11 @@ if (supported.indexOf(version) !== -1) {
     describe('fchmodSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('fchmodSync', [Number.MAX_VALUE]);
+        check('fchmodSync', [BAD_FD, '0700']);
       });
 
       it('should throw on non integer file descriptor', function () {
-        check('fchmodSync', [false]);
+        check('fchmodSync', [false, '0700']);
       });
 
       it('should throw on bad mode parameter type', function () {
@@ -215,7 +217,7 @@ if (supported.indexOf(version) !== -1) {
     describe('fchownSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('fchownSync', [Number.MAX_VALUE, 1001, 1001]);
+        check('fchownSync', [BAD_FD, 1001, 1001]);
       });
 
       it('should throw on non integer file descriptor', function () {
@@ -255,7 +257,7 @@ if (supported.indexOf(version) !== -1) {
     describe('fstatSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('fstatSync', [Number.MAX_VALUE]);
+        check('fstatSync', [BAD_FD]);
       });
 
       it('should throw on non integer file descriptor', function () {
@@ -267,7 +269,7 @@ if (supported.indexOf(version) !== -1) {
     describe('fsyncSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('fsyncSync', [Number.MAX_VALUE]);
+        check('fsyncSync', [BAD_FD]);
       });
 
       it('should throw on non integer file descriptor', function () {
@@ -279,7 +281,7 @@ if (supported.indexOf(version) !== -1) {
     describe('ftruncateSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('ftruncateSync', [Number.MAX_VALUE]);
+        check('ftruncateSync', [BAD_FD]);
       });
 
       it('should throw on non integer file descriptor', function () {
@@ -298,7 +300,7 @@ if (supported.indexOf(version) !== -1) {
     describe('futimesSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
-        check('futimesSync', [Number.MAX_VALUE, 0, 0]);
+        check('futimesSync', [BAD_FD, 0, 0]);
       });
 
       it('should throw on non integer file descriptor', function () {
@@ -364,6 +366,26 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('lstatSync()', function () {
+
+      it('should throw on non existing path', function () {
+        check('lstatSync', ['/tmp/dir/not']);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('lstatSync', ['/tmp/dir/not/file']);
+      });
+
+      it('should throw on not directory parent', function () {
+        check('lstatSync', ['/tmp/dir/file/file']);
+      });
+
+      it('should throw on non string path', function () {
+        check('lstatSync', [true]);
+      });
+
+    });
+
     describe('mkdirSync()', function () {
 
       it('should throw on existing path', function () {
@@ -371,11 +393,11 @@ if (supported.indexOf(version) !== -1) {
       });
 
       it('should throw on non existing parent directory', function () {
-        check('mkdirSync', ['/tmp/not/dir']);
+        check('mkdirSync', ['/tmp/dir/not/dir']);
       });
 
       it('should throw on not directory parent', function () {
-        check('mkdirSync', ['/tmp/file/dir']);
+        check('mkdirSync', ['/tmp/dir/file/dir']);
       });
 
       it('should throw on non string path', function () {
@@ -425,7 +447,7 @@ if (supported.indexOf(version) !== -1) {
       });
 
       it('should throw on non existing parent directory', function () {
-        check('openSync', ['/tmp/not/file', 'w']);
+        check('openSync', ['/tmp/dir/not/file', 'w']);
       });
 
       it('should throw on non directory parent', function () {
@@ -485,7 +507,7 @@ if (supported.indexOf(version) !== -1) {
       });
 
       it('should throw on non existing parent directory', function () {
-        check('readlinkSync', ['/tmp/not/file']);
+        check('readlinkSync', ['/tmp/dir/not/file']);
       });
 
       it('should throw on non directory parent', function () {
@@ -501,7 +523,7 @@ if (supported.indexOf(version) !== -1) {
     describe('readSync()', function () {
 
       it('should fail on non existing fd', function () {
-        check('readSync', [Number.MAX_VALUE, new Buffer(5), 0, 5, 0]);
+        check('readSync', [BAD_FD, new Buffer(5), 0, 5, 0]);
       });
 
       it('should fail on closed fd', function () {
@@ -704,27 +726,27 @@ if (supported.indexOf(version) !== -1) {
     describe('utimesSync()', function () {
 
       it('should throw on non existing path', function () {
-        check('chownSync', ['/tmp/dir/not', 0, 0]);
+        check('utimesSync', ['/tmp/dir/not', 0, 0]);
       });
 
       it('should throw on non existing parent directory', function () {
-        check('chownSync', ['/tmp/dir/not/file', 0, 0]);
+        check('utimesSync', ['/tmp/dir/not/file', 0, 0]);
       });
 
       it('should throw on not directory parent', function () {
-        check('chownSync', ['/tmp/dir/file/new', 0, 0]);
+        check('utimesSync', ['/tmp/dir/file/new', 0, 0]);
       });
 
       it('should throw on non string path', function () {
-        check('chownSync', [true, 0, 0]);
+        check('utimesSync', [true, 0, 0]);
       });
 
       it('should throw bad atime parameter type', function () {
-        check('chownSync', ['/tmp/dir/file', false, 0]);
+        check('utimesSync', ['/tmp/dir/file', false, 0]);
       });
 
       it('should throw bad mtime parameter type', function () {
-        check('chownSync', ['/tmp/dir/file', 0, false]);
+        check('utimesSync', ['/tmp/dir/file', 0, false]);
       });
 
     });
@@ -764,7 +786,7 @@ if (supported.indexOf(version) !== -1) {
       if (version !== 'v0.12') {
 
         it('should throw on non existing file descriptor', function () {
-          check('writeSync', [Number.MAX_VALUE, new Buffer('Hello, friend'), 0, 5, 0]);
+          check('writeSync', [BAD_FD, new Buffer('Hello, friend'), 0, 5, 0]);
         });
 
         it('should throw on non integer file descriptor', function () {
@@ -815,7 +837,7 @@ if (supported.indexOf(version) !== -1) {
         if (version !== 'v0.12') {
 
           it('should throw on non existing file descriptor', function () {
-            check('writeSync', [Number.MAX_VALUE, 'Hello, friend']);
+            check('writeSync', [BAD_FD, 'Hello, friend']);
           });
 
           it('should throw on non integer file descriptor', function () {
