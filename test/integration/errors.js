@@ -812,9 +812,16 @@ if (supported.indexOf(version) !== -1) {
         });
       });
 
+      it('should throw on offset out of bounds', function () {
+        check('writeSync', {
+          fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 5, 0],
+          avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 5, 0]
+        });
+      });
+
       if (version !== 'v0.10') {
 
-        it('should throw on offset out of bounds', function () {
+        it('should throw on offset out of bounds with zero length', function () {
           check('writeSync', {
             fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0],
             avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0]
