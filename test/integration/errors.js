@@ -254,6 +254,18 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('fdatasyncSync()', function () {
+
+      it('should throw on non existing file descriptor', function () {
+        check('fdatasyncSync', [BAD_FD]);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('fdatasyncSync', [true]);
+      });
+
+    });
+
     describe('fstatSync()', function () {
 
       it('should throw on non existing file descriptor', function () {
