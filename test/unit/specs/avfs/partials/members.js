@@ -8,6 +8,8 @@ var Stats = require('lib/common/stats');
 var ReadStream  = require('lib/common/read-stream');
 var WriteStream = require('lib/common/write-stream');
 
+var SyncWriteStream = require('lib/common/sync-write-stream');
+
 module.exports = function (fs) {
 
   describe('members', function () {
@@ -24,6 +26,11 @@ module.exports = function (fs) {
     it('should expose WriteStream', function () {
       expect(fs.WriteStream).to.be.a('function');
       expect(new fs.WriteStream('/file')).to.be.an.instanceof(WriteStream);
+    });
+
+    it('should expose SyncWriteStream', function () {
+      expect(fs.SyncWriteStream).to.be.a('function');
+      expect(new fs.SyncWriteStream('/file')).to.be.an.instanceof(SyncWriteStream);
     });
 
   });
