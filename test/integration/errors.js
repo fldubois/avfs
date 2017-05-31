@@ -886,6 +886,18 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('_toUnixTimestamp()', function () {
+
+      it('should throw on invalid string parameter', function () {
+        check('_toUnixTimestamp', ['not']);
+      });
+
+      it('should throw on invalid parameter', function () {
+        check('_toUnixTimestamp', [false]);
+      });
+
+    });
+
     after('clean files', function () {
       fs.chmodSync('/tmp/dir/dperm', parseInt('777', 8));
 

@@ -20,7 +20,7 @@
     // require constructor function names to begin with a capital letter
     "new-cap": ["error", {"properties": false, "capIsNew": false}],
     // disallow dangling underscores in identifiers
-    "no-underscore-dangle": ["error", { "allow": ["_obj", "_write", "_read", "_readableState"] }],
+    "no-underscore-dangle": ["error", { "allow": ["_obj", "_write", "_read", "_readableState", "_toUnixTimestamp"] }],
     // require or disallow padding within blocks
     "padded-blocks": "off"
 

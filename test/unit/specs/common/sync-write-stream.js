@@ -6,8 +6,6 @@ var chai   = require('chai');
 var expect = chai.expect;
 var sinon  = require('sinon');
 
-var errors = require('lib/common/errors');
-
 var Stream = stream.Stream;
 
 var SyncWriteStream = require('lib/common/sync-write-stream');
