@@ -886,6 +886,14 @@ if (supported.indexOf(version) !== -1) {
 
     });
 
+    describe('watchFile()', function () {
+
+      it('should throw on invalid string parameter', function () {
+        check('watchFile', ['/tmp/dir/file']);
+      });
+
+    });
+
     describe('_toUnixTimestamp()', function () {
 
       it('should throw on invalid string parameter', function () {
