@@ -10,7 +10,7 @@ var WriteStream = require('lib/common/write-stream');
 
 var SyncWriteStream = require('lib/common/sync-write-stream');
 
-module.exports = function (fs) {
+module.exports = function (fs, getElement, version) {
 
   describe('members', function () {
 
@@ -28,10 +28,14 @@ module.exports = function (fs) {
       expect(new fs.WriteStream('/file')).to.be.an.instanceof(WriteStream);
     });
 
-    it('should expose SyncWriteStream', function () {
-      expect(fs.SyncWriteStream).to.be.a('function');
-      expect(new fs.SyncWriteStream('/file')).to.be.an.instanceof(SyncWriteStream);
-    });
+    if (['v0.10', 'v0.12'].indexOf(version) !== -1) {
+
+      it('should expose SyncWriteStream', function () {
+        expect(fs.SyncWriteStream).to.be.a('function');
+        expect(new fs.SyncWriteStream('/file')).to.be.an.instanceof(SyncWriteStream);
+      });
+
+    }
 
   });
 
