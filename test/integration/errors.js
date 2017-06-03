@@ -63,8 +63,8 @@ if (supported.indexOf(version) !== -1) {
       fs.symlinkSync('/tmp/dir/file', '/tmp/dir/link');
       avfs.symlinkSync('/tmp/dir/file', '/tmp/dir/link');
 
-      fs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
-      avfs.openSync('/tmp/dir/perm', 'w', parseInt('222', 8));
+      fs.openSync('/tmp/dir/perm', 'w', parseInt('000', 8));
+      avfs.openSync('/tmp/dir/perm', 'w', parseInt('000', 8));
 
       fs.mkdirSync('/tmp/dir/dperm');
       avfs.mkdirSync('/tmp/dir/dperm');
@@ -94,6 +94,42 @@ if (supported.indexOf(version) !== -1) {
       fs.closeSync(fd.closed.fs);
       avfs.closeSync(fd.closed.avfs);
     });
+
+    if (version !== 'v0.10') {
+
+      describe('accessSync()', function () {
+
+        it('should throw on non readable file and R_OK mode', function () {
+          check('accessSync', ['/tmp/dir/perm', fs.R_OK]);
+        });
+
+        it('should throw on non writable file and W_OK mode', function () {
+          check('accessSync', ['/tmp/dir/perm', fs.W_OK]);
+        });
+
+        it('should throw on non executable file and X_OK mode', function () {
+          check('accessSync', ['/tmp/dir/perm', fs.X_OK]);
+        });
+
+        it('should throw on non existing file', function () {
+          check('accessSync', ['/tmp/dir/not']);
+        });
+
+        it('should throw on non existing parent directory', function () {
+          check('accessSync', ['/tmp/dir/not/file']);
+        });
+
+        it('should throw on not directory parent', function () {
+          check('accessSync', ['/tmp/dir/file/new']);
+        });
+
+        it('should throw on non string path', function () {
+          check('accessSync', [true]);
+        });
+
+      });
+
+    }
 
     describe('appendFileSync()', function () {
 
