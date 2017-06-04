@@ -7,10 +7,6 @@ var constants = require('lib/common/constants');
 
 var Descriptor = require('lib/common/descriptor');
 
-var noop = function () {
-  return null;
-};
-
 module.exports = function (fs, getElement, version) {
 
   describe('writeSync()', function () {
@@ -90,50 +86,16 @@ module.exports = function (fs, getElement, version) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
     });
 
-    it('should fail on non existing fd', function () {
+    it('should throw on non existing file descriptor', function () {
       expect(function () {
         fs.writeSync(0, new Buffer('Hello, friend'), 0, 5, 0);
       }).to.throw(Error, {code: 'EBADF'});
     });
 
-    it('should fail on closed fd', function () {
-      var fd = 0;
-
-      fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDWR);
-
-      fs.handles[fd].close();
-
-      expect(function () {
-        fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should fail on non writing fd', function () {
-      var fd = 0;
-
-      fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDONLY);
-
-      expect(function () {
-        fs.writeSync(fd, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on bad fd type', function () {
+    it('should throw on non integer file descriptor', function () {
       expect(function () {
         fs.writeSync(true, new Buffer('Hello, friend'), 0, 5, 0);
       }).to.throw(TypeError);
-    });
-
-    it('should throw on offset out of bounds', function () {
-      expect(function () {
-        fs.writeSync(0, new Buffer('Hello, friend'), 1000, 0, 0, noop);
-      }).to.throw(Error);
-    });
-
-    it('should throw on length beyond buffer', function () {
-      expect(function () {
-        fs.writeSync(0, new Buffer('Hello, friend'), 0, 1000, 0, noop);
-      }).to.throw(Error);
     });
 
     if (['v0.12', 'v4', 'v5'].indexOf(version) !== -1) {
@@ -205,35 +167,13 @@ module.exports = function (fs, getElement, version) {
         expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
       });
 
-      it('should fail on non existing fd', function () {
+      it('should throw on non existing file descriptor', function () {
         expect(function () {
           fs.writeSync(0, 'Hello, friend');
         }).to.throw(Error, {code: 'EBADF'});
       });
 
-      it('should fail on closed fd', function () {
-        var fd = 0;
-
-        fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDWR);
-
-        fs.handles[fd].close();
-
-        expect(function () {
-          fs.writeSync(fd, 'Hello, friend');
-        }).to.throw(Error, {code: 'EBADF'});
-      });
-
-      it('should fail on non writing fd', function () {
-        var fd = 0;
-
-        fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDONLY);
-
-        expect(function () {
-          fs.writeSync(fd, 'Hello, friend');
-        }).to.throw(Error, {code: 'EBADF'});
-      });
-
-      it('should throw on bad fd type', function () {
+      it('should throw on non integer file descriptor', function () {
         expect(function () {
           fs.writeSync(true);
         }).to.throw(TypeError);

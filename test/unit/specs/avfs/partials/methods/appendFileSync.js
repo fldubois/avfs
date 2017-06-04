@@ -55,42 +55,6 @@ module.exports = function (fs) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/new').that.contain('Hello, friend.');
     });
 
-    it('should throw on non existing parent directory', function () {
-      expect(function () {
-        fs.appendFileSync('/not/file', 'Hello, friend.');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on not directory parent', function () {
-      expect(function () {
-        fs.appendFileSync('/tmp/file/new', 'Hello, friend.');
-      }).to.throw(Error, {code: 'ENOTDIR'});
-    });
-
-    it('should throw on directory path', function () {
-      expect(function () {
-        fs.appendFileSync('/tmp', 'Hello, friend.');
-      }).to.throw(Error, {code: 'EISDIR'});
-    });
-
-    it('should throw on unknown encoding', function () {
-      expect(function () {
-        fs.appendFileSync('/tmp/file', 'Hello, friend.', 'utf5');
-      }).to.throw(Error, 'Unknown encoding: utf5');
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.appendFileSync(true);
-      }).to.throw(TypeError, 'path must be a string');
-    });
-
-    it('should throw on bad options type', function () {
-      expect(function () {
-        fs.appendFileSync('/tmp/file', 'Hello, friend.', true);
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

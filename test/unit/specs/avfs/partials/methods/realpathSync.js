@@ -17,24 +17,6 @@ module.exports = function (fs) {
       expect(fs.realpathSync('/falsy', {'/falsy': false})).to.equal(false);
     });
 
-    it('should throw on non existing element', function () {
-      expect(function () {
-        fs.realpathSync('/not/test.txt');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on not string path', function () {
-      expect(function () {
-        fs.realpathSync(false);
-      }).to.throw(TypeError);
-    });
-
-    it('should throw on not string path in cache', function () {
-      expect(function () {
-        fs.realpathSync('/tmp/not/file', {'/tmp/not': false});
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

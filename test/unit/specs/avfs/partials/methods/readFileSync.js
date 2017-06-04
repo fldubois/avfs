@@ -28,36 +28,6 @@ module.exports = function (fs) {
       expect(content).to.equal('Hello, friend.');
     });
 
-    it('should throw on non existing file', function () {
-      expect(function () {
-        fs.readFileSync('/not/file');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on directory', function () {
-      expect(function () {
-        fs.readFileSync('/tmp');
-      }).to.throw(Error, {code: 'EISDIR'});
-    });
-
-    it('should throw on unknown encoding', function () {
-      expect(function () {
-        fs.readFileSync('/tmp/file', 'utf5');
-      }).to.throw(Error, 'Unknown encoding: utf5');
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.readFileSync(true);
-      }).to.throw(TypeError, 'path must be a string');
-    });
-
-    it('should throw on bad options type', function () {
-      expect(function () {
-        fs.readFileSync('/tmp/file', true);
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

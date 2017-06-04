@@ -55,30 +55,6 @@ module.exports = function (fs, getElement) {
       expect(getElement('/tmp/file').get('mtime').getTime()).to.equal(date.getTime());
     });
 
-    it('should throw on non existing file descriptor', function () {
-      expect(function () {
-        fs.futimesSync(0, 0, 0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non integer file descriptor', function () {
-      expect(function () {
-        fs.futimesSync(false, 0, 0);
-      }).to.throw(TypeError);
-    });
-
-    it('should throw on bad atime parameter type', function () {
-      expect(function () {
-        fs.futimesSync(0, false, 0);
-      }).to.throw(Error);
-    });
-
-    it('should throw on bad mtime parameter type', function () {
-      expect(function () {
-        fs.futimesSync(0, 0, false);
-      }).to.throw(Error);
-    });
-
   });
 
 };

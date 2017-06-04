@@ -22,24 +22,6 @@ module.exports = function (fs, getElement) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
     });
 
-    it('should throw on non existing file descriptor', function () {
-      expect(function () {
-        fs.fchmodSync(0, '0700');
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non integer file descriptor', function () {
-      expect(function () {
-        fs.fchmodSync(true, '0700');
-      }).to.throw(TypeError);
-    });
-
-    it('should throw on bad mode parameter type', function () {
-      expect(function () {
-        fs.fchmodSync(0, false);
-      }).to.throw(Error);
-    });
-
   });
 
 };

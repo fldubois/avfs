@@ -570,32 +570,32 @@ if (supported.indexOf(version) !== -1) {
 
     describe('readSync()', function () {
 
-      it('should fail on non existing fd', function () {
+      it('should throw on non existing file descriptor', function () {
         check('readSync', [BAD_FD, new Buffer(5), 0, 5, 0]);
       });
 
-      it('should fail on closed fd', function () {
+      it('should throw on closed file descriptor', function () {
         check('readSync', {
           fs:   [fd.closed.fs,   new Buffer(5), 0, 5, 0],
           avfs: [fd.closed.avfs, new Buffer(5), 0, 5, 0]
         });
       });
 
-      it('should fail on non reading fd', function () {
+      it('should throw on non reading file descriptor', function () {
         check('readSync', {
           fs:   [fd.write.fs,   new Buffer(5), 0, 5, 0],
           avfs: [fd.write.avfs, new Buffer(5), 0, 5, 0]
         });
       });
 
-      it('should fail on directory', function () {
+      it('should throw on directory', function () {
         check('readSync', {
           fs:   [fd.dir.fs,   new Buffer(5), 0, 5, 0],
           avfs: [fd.dir.avfs, new Buffer(5), 0, 5, 0]
         });
       });
 
-      it('should throw on bad fd type', function () {
+      it('should throw on bad file descriptor type', function () {
         check('readSync', [true, new Buffer(5), 0, 5, 0]);
       });
 

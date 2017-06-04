@@ -37,18 +37,6 @@ module.exports = function (fs, getElement) {
       expect(stats.ctime).to.equal(file.get('ctime'));
     });
 
-    it('should throw on non existing file descriptor', function () {
-      expect(function () {
-        fs.fstatSync(0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non integer file descriptor', function () {
-      expect(function () {
-        fs.fstatSync(true);
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

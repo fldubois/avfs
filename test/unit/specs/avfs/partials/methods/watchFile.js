@@ -18,12 +18,6 @@ module.exports = function (fs) {
       expect(fs.watchFile('/tmp/file', {}, noop)).to.be.an.instanceOf(StatWatcher);
     });
 
-    it('should throw on non function listener', function () {
-      expect(function () {
-        fs.watchFile('/tmp/file', false);
-      }).to.throw(Error, 'watchFile requires a listener function');
-    });
-
   });
 
 };

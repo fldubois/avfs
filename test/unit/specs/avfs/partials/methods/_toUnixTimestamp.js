@@ -34,18 +34,6 @@ module.exports = function (fs) {
       expect(fs._toUnixTimestamp(new Date())).to.equal(1500.600);
     });
 
-    it('should throw on invalid string parameter', function () {
-      expect(function () {
-        fs._toUnixTimestamp('not');
-      }).to.throw(Error, 'Cannot parse time: not');
-    });
-
-    it('should throw on invalid parameter', function () {
-      expect(function () {
-        fs._toUnixTimestamp(false);
-      }).to.throw(Error, 'Cannot parse time: false');
-    });
-
     after('Restore dates', function () {
       clock.restore();
     });

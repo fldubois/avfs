@@ -42,42 +42,6 @@ module.exports = function (fs, getElement) {
       expect(getElement('/tmp/file').get('mtime').getTime()).to.equal(date.getTime());
     });
 
-    it('should throw on non existing path', function () {
-      expect(function () {
-        fs.utimesSync('/not/file', 0, 0);
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on non existing parent directory', function () {
-      expect(function () {
-        fs.chownSync('/not/file', 0, 0);
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on not directory parent', function () {
-      expect(function () {
-        fs.chownSync('/tmp/file/new', 0, 0);
-      }).to.throw(Error, {code: 'ENOTDIR'});
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.utimesSync(true, 0, 0);
-      }).to.throw(TypeError, 'path must be a string');
-    });
-
-    it('should throw bad atime parameter type', function () {
-      expect(function () {
-        fs.utimesSync('/tmp/file', false, 0);
-      }).to.throw(Error, 'Cannot parse time: false');
-    });
-
-    it('should throw bad mtime parameter type', function () {
-      expect(function () {
-        fs.utimesSync('/tmp/file', 0, false);
-      }).to.throw(Error, 'Cannot parse time: false');
-    });
-
   });
 
 };

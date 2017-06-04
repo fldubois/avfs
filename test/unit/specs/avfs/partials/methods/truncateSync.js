@@ -23,30 +23,6 @@ module.exports = function (fs) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
     });
 
-    it('should throw on non existing path', function () {
-      expect(function () {
-        fs.truncateSync('/not/file');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on directory', function () {
-      expect(function () {
-        fs.truncateSync('/tmp');
-      }).to.throw(Error, {code: 'EISDIR'});
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.truncateSync(true);
-      }).to.throw(TypeError, 'path must be a string');
-    });
-
-    it('should throw on non integer length', function () {
-      expect(function () {
-        fs.truncateSync('/tmp/file', true);
-      }).to.throw(TypeError, 'Not an integer');
-    });
-
   });
 
 };

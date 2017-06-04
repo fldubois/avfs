@@ -29,31 +29,6 @@ module.exports = function (fs, getElement) {
       expect(stats.ctime).to.equal(file.get('ctime'));
     });
 
-    it('should not follow symlinks', function () {
-      var statsFile = fs.lstatSync('/tmp/file');
-      var statsLink = fs.lstatSync('/dir/link');
-
-      expect(statsFile).to.not.deep.equal(statsLink);
-    });
-
-    it('should throw on non existing path', function () {
-      expect(function () {
-        fs.lstatSync('/not/test.txt');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on non directory parent', function () {
-      expect(function () {
-        fs.lstatSync('/tmp/file/file');
-      }).to.throw(Error, {code: 'ENOTDIR'});
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.lstatSync(true);
-      }).to.throw(TypeError, 'path must be a string');
-    });
-
   });
 
 };

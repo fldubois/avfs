@@ -34,34 +34,6 @@ module.exports = function (fs, getElement) {
       expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
     });
 
-    it('should throw on non writing file descriptor', function () {
-      var fd = 10;
-
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDONLY);
-
-      expect(function () {
-        fs.ftruncateSync(fd);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non existing file descriptor', function () {
-      expect(function () {
-        fs.ftruncateSync(0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non integer file descriptor', function () {
-      expect(function () {
-        fs.ftruncateSync(true);
-      }).to.throw(TypeError);
-    });
-
-    it('should throw on non integer length', function () {
-      expect(function () {
-        fs.ftruncateSync(0, true);
-      }).to.throw(TypeError, 'Not an integer');
-    });
-
   });
 
 };

@@ -7,10 +7,6 @@ var constants = require('lib/common/constants');
 
 var Descriptor = require('lib/common/descriptor');
 
-var noop = function () {
-  return null;
-};
-
 module.exports = function (fs, getElement) {
 
   describe('readSync()', function () {
@@ -83,62 +79,6 @@ module.exports = function (fs, getElement) {
 
       expect(bytesRead).to.equal(0);
       expect(buffer.toString()).to.equal('Hello, world!');
-    });
-
-    it('should fail on non existing fd', function () {
-      expect(function () {
-        fs.readSync(0, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should fail on closed fd', function () {
-      var fd = 0;
-
-      fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_RDWR);
-
-      fs.handles[fd].close();
-
-      expect(function () {
-        fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should fail on non reading fd', function () {
-      var fd = 0;
-
-      fs.handles[fd] = new Descriptor({}, '/tmp/file', constants.O_WRONLY);
-
-      expect(function () {
-        fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should fail on directory', function () {
-      var fd = 0;
-
-      fs.handles[fd] = new Descriptor(getElement('/tmp'), '/tmp', constants.O_RDWR);
-
-      expect(function () {
-        fs.readSync(fd, new Buffer(5), 0, 5, 0);
-      }).to.throw(Error, {code: 'EISDIR'});
-    });
-
-    it('should throw on bad fd type', function () {
-      expect(function () {
-        fs.readSync(true);
-      }).to.throw(TypeError);
-    });
-
-    it('should throw on offset out of bounds', function () {
-      expect(function () {
-        fs.readSync(0, new Buffer(10), 1000, 0, 0, noop);
-      }).to.throw(Error, 'Offset is out of bounds');
-    });
-
-    it('should throw on length beyond buffer', function () {
-      expect(function () {
-        fs.readSync(0, new Buffer(10), 0, 1000, 0, noop);
-      }).to.throw(Error, 'Length extends beyond buffer');
     });
 
   });

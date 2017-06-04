@@ -19,18 +19,6 @@ module.exports = function (fs, getElement) {
       expect(fs.fdatasyncSync(fd)).to.be.an('undefined');
     });
 
-    it('should throw on non existing file descriptor', function () {
-      expect(function () {
-        fs.fdatasyncSync(0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non integer file descriptor', function () {
-      expect(function () {
-        fs.fdatasyncSync(true);
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

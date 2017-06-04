@@ -42,30 +42,6 @@ module.exports = function (fs) {
       expect(fs.files).to.contain.an.avfs.directory('/tmp/dir').with.mode('0777').that.is.clear();
     });
 
-    it('should throw on existing path', function () {
-      expect(function () {
-        fs.mkdirSync('/tmp');
-      }).to.throw(Error, {code: 'EEXIST'});
-    });
-
-    it('should throw on non existing parent directory', function () {
-      expect(function () {
-        fs.mkdirSync('/not/dir');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on not directory parent', function () {
-      expect(function () {
-        fs.mkdirSync('/tmp/file/dir');
-      }).to.throw(Error, {code: 'ENOTDIR'});
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.mkdirSync(true);
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

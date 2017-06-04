@@ -21,48 +21,6 @@ module.exports = function (fs) {
       expect(fs.files).to.contain.an.avfs.file('/dir/file').that.contain('Hello, friend.');
     });
 
-    it('should throw on non existing path', function () {
-      expect(function () {
-        fs.renameSync('/tmp/not', '/tmp/new');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on new path under old path', function () {
-      expect(function () {
-        fs.renameSync('/tmp/file', '/tmp/file/new');
-      }).to.throw(Error, {code: 'EINVAL'});
-    });
-
-    it('should throw on not directory parent', function () {
-      expect(function () {
-        fs.renameSync('/tmp/file/file', '/dir/file');
-      }).to.throw(Error, {code: 'ENOTDIR'});
-    });
-
-    it('should throw on not writable parent directory', function () {
-      expect(function () {
-        fs.renameSync('/perm/file', '/tmp/new');
-      }).to.throw(Error, {code: 'EACCES'});
-    });
-
-    it('should throw on not writable destination directory', function () {
-      expect(function () {
-        fs.renameSync('/tmp/file', '/perm/new');
-      }).to.throw(Error, {code: 'EACCES'});
-    });
-
-    it('should throw on not string source', function () {
-      expect(function () {
-        fs.renameSync(true, '/tmp/new');
-      }).to.throw(TypeError);
-    });
-
-    it('should throw on not string destination', function () {
-      expect(function () {
-        fs.renameSync('/tmp/file', true);
-      }).to.throw(TypeError);
-    });
-
   });
 
 };

@@ -25,30 +25,6 @@ module.exports = function (fs, getElement) {
       expect(file.get('nlink')).to.equal(4);
     });
 
-    it('should throw on non existing path', function () {
-      expect(function () {
-        fs.unlinkSync('/not/file');
-      }).to.throw(Error, {code: 'ENOENT'});
-    });
-
-    it('should throw on directory', function () {
-      expect(function () {
-        fs.unlinkSync('/tmp');
-      }).to.throw(Error, {code: 'EISDIR'});
-    });
-
-    it('should throw on non string path', function () {
-      expect(function () {
-        fs.unlinkSync(true);
-      }).to.throw(TypeError, 'path must be a string');
-    });
-
-    it('should throw on not writable parent directory', function () {
-      expect(function () {
-        fs.unlinkSync('/perm/file');
-      }).to.throw(Error, {code: 'EACCES'});
-    });
-
   });
 
 };

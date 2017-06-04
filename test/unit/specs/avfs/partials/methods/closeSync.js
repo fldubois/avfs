@@ -24,18 +24,6 @@ module.exports = function (fs, getElement) {
       expect(fs.handles[fd].closed).to.equal(true);
     });
 
-    it('should throw on non existing file descriptor', function () {
-      expect(function () {
-        fs.closeSync(0);
-      }).to.throw(Error, {code: 'EBADF'});
-    });
-
-    it('should throw on non integer file descriptor', function () {
-      expect(function () {
-        fs.closeSync('Hello');
-      }).to.throw(Error);
-    });
-
   });
 
 };

@@ -27,12 +27,6 @@ module.exports = function (fs, getElement, version) {
         });
       });
 
-      it('should throw on non function callback', function () {
-        expect(function () {
-          fs.mkdtemp('test-', false);
-        }).to.throw(TypeError, '"callback" argument must be a function');
-      });
-
     });
 
   }
