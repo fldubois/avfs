@@ -8,7 +8,7 @@ var sinon  = require('sinon');
 
 var Stream = stream.Stream;
 
-var SyncWriteStream = require('lib/common/sync-write-stream');
+var SyncWriteStream = require('lib/common/streams/sync-write-stream');
 
 chai.use(require('sinon-chai'));
 

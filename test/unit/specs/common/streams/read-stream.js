@@ -11,7 +11,7 @@ var errors = require('lib/common/errors');
 var PassThrough = stream.PassThrough;
 var Readable    = stream.Readable;
 
-var ReadStream = require('lib/common/read-stream');
+var ReadStream = require('lib/common/streams/read-stream');
 
 chai.use(require('sinon-chai'));
 

@@ -10,7 +10,7 @@ var errors = require('lib/common/errors');
 
 var Writable = stream.Writable;
 
-var WriteStream = require('lib/common/write-stream');
+var WriteStream = require('lib/common/streams/write-stream');
 
 chai.use(require('sinon-chai'));
 

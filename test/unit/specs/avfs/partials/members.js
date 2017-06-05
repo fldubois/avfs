@@ -3,12 +3,12 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var Stats = require('lib/common/stats');
+var Stats = require('lib/common/components/stats');
 
-var ReadStream  = require('lib/common/read-stream');
-var WriteStream = require('lib/common/write-stream');
+var ReadStream  = require('lib/common/streams/read-stream');
+var WriteStream = require('lib/common/streams/write-stream');
 
-var SyncWriteStream = require('lib/common/sync-write-stream');
+var SyncWriteStream = require('lib/common/streams/sync-write-stream');
 
 module.exports = function (fs, getElement, version) {
 

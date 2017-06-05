@@ -3,7 +3,7 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var ReadStream = require('lib/common/read-stream');
+var ReadStream = require('lib/common/streams/read-stream');
 
 module.exports = function (fs) {
 

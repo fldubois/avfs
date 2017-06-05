@@ -5,7 +5,7 @@ var expect = chai.expect;
 
 var elements  = require('lib/common/elements');
 
-var Stats = require('lib/common/stats');
+var Stats = require('lib/common/components/stats');
 
 var elems = {
   directory: elements.directory(parseInt('777', 8)),

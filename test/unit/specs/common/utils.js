@@ -4,13 +4,13 @@ var chai   = require('chai');
 var expect = chai.expect;
 
 var constants = require('lib/common/constants');
-var utils     = require('lib/common/utils');
+var parsers     = require('lib/common/parsers');
 
-describe('common/utils', function () {
+describe('common/parsers', function () {
 
-  describe('parseFlags()', function () {
+  describe('flags()', function () {
 
-    it('should parse string to utils', function () {
+    it('should parse string to parsers', function () {
       var specs = [
         {flag: constants.O_RDONLY, values: ['r', 'rs']},
         {flag: constants.O_WRONLY, values: ['w', 'wx', 'xw']},
@@ -23,26 +23,26 @@ describe('common/utils', function () {
 
       specs.forEach(function (spec) {
         spec.values.forEach(function (value) {
-          expect(utils.parseFlags(value) & spec.flag).to.be.above(0, value + ' should contain ' + spec.flag + ' flag');
+          expect(parsers.flags(value) & spec.flag).to.be.above(0, value + ' should contain ' + spec.flag + ' flag');
         });
       });
     });
 
-    it('should throw on unknown utils', function () {
+    it('should throw on unknown parsers', function () {
       expect(function () {
-        utils.parseFlags('b');
+        parsers.flags('b');
       }).to.throw(Error, 'Unknown file open flag: b');
     });
 
     it('should do nothing on non string parameter', function () {
-      expect(utils.parseFlags(1)).to.equal(1);
-      expect(utils.parseFlags(true)).to.equal(true);
-      expect(utils.parseFlags({})).to.deep.equal({});
+      expect(parsers.flags(1)).to.equal(1);
+      expect(parsers.flags(true)).to.equal(true);
+      expect(parsers.flags({})).to.deep.equal({});
     });
 
   });
 
-  describe('parseMode()', function () {
+  describe('mode()', function () {
 
     it('should parse mode string to number', function () {
       var specs = [
@@ -57,36 +57,36 @@ describe('common/utils', function () {
       ];
 
       specs.forEach(function (spec) {
-        expect(utils.parseMode(spec.mode)).to.equal(spec.value, spec.mode + 'mode  should equal ' + spec.value);
+        expect(parsers.mode(spec.mode)).to.equal(spec.value, spec.mode + 'mode  should equal ' + spec.value);
       });
     });
 
     it('should return the value on number parameter', function () {
-      expect(utils.parseMode(0)).to.equal(0);
-      expect(utils.parseMode(7)).to.equal(7);
+      expect(parsers.mode(0)).to.equal(0);
+      expect(parsers.mode(7)).to.equal(7);
 
-      expect(utils.parseMode(511)).to.equal(511);
-      expect(utils.parseMode(438)).to.equal(438);
+      expect(parsers.mode(511)).to.equal(511);
+      expect(parsers.mode(438)).to.equal(438);
     });
 
     it('should return NaN on non octal string', function () {
-      expect(Number.isNaN(utils.parseMode('9'))).to.equal(true, 'should return NaN');
+      expect(Number.isNaN(parsers.mode('9'))).to.equal(true, 'should return NaN');
     });
 
     it('should return default on bad type', function () {
-      expect(utils.parseMode(null, 511)).to.equal(511);
-      expect(utils.parseMode(true, 511)).to.equal(511);
+      expect(parsers.mode(null, 511)).to.equal(511);
+      expect(parsers.mode(true, 511)).to.equal(511);
 
-      expect(utils.parseMode({}, '0777')).to.equal(511);
-      expect(utils.parseMode([], '0777')).to.equal(511);
+      expect(parsers.mode({}, '0777')).to.equal(511);
+      expect(parsers.mode([], '0777')).to.equal(511);
     });
 
     it('should return null on bad type without default', function () {
-      expect(utils.parseMode(null)).to.equal(null);
-      expect(utils.parseMode(true)).to.equal(null);
+      expect(parsers.mode(null)).to.equal(null);
+      expect(parsers.mode(true)).to.equal(null);
 
-      expect(utils.parseMode({})).to.equal(null);
-      expect(utils.parseMode([])).to.equal(null);
+      expect(parsers.mode({})).to.equal(null);
+      expect(parsers.mode([])).to.equal(null);
     });
   });
 

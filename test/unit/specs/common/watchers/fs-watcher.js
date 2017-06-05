@@ -5,7 +5,7 @@ var events = require('events');
 var chai   = require('chai');
 var expect = chai.expect;
 
-var FSWatcher = require('lib/common/fs-watcher');
+var FSWatcher = require('lib/common/watchers/fs-watcher');
 
 describe('common/fs-watcher', function () {
 

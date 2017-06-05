@@ -5,7 +5,7 @@ var events = require('events');
 var chai   = require('chai');
 var expect = chai.expect;
 
-var StatWatcher = require('lib/common/stat-watcher');
+var StatWatcher = require('lib/common/watchers/stat-watcher');
 
 describe('common/stat-watcher', function () {
 
