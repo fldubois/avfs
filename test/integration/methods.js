@@ -1,14 +1,9 @@
 'use strict';
 
-var fs   = require('fs');
-var path = require('path');
+var fs = require('fs');
 
 var chai   = require('chai');
 var expect = chai.expect;
-
-var version = require('lib/common/version');
-
-var supported = fs.readdirSync(path.join(__dirname, '../../lib'));
 
 var ignored = [
   'lchmod',
@@ -29,16 +24,14 @@ var getMethods = function (target) {
   return methods.sort();
 };
 
-if (supported.indexOf(version) !== -1) {
-  var AVFS = require('lib/avfs');
+var AVFS = require('lib/avfs');
 
-  var avfs = new AVFS();
+var avfs = new AVFS();
 
-  describe('methods', function () {
+describe('methods', function () {
 
-    it('should expose fs methods', function () {
-      expect(getMethods(avfs)).to.deep.equal(getMethods(fs));
-    });
-
+  it('should expose fs methods', function () {
+    expect(getMethods(avfs)).to.deep.equal(getMethods(fs));
   });
-}
+
+});
