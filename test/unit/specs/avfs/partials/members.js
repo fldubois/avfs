@@ -37,6 +37,19 @@ module.exports = function (fs, getElement, version) {
 
     }
 
+    if (version !== 'v0.10') {
+
+      it('should expose access flags', function () {
+        expect(fs).to.contain.keys([
+          'F_OK',
+          'R_OK',
+          'W_OK',
+          'X_OK'
+        ]);
+      });
+
+    }
+
   });
 
 };
