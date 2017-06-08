@@ -29,7 +29,8 @@ describe('common/errors', function () {
       'EISDIR',
       'ENOENT',
       'EEXIST',
-      'EPERM'
+      'EPERM',
+      'nullCheck'
     ]);
 
     Object.keys(errors).forEach(function (code) {

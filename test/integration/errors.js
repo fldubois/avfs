@@ -95,6 +95,10 @@ describe('errors', function () {
 
     describe('accessSync()', function () {
 
+      it('should throw on null character in path', function () {
+        check('accessSync', ['\u0000']);
+      });
+
       it('should throw on non readable file and R_OK mode', function () {
         check('accessSync', ['/tmp/dir/perm', fs.R_OK]);
       });
@@ -157,6 +161,10 @@ describe('errors', function () {
 
   describe('chmodSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('chmodSync', ['\u0000']);
+    });
+
     it('should throw on bad path parameter type', function () {
       check('chmodSync', [false, '0700']);
     });
@@ -184,6 +192,10 @@ describe('errors', function () {
   });
 
   describe('chownSync()', function () {
+
+    it('should throw on null character in path', function () {
+      check('chownSync', ['\u0000']);
+    });
 
     it('should throw on bad path parameter type', function () {
       check('chownSync', [false, 1001, 1001]);
@@ -376,6 +388,14 @@ describe('errors', function () {
 
   describe('linkSync()', function () {
 
+    it('should throw on null character in source', function () {
+      check('linkSync', ['\u0000', '/tmp/dir/file']);
+    });
+
+    it('should throw on null character in destination', function () {
+      check('linkSync', ['/tmp/dir/file', '\u0000']);
+    });
+
     it('should throw on directory source', function () {
       check('linkSync', ['/tmp/dir', '/tmp/link']);
     });
@@ -412,6 +432,10 @@ describe('errors', function () {
 
   describe('lstatSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('lstatSync', ['\u0000']);
+    });
+
     it('should throw on non existing path', function () {
       check('lstatSync', ['/tmp/dir/not']);
     });
@@ -432,6 +456,10 @@ describe('errors', function () {
 
   describe('mkdirSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('mkdirSync', ['\u0000']);
+    });
+
     it('should throw on existing path', function () {
       check('mkdirSync', ['/tmp/dir']);
     });
@@ -450,15 +478,31 @@ describe('errors', function () {
 
   });
 
-  describe('mkdtemp()', function () {
+  if (['v0.10', 'v0.12'].indexOf(version) === -1) {
 
-    it('should throw on non function callback', function () {
-      check('mkdtemp', ['test-', false]);
+    describe('mkdtemp()', function () {
+
+      it('should throw on non function callback', function () {
+        check('mkdtemp', ['test-', false]);
+      });
+
     });
 
-  });
+    describe('mkdtempSync()', function () {
+
+      it('should throw on null character in path', function () {
+        check('mkdtempSync', ['\u0000']);
+      });
+
+    });
+
+  }
 
   describe('openSync()', function () {
+
+    it('should throw on null character in path', function () {
+      check('openSync', ['\u0000', 'r']);
+    });
 
     it('should throw on bad path type', function () {
       check('openSync', [false, 'r']);
@@ -506,6 +550,10 @@ describe('errors', function () {
 
   describe('readdirSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('readdirSync', ['\u0000']);
+    });
+
     it('should throw on non existing path', function () {
       check('readdirSync', ['/tmp/dir/not']);
     });
@@ -545,6 +593,10 @@ describe('errors', function () {
   });
 
   describe('readlinkSync()', function () {
+
+    it('should throw on null character in path', function () {
+      check('readlinkSync', ['\u0000']);
+    });
 
     it('should throw on non symlink', function () {
       check('readlinkSync', ['/tmp/dir/file']);
@@ -629,6 +681,14 @@ describe('errors', function () {
 
   describe('renameSync()', function () {
 
+    it('should throw on null character in source', function () {
+      check('renameSync', ['\u0000', '/tmp/dir/file']);
+    });
+
+    it('should throw on null character in destination', function () {
+      check('renameSync', ['/tmp/dir/file', '\u0000']);
+    });
+
     it('should throw on non existing source', function () {
       check('renameSync', ['/tmp/dir/not', '/tmp/dir/new']);
     });
@@ -665,6 +725,10 @@ describe('errors', function () {
 
   describe('rmdirSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('rmdirSync', ['\u0000']);
+    });
+
     it('should throw on non existing path', function () {
       check('rmdirSync', ['/tmp/dir/not']);
     });
@@ -685,6 +749,10 @@ describe('errors', function () {
 
   describe('statSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('statSync', ['\u0000']);
+    });
+
     it('should throw on non existing path', function () {
       check('statSync', ['/tmp/dir/not']);
     });
@@ -700,6 +768,14 @@ describe('errors', function () {
   });
 
   describe('symlinkSync()', function () {
+
+    it('should throw on null character in source', function () {
+      check('symlinkSync', ['\u0000', '/tmp/dir/file']);
+    });
+
+    it('should throw on null character in destination', function () {
+      check('symlinkSync', ['/tmp/dir/file', '\u0000']);
+    });
 
     it('should throw on existing destination', function () {
       check('symlinkSync', ['/tmp/dir/file', '/tmp/dir/foo']);
@@ -749,6 +825,10 @@ describe('errors', function () {
 
   describe('unlinkSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('unlinkSync', ['\u0000']);
+    });
+
     it('should throw on non existing path', function () {
       check('unlinkSync', ['/tmp/dir/not']);
     });
@@ -768,6 +848,10 @@ describe('errors', function () {
   });
 
   describe('utimesSync()', function () {
+
+    it('should throw on null character in path', function () {
+      check('utimesSync', ['\u0000']);
+    });
 
     it('should throw on non existing path', function () {
       check('utimesSync', ['/tmp/dir/not', 0, 0]);
@@ -918,10 +1002,30 @@ describe('errors', function () {
 
   });
 
+  describe('watch()', function () {
+
+    it('should throw on null character in path', function () {
+      check('watch', ['\u0000']);
+    });
+
+  });
+
   describe('watchFile()', function () {
+
+    it('should throw on null character in path', function () {
+      check('watchFile', ['\u0000']);
+    });
 
     it('should throw on invalid string parameter', function () {
       check('watchFile', ['/tmp/dir/file']);
+    });
+
+  });
+
+  describe('unwatchFile()', function () {
+
+    it('should throw on null character in path', function () {
+      check('unwatchFile', ['\u0000']);
     });
 
   });

@@ -27,6 +27,18 @@ module.exports = function (fs, getElement, version) {
         });
       });
 
+      it('should return an error on null character in prefix', function (done) {
+        fs.mkdtemp('\u0000', function (error, name) {
+          expect(error).to.be.an('error');
+          expect(error.message).to.equal('Path must be a string without null bytes.');
+          expect(error.code).to.equal('ENOENT');
+
+          expect(name).to.be.an('undefined');
+
+          return done();
+        });
+      });
+
     });
 
   }

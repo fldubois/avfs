@@ -16,6 +16,7 @@ module.exports = function (fs) {
     });
 
     it('should return false for bad parameter', function () {
+      expect(fs.existsSync('\u0000')).to.equal(false);
       expect(fs.existsSync(0)).to.equal(false);
       expect(fs.existsSync(false)).to.equal(false);
       expect(fs.existsSync([])).to.equal(false);
