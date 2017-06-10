@@ -21,7 +21,7 @@ describe('common/errors', function () {
   it('should expose factories', function () {
     expect(errors).to.be.an('object');
 
-    expect(errors).to.have.keys([
+    expect(errors).to.include.all.keys([
       'EACCES',
       'EBADF',
       'EINVAL',
@@ -29,11 +29,12 @@ describe('common/errors', function () {
       'EISDIR',
       'ENOENT',
       'EEXIST',
-      'EPERM',
-      'nullCheck'
+      'EPERM'
     ]);
 
-    Object.keys(errors).forEach(function (code) {
+    Object.keys(errors).filter(function (code) {
+      return /^E[A-Z]+$/.test(code);
+    }).forEach(function (code) {
       expect(errors[code]).to.be.a('function');
     });
   });
