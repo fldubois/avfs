@@ -4,7 +4,7 @@ var fs   = require('fs');
 var path = require('path');
 
 var elements = require('lib/common/elements');
-var storage  = require('lib/common/storage');
+var parsers  = require('lib/common/parsers');
 var version  = require('lib/common/version');
 
 var AVFS = require('lib/avfs');
@@ -14,7 +14,7 @@ var avfs = new AVFS();
 var getElement = function (filepath) {
   var current = avfs.files;
 
-  storage.parse(filepath).forEach(function (element) {
+  parsers.path(filepath).forEach(function (element) {
     current = current.get('content')[element];
   });
 

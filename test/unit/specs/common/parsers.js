@@ -90,4 +90,16 @@ describe('common/parsers', function () {
     });
   });
 
+  describe('path()', function () {
+
+    it('should return path elements', function () {
+      expect(parsers.path('/')).to.deep.equal([]);
+      expect(parsers.path('/path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
+      expect(parsers.path('path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
+      expect(parsers.path('C:\\path\\to\\file.txt')).to.deep.equal(['C:', 'path', 'to', 'file.txt']);
+      expect(parsers.path('path\\to\\file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
+    });
+
+  });
+
 });

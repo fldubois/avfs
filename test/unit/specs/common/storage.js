@@ -4,6 +4,7 @@ var chai   = require('chai');
 var expect = chai.expect;
 
 var elements = require('lib/common/elements');
+var parsers  = require('lib/common/parsers');
 var storage  = require('lib/common/storage');
 
 var files = elements.directory(parseInt('0755', 8), {
@@ -26,7 +27,7 @@ var files = elements.directory(parseInt('0755', 8), {
 var getElement = function (path) {
   var current = files;
 
-  storage.parse(path).forEach(function (element) {
+  parsers.path(path).forEach(function (element) {
     current = current.get('content')[element];
   });
 
@@ -37,23 +38,10 @@ describe('common/storage', function () {
 
   it('should expose storage function', function () {
     expect(storage).to.contain.keys([
-      'parse',
       'get',
       'set',
       'unset'
     ]);
-  });
-
-  describe('parse()', function () {
-
-    it('should return path elements', function () {
-      expect(storage.parse('/')).to.deep.equal([]);
-      expect(storage.parse('/path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
-      expect(storage.parse('path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
-      expect(storage.parse('C:\\path\\to\\file.txt')).to.deep.equal(['C:', 'path', 'to', 'file.txt']);
-      expect(storage.parse('path\\to\\file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
-    });
-
   });
 
   describe('get()', function () {
