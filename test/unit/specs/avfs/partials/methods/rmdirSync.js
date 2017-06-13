@@ -11,7 +11,7 @@ module.exports = function (fs) {
       var result = fs.rmdirSync('/tmp');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.not.contain.keys('tmp');
+      expect(fs.storage.files).to.not.contain.keys('tmp');
     });
 
   });

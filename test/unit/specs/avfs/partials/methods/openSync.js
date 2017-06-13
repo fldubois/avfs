@@ -43,7 +43,7 @@ module.exports = function (fs) {
         var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
-        expect(fs.files).to.contain.an.avfs.file(filename).that.is.clear();
+        expect(fs.storage.files).to.contain.an.avfs.file(filename).that.is.clear();
       });
     });
 
@@ -51,26 +51,26 @@ module.exports = function (fs) {
       var fd = fs.openSync('/file', 'w', '0500');
 
       expect(fd).to.be.a('number');
-      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0500').that.is.clear();
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').with.mode('0500').that.is.clear();
     });
 
     it('should set mode to 0666 by default', function () {
       var fd = fs.openSync('/file', 'w');
 
       expect(fd).to.be.a('number');
-      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0666').that.is.clear();
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').with.mode('0666').that.is.clear();
     });
 
     it('should erase existing file in truncate mode', function () {
       ['w',  'w+'].forEach(function (fgs) {
         var filename = 'file-' + fgs + '';
 
-        fs.files[filename] = elements.file('0666', new Buffer('Hello, friend.'));
+        fs.storage.files[filename] = elements.file('0666', new Buffer('Hello, friend.'));
 
         var fd = fs.openSync('/' + filename, fgs);
 
         expect(fd).to.be.a('number');
-        expect(fs.files).to.contain.an.avfs.file(filename).that.is.clear();
+        expect(fs.storage.files).to.contain.an.avfs.file(filename).that.is.clear();
       });
     });
 
@@ -79,7 +79,7 @@ module.exports = function (fs) {
         var fd = fs.openSync('/tmp/file', fgs);
 
         expect(fd).to.be.a('number');
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.');
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.');
       });
     });
 

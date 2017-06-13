@@ -20,7 +20,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(written).to.equal(5);
 
-      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
     });
 
     it('should write the buffer in the file from position', function () {
@@ -32,7 +32,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(written).to.equal(5);
 
-      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
     });
 
     it('should always append the buffer to the end in append mode', function () {
@@ -43,7 +43,7 @@ module.exports = function (fs, getElement, version) {
       expect(fs.writeSync(fd, new Buffer(' Hello,'),  0, 7, 2)).to.equal(7);
       expect(fs.writeSync(fd, new Buffer(' world !'), 0, 8, 2)).to.equal(8);
 
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
     });
 
     it('should write the buffer from current position', function () {
@@ -57,7 +57,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(written).to.equal(7);
 
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, Hello, ');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, Hello, ');
 
       expect(fs.handles[fd].write).to.equal(14);
     });
@@ -71,7 +71,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(written).to.equal(6);
 
-      expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('friend');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/empty').that.contain('friend');
     });
 
     it('should fill unwritten parts before buffer with white spaces', function () {
@@ -83,7 +83,7 @@ module.exports = function (fs, getElement, version) {
 
       expect(written).to.equal(2);
 
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
     });
 
     it('should throw on non existing file descriptor', function () {
@@ -109,7 +109,7 @@ module.exports = function (fs, getElement, version) {
 
         expect(fs.writeSync(fd, 'Hello')).to.equal(5);
 
-        expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/empty').that.contain('Hello');
       });
 
       it('should write the string in the file from position', function () {
@@ -119,7 +119,7 @@ module.exports = function (fs, getElement, version) {
 
         expect(fs.writeSync(fd, 'Hello', 7)).to.equal(5);
 
-        expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/empty').that.contain('       Hello');
       });
 
       it('should write the string with the correct encoding', function () {
@@ -129,7 +129,9 @@ module.exports = function (fs, getElement, version) {
 
         expect(fs.writeSync(fd, 'aàâä', 0, 'ascii')).to.equal(4);
 
-        expect(fs.files).to.contain.an.avfs.file('/tmp/empty').that.contain(new Buffer('aàâä', 'ascii').toString());
+        var content = new Buffer('aàâä', 'ascii').toString();
+
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/empty').that.contain(content);
       });
 
       it('should always append the string to the end in append mode', function () {
@@ -140,7 +142,7 @@ module.exports = function (fs, getElement, version) {
         expect(fs.writeSync(fd, ' Hello,',  0)).to.equal(7);
         expect(fs.writeSync(fd, ' world !', 0)).to.equal(8);
 
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend. Hello, world !');
       });
 
       it('should write the string from current position', function () {
@@ -152,7 +154,7 @@ module.exports = function (fs, getElement, version) {
 
         expect(fs.writeSync(fd, 'world !')).to.equal(7);
 
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, world !');
 
         expect(fs.handles[fd].write).to.equal(14);
       });
@@ -164,7 +166,7 @@ module.exports = function (fs, getElement, version) {
 
         expect(fs.writeSync(fd, 'OK', 20)).to.equal(2);
 
-        expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
+        expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain('Hello, friend.      OK');
       });
 
       it('should throw on non existing file descriptor', function () {

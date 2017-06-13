@@ -13,43 +13,47 @@ module.exports = function (fs) {
       var result = fs.writeFileSync('/file', new Buffer('Hello, friend.'));
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
     });
 
     it('should write string to file', function () {
-      fs.files = elements.directory('0755', {
+      fs.storage.files = elements.directory('0755', {
         tmp: elements.directory('0777', {})
       });
 
       var result = fs.writeFileSync('/file', 'Hello, friend.');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
     });
 
     it('should write encoded string to file', function () {
-      fs.files = elements.directory('0755', {
+      fs.storage.files = elements.directory('0755', {
         tmp: elements.directory('0777', {})
       });
+
+      var content = new Buffer('aàâäeéèâë', 'ascii').toString();
 
       var result = fs.writeFileSync('/file', 'aàâäeéèâë', {encoding: 'ascii'});
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').that.contain(content);
     });
 
     it('should accept encoding option', function () {
+      var content = new Buffer('aàâäeéèâë', 'ascii').toString();
+
       var result = fs.writeFileSync('/file', 'aàâäeéèâë', 'ascii');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/file').that.contain(new Buffer('aàâäeéèâë', 'ascii').toString());
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').that.contain(content);
     });
 
     it('should accept mode option', function () {
       var result = fs.writeFileSync('/file', 'OK', {mode: '0700'});
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/file').with.mode('0700');
+      expect(fs.storage.files).to.contain.an.avfs.file('/file').with.mode('0700');
     });
 
     it('should accept flag option', function () {

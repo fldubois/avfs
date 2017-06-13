@@ -12,7 +12,7 @@ var AVFS = require('lib/avfs');
 var avfs = new AVFS();
 
 var getElement = function (filepath) {
-  var current = avfs.files;
+  var current = avfs.storage.files;
 
   parsers.path(filepath).forEach(function (element) {
     current = current.get('content')[element];
@@ -35,7 +35,7 @@ describe('avfs', function () {
 
     otherFile.set('uid', process.getuid() + 1);
 
-    avfs.files = elements.directory(parseInt('0755', 8), {
+    avfs.storage.files = elements.directory(parseInt('0755', 8), {
       tmp: elements.directory(parseInt('0777', 8), {
         ascii: elements.file(parseInt('0666', 8), new Buffer('Hello, friend.')),
         empty: elements.file(parseInt('0666', 8), new Buffer(0)),

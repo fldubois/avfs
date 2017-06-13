@@ -19,7 +19,7 @@ module.exports = function (fs, getElement) {
       var result = fs.fchmodSync(fd, '0700');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
     });
 
   });

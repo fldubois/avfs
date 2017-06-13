@@ -11,14 +11,14 @@ module.exports = function (fs) {
       var result = fs.renameSync('/tmp/file', '/tmp/new');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/new').that.contain('Hello, friend.');
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/new').that.contain('Hello, friend.');
     });
 
     it('should move files', function () {
       var result = fs.renameSync('/tmp/file', '/dir/file');
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/dir/file').that.contain('Hello, friend.');
+      expect(fs.storage.files).to.contain.an.avfs.file('/dir/file').that.contain('Hello, friend.');
     });
 
   });

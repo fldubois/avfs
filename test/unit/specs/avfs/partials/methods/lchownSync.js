@@ -7,19 +7,22 @@ module.exports = function (fs) {
 
   describe('lchownSync()', function () {
 
+    var uid = process.getuid();
+    var gid = process.getgroups()[0];
+
     it('should change the owner and group', function () {
-      var result = fs.lchownSync('/tmp/file', process.getuid(), process.getgroups()[0]);
+      var result = fs.lchownSync('/tmp/file', uid, gid);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgroups()[0]);
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').with.owner(uid, gid);
     });
 
     it('should follow symlinks', function () {
-      var result = fs.lchownSync('/dir/link', process.getuid(), process.getgroups()[0]);
+      var result = fs.lchownSync('/dir/link', uid, gid);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.symlink('/dir/link').with.owner(process.getuid(), process.getgroups()[0]);
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').with.owner(process.getuid(), process.getgid());
+      expect(fs.storage.files).to.contain.an.avfs.symlink('/dir/link').with.owner(uid, gid);
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').with.owner(uid, process.getgid());
     });
 
     it('should throw on bad path parameter type', function () {
@@ -64,7 +67,7 @@ module.exports = function (fs) {
       }).to.throw(Error, {code: 'EPERM'});
 
       expect(function () {
-        fs.lchownSync('/tmp/file', process.getuid(), 0);
+        fs.lchownSync('/tmp/file', uid, 0);
       }).to.throw(Error, {code: 'EPERM'});
     });
 

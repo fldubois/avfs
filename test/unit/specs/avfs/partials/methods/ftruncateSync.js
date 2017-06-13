@@ -19,7 +19,7 @@ module.exports = function (fs, getElement) {
       var result = fs.ftruncateSync(fd);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.is.clear();
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.is.clear();
     });
 
     it('should truncate file to the specified length', function () {
@@ -31,7 +31,7 @@ module.exports = function (fs, getElement) {
       var result = fs.ftruncateSync(fd, 3);
 
       expect(result).to.be.an('undefined');
-      expect(fs.files).to.contain.an.avfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
+      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').that.contain(content.slice(0, 3).toString());
     });
 
   });
