@@ -29,6 +29,9 @@
     "test:coverage": "nyc check-coverage",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
+  "dependencies": {
+    "object-assign": "^4.1.1"
+  },
   "devDependencies": {
     "app-module-path": "^2.2.0",
     "chai": "^3.5.0",
