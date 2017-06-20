@@ -15,7 +15,7 @@ module.exports = function (fs, getElement) {
       var date = new Date('2012-12-21T00:00:00.000Z');
       var fd   = 10;
 
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var result = fs.futimesSync(fd, date, date);
 
@@ -29,7 +29,7 @@ module.exports = function (fs, getElement) {
       var timestamp = date.getTime() / 1000;
       var fd        = 10;
 
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var result = fs.futimesSync(fd, timestamp, timestamp);
 
@@ -42,7 +42,7 @@ module.exports = function (fs, getElement) {
       var date = new Date('2012-12-21T00:00:00.000Z');
       var fd   = 10;
 
-      fs.handles[fd] = new Descriptor(getElement('/dir/link'), '/dir/link', constants.O_RDWR);
+      fs.base.handles[fd] = new Descriptor(getElement('/dir/link'), '/dir/link', constants.O_RDWR);
 
       var result = fs.futimesSync(fd, date, date);
 

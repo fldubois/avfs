@@ -14,7 +14,7 @@ module.exports = function (fs, getElement) {
     it('should truncate file', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var result = fs.ftruncateSync(fd);
 
@@ -26,7 +26,7 @@ module.exports = function (fs, getElement) {
       var content = new Buffer('Hello, friend.');
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var result = fs.ftruncateSync(fd, 3);
 

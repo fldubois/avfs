@@ -17,7 +17,7 @@ module.exports = function (fs, getElement) {
     it('should change the owner and group', function () {
       var fd = 10;
 
-      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var result = fs.fchownSync(fd, uid, gid);
 

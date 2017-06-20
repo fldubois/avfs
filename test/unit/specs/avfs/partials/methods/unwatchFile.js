@@ -33,7 +33,7 @@ module.exports = function (fs) {
 
       watcher.listeners.returns([]);
 
-      fs.watchers['/tmp/file'] = watcher;
+      fs.base.watchers['/tmp/file'] = watcher;
     });
 
     it('should remove all listeners without listener parameter', function () {
@@ -79,7 +79,7 @@ module.exports = function (fs) {
     });
 
     after('Delete watcher stub', function () {
-      delete fs.watchers['/tmp/file'];
+      delete fs.base.watchers['/tmp/file'];
     });
 
   });
