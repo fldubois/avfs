@@ -16,8 +16,8 @@ module.exports = function (fs) {
 
       var key = fd.toString();
 
-      expect(fs.base.handles).to.contain.keys(key);
-      expect(fs.base.handles[key].path).to.equal('/tmp/file');
+      expect(fs.handles).to.contain.keys(key);
+      expect(fs.handles[key].path).to.equal('/tmp/file');
     });
 
     it('should open directory in read mode', function () {
@@ -27,8 +27,8 @@ module.exports = function (fs) {
 
       var key = fd.toString();
 
-      expect(fs.base.handles).to.contain.keys(key);
-      expect(fs.base.handles[key].path).to.equal('/tmp');
+      expect(fs.handles).to.contain.keys(key);
+      expect(fs.handles[key].path).to.equal('/tmp');
     });
 
     it('should create non existing file in create mode', function () {

@@ -14,7 +14,7 @@ module.exports = function (fs, getElement) {
     it('should read the file', function () {
       var fd = 0;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var buffer = new Buffer(5);
 
@@ -27,7 +27,7 @@ module.exports = function (fs, getElement) {
     it('should read the file from position', function () {
       var fd = 0;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var buffer = new Buffer(5);
 
@@ -40,23 +40,23 @@ module.exports = function (fs, getElement) {
     it('should read the file from current position', function () {
       var fd = 0;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
-      fs.base.handles[fd].read = 5;
+      fs.handles[fd].read = 5;
 
       var buffer = new Buffer(5);
 
       var bytesRead = fs.readSync(fd, buffer, 0, 5, null);
 
       expect(bytesRead).to.equal(5);
-      expect(fs.base.handles[fd].read).to.equal(10);
+      expect(fs.handles[fd].read).to.equal(10);
       expect(buffer.toString()).to.equal(', fri');
     });
 
     it('should fill the buffer from offset', function () {
       var fd = 0;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       var buffer = new Buffer('Hello, world!');
 
@@ -69,9 +69,9 @@ module.exports = function (fs, getElement) {
     it('should not read file beyond his length', function () {
       var fd = 0;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
-      fs.base.handles[fd].read = 14;
+      fs.handles[fd].read = 14;
 
       var buffer = new Buffer('Hello, world!');
 

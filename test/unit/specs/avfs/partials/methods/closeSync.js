@@ -14,14 +14,14 @@ module.exports = function (fs, getElement) {
     it('should close the file handle', function () {
       var fd = 0;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
-      expect(fs.base.handles[fd].closed).to.equal(false);
+      expect(fs.handles[fd].closed).to.equal(false);
 
       var result = fs.closeSync(fd);
 
       expect(result).to.be.an('undefined');
-      expect(fs.base.handles[fd].closed).to.equal(true);
+      expect(fs.handles[fd].closed).to.equal(true);
     });
 
   });

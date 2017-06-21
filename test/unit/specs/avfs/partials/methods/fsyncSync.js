@@ -14,7 +14,7 @@ module.exports = function (fs, getElement) {
     it('should return undefined', function () {
       var fd = 10;
 
-      fs.base.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
+      fs.handles[fd] = new Descriptor(getElement('/tmp/file'), '/tmp/file', constants.O_RDWR);
 
       expect(fs.fsyncSync(fd)).to.be.an('undefined');
     });
