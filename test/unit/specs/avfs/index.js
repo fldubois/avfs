@@ -54,7 +54,9 @@ describe('avfs', function () {
     });
 
     Object.keys(avfs.handles).forEach(function (fd) {
-      delete avfs.handles[fd];
+      if (fd !== 'next') {
+        delete avfs.handles[fd];
+      }
     });
   });
 
