@@ -13,74 +13,7 @@ module.exports = function (fs) {
   describe('Asynchronous methods', function () {
 
     before(function () {
-      sinon.stub(fs, 'openSync');
       sinon.stub(console, 'error');
-    });
-
-    beforeEach(function () {
-      fs.openSync.reset();
-    });
-
-    it('should expose asynchronous methods', function () {
-      for (var method in fs) {
-        if (/Sync$/.test(method)) {
-          expect(fs).to.respondTo(method.replace('Sync', ''));
-        }
-      }
-    });
-
-    it('should call the synchronous couterpart', function (done) {
-      fs.openSync.returns(1);
-
-      fs.open('/file', 'w+', '0755', function (error, fd) {
-        expect(error).to.equal(null);
-        expect(fd).to.equal(1);
-
-        expect(fs.openSync).to.have.callCount(1);
-        expect(fs.openSync).to.have.been.calledWithExactly('/file', 'w+', '0755');
-
-        return done();
-      });
-    });
-
-    it('should work without callback', function (done) {
-      fs.openSync.returns(1);
-
-      fs.open('/file', 'w+', '0755');
-
-      setImmediate(function () {
-        expect(fs.openSync).to.have.callCount(1);
-        expect(fs.openSync).to.have.been.calledWithExactly('/file', 'w+', '0755');
-
-        return done();
-      });
-    });
-
-    it('should pass error to the callback', function (done) {
-      var error = new Error('Fake open error');
-
-      fs.openSync.throws(error);
-
-      fs.open('/file', 'w+', '0755', function (error, fd) {
-        expect(error).to.equal(error);
-        expect(fd).to.be.an('undefined');
-
-        return done();
-      });
-    });
-
-    it('should log error without callback', function (done) {
-      var error = new Error('Fake open error');
-
-      fs.openSync.throws(error);
-
-      fs.open('/file', 'w+', '0755');
-
-      setImmediate(function () {
-        expect(console.error).to.have.been.calledWithExactly('fs: missing callback Fake open error');
-
-        return done();
-      });
     });
 
     describe('read()', function () {
@@ -284,7 +217,6 @@ module.exports = function (fs) {
     });
 
     after(function () {
-      fs.openSync.restore();
       console.error.restore();
     });
 
