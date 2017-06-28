@@ -55,66 +55,48 @@ describe('common/storage', function () {
   describe('get()', function () {
 
     it('should return the element', function () {
-      expect(storage.get('test', '/')).to.equal(files);
-      expect(storage.get('test', '/dir')).to.equal(getElement(storage, '/dir'));
-      expect(storage.get('test', '/dir/file')).to.equal(getElement(storage, '/dir/file'));
+      expect(storage.get('/')).to.equal(files);
+      expect(storage.get('/dir')).to.equal(getElement(storage, '/dir'));
+      expect(storage.get('/dir/file')).to.equal(getElement(storage, '/dir/file'));
     });
 
     it('should follow symlinks', function () {
-      expect(storage.get('test', '/dir/link')).to.equal(getElement(storage, '/dir/file'));
+      expect(storage.get('/dir/link')).to.equal(getElement(storage, '/dir/file'));
     });
 
     it('should support relative symlinks', function () {
-      expect(storage.get('test', '/tmp/link')).to.equal(getElement(storage, '/dir/file'));
+      expect(storage.get('/tmp/link')).to.equal(getElement(storage, '/dir/file'));
     });
 
     it('should not follow symlinks', function () {
-      expect(storage.get('test', '/dir/link', false)).to.equal(getElement(storage, '/dir/link'));
+      expect(storage.get('/dir/link', false)).to.equal(getElement(storage, '/dir/link'));
     });
 
     it('should slice the path', function () {
-      expect(storage.get('test', '/dir/file', 1)).to.equal(getElement(storage, '/dir'));
-    });
-
-    it('should set parameters on error', function () {
-      try {
-        storage.get({syscall: 'test', path: '/other/path'}, '/not/file');
-      } catch (error) {
-        expect(error.code).to.equal('ENOENT');
-        expect(error.path).to.equal('/other/path');
-        expect(error.syscall).to.equal('test');
-      }
-
-      try {
-        storage.get({syscall: 'test'}, '/not/file');
-      } catch (error) {
-        expect(error.code).to.equal('ENOENT');
-        expect(error.path).to.equal('/not/file');
-        expect(error.syscall).to.equal('test');
-      }
+      expect(storage.get('/dir/file', 1)).to.equal(getElement(storage, '/dir'));
     });
 
     it('should throw EACCES on missing directory in path', function () {
       expect(function () {
-        storage.get('test', '/restricted/file');
+        storage.get('/restricted/file');
       }).to.throw(Error, {code: 'EACCES'});
     });
 
     it('should throw ENOENT on missing directory in path', function () {
       expect(function () {
-        storage.get('test', '/not/file');
+        storage.get('/not/file');
       }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw ENOTDIR on not directory element in path', function () {
       expect(function () {
-        storage.get('test', '/dir/file/test');
+        storage.get('/dir/file/test');
       }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw ENOENT on missing symlink target', function () {
       expect(function () {
-        storage.get('test', '/dir/miss');
+        storage.get('/dir/miss');
       }).to.throw(Error, {code: 'ENOENT'});
     });
 
@@ -125,45 +107,27 @@ describe('common/storage', function () {
     it('should set the element', function () {
       var file = elements.file(438, new Buffer(0));
 
-      storage.set('test', '/dir/test', file);
+      storage.set('/dir/test', file);
 
       expect(getElement(storage, '/dir').get('content')).to.contain.keys('test');
       expect(getElement(storage, '/dir/test')).to.equal(file);
     });
 
-    it('should set parameters on error', function () {
-      try {
-        storage.set({syscall: 'test', path: '/other/path'}, '/not/file', elements.file(438, new Buffer(0)));
-      } catch (error) {
-        expect(error.code).to.equal('ENOENT');
-        expect(error.path).to.equal('/other/path');
-        expect(error.syscall).to.equal('test');
-      }
-
-      try {
-        storage.set({syscall: 'test'}, '/not/file', elements.file(438, new Buffer(0)));
-      } catch (error) {
-        expect(error.code).to.equal('ENOENT');
-        expect(error.path).to.equal('/not/file');
-        expect(error.syscall).to.equal('test');
-      }
-    });
-
     it('should throw on missing directory in path', function () {
       expect(function () {
-        storage.set('test', '/not/file', elements.file(438, new Buffer(0)));
+        storage.set('/not/file', elements.file(438, new Buffer(0)));
       }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory element in path', function () {
       expect(function () {
-        storage.set('test', '/dir/file/test', elements.file(438, new Buffer(0)));
+        storage.set('/dir/file/test', elements.file(438, new Buffer(0)));
       }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on not writable parent directory', function () {
       expect(function () {
-        storage.set('test', '/perm/test', elements.file(438, new Buffer(0)));
+        storage.set('/perm/test', elements.file(438, new Buffer(0)));
       }).to.throw(Error, {code: 'EACCES'});
     });
 
@@ -172,44 +136,26 @@ describe('common/storage', function () {
   describe('unset()', function () {
 
     it('should unset the element', function () {
-      storage.unset('test', '/dir/test');
+      storage.unset('/dir/test');
 
       expect(getElement(storage, '/dir')).to.not.contain.keys('test');
     });
 
-    it('should set parameters on error', function () {
-      try {
-        storage.unset({syscall: 'test', path: '/other/path'}, '/not/file');
-      } catch (error) {
-        expect(error.code).to.equal('ENOENT');
-        expect(error.path).to.equal('/other/path');
-        expect(error.syscall).to.equal('test');
-      }
-
-      try {
-        storage.unset({syscall: 'test'}, '/not/file');
-      } catch (error) {
-        expect(error.code).to.equal('ENOENT');
-        expect(error.path).to.equal('/not/file');
-        expect(error.syscall).to.equal('test');
-      }
-    });
-
     it('should throw on missing directory in path', function () {
       expect(function () {
-        storage.unset('test', '/not/file');
+        storage.unset('/not/file');
       }).to.throw(Error, {code: 'ENOENT'});
     });
 
     it('should throw on not directory element in path', function () {
       expect(function () {
-        storage.unset('test', '/dir/file/test');
+        storage.unset('/dir/file/test');
       }).to.throw(Error, {code: 'ENOTDIR'});
     });
 
     it('should throw on not writable parent directory', function () {
       expect(function () {
-        storage.unset('test', '/perm/file');
+        storage.unset('/perm/file');
       }).to.throw(Error, {code: 'EACCES'});
     });
 
