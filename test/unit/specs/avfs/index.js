@@ -50,6 +50,11 @@ describe('avfs', function () {
       perm: elements.directory(parseInt('0000', 8), {
         file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend.')),
         dir:  elements.directory(parseInt('0777', 8))
+      }),
+      access: elements.directory(parseInt('0777', 8), {
+        r: elements.file(parseInt('0444', 8), new Buffer('Hello, friend.')),
+        w: elements.file(parseInt('0222', 8), new Buffer('Hello, friend.')),
+        x: elements.file(parseInt('0111', 8), new Buffer('Hello, friend.'))
       })
     });
 

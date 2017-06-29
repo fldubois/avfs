@@ -127,6 +127,10 @@ describe('errors', function () {
         check('accessSync', [true]);
       });
 
+      it('should throw on invalid mode', function () {
+        check('accessSync', ['/tmp/dir/perm', 1000]);
+      });
+
     });
 
   }
