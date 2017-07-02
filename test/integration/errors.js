@@ -516,7 +516,7 @@ describe('errors', function () {
       check('openSync', ['/tmp/dir/file', false]);
     });
 
-    it('should throw on non unknown flags', function () {
+    it('should throw on unknown flags', function () {
       check('openSync', ['/tmp/dir/file', 'p']);
     });
 
