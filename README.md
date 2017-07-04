@@ -1,5 +1,11 @@
 # avfs
 
+[![npm](https://img.shields.io/npm/v/avfs.svg?maxAge=3600)](https://www.npmjs.com/package/avfs)
+[![Build Status](https://travis-ci.org/fldubois/avfs.svg?branch=master)](https://travis-ci.org/fldubois/avfs)
+[![Coverage Status](https://coveralls.io/repos/github/fldubois/avfs/badge.svg?branch=master)](https://coveralls.io/github/fldubois/avfs?branch=master)
+[![dependencies Status](https://david-dm.org/fldubois/avfs/status.svg)](https://david-dm.org/fldubois/avfs)
+[![devDependencies Status](https://david-dm.org/fldubois/avfs/dev-status.svg)](https://david-dm.org/fldubois/avfs?type=dev)
+
 > Another Virtual File System
 
 ### Description

@@ -243,6 +243,14 @@ describe('errors', function () {
 
   });
 
+  describe('existsSync()', function () {
+
+    it('should not throw on null character in path', function () {
+      expect(avfs.existsSync('\u0000')).to.equal(fs.existsSync('\u0000'));
+    });
+
+  });
+
   describe('fchmodSync()', function () {
 
     it('should throw on non existing file descriptor', function () {
