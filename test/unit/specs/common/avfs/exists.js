@@ -6,7 +6,7 @@ var expect = chai.expect;
 var elements = require('lib/common/elements');
 var factory  = require('lib/common/avfs/exists');
 
-var Storage   = require('lib/common/storage');
+var Storage = require('lib/common/storage');
 
 describe('common/avfs/directories', function () {
 
