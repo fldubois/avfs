@@ -8,7 +8,7 @@ var factory  = require('lib/common/avfs/exists');
 
 var Storage = require('lib/common/storage');
 
-describe('common/avfs/directories', function () {
+describe('common/avfs/exists', function () {
 
   var storage = new Storage();
 

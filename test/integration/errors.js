@@ -151,6 +151,7 @@ describe('errors', function () {
 
     it('should throw on unknown encoding', function () {
       check('appendFileSync', ['/tmp/dir/file', 'Hello, friend.', 'utf5']);
+      check('appendFileSync', ['/tmp/dir/file', 'Hello, friend.', {encoding: 'utf5'}]);
     });
 
     it('should throw on non string path', function () {
@@ -592,6 +593,7 @@ describe('errors', function () {
 
     it('should throw on unknown encoding', function () {
       check('readFileSync', ['/tmp/dir/file', 'utf5']);
+      check('readFileSync', ['/tmp/dir/file', {encoding: 'utf5'}]);
     });
 
     it('should throw on non string path', function () {
@@ -907,6 +909,7 @@ describe('errors', function () {
 
     it('should throw on unknown encoding', function () {
       check('writeFileSync', ['/tmp/dir/file', 'Hello, friend.', 'utf5']);
+      check('writeFileSync', ['/tmp/dir/file', 'Hello, friend.', {encoding: 'utf5'}]);
     });
 
     it('should throw on non string path', function () {
