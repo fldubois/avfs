@@ -980,40 +980,36 @@ describe('errors', function () {
       });
     });
 
-    if (version !== 'v0.10') {
+    // fs.writeSync(fd, data[, position[, encoding]]);
 
-      // fs.writeSync(fd, data[, position[, encoding]]);
+    if (version !== 'v0.12') {
 
-      if (version !== 'v0.12') {
-
-        it('should throw on non existing file descriptor', function () {
-          check('writeSync', [BAD_FD, 'Hello, friend']);
-        });
-
-        it('should throw on non integer file descriptor', function () {
-          check('writeSync', {
-            fs:   [true, 'Hello, friend'],
-            avfs: [true, 'Hello, friend']
-          });
-        });
-
-      }
-
-      it('should throw on closed file descriptor', function () {
-        check('writeSync', {
-          fs:   [fd.closed.fs,   'Hello, friend'],
-          avfs: [fd.closed.avfs, 'Hello, friend']
-        });
+      it('should throw on non existing file descriptor', function () {
+        check('writeSync', [BAD_FD, 'Hello, friend']);
       });
 
-      it('should throw on non writing file descriptor', function () {
+      it('should throw on non integer file descriptor', function () {
         check('writeSync', {
-          fs:   [fd.read.fs,   'Hello, friend'],
-          avfs: [fd.read.avfs, 'Hello, friend']
+          fs:   [true, 'Hello, friend'],
+          avfs: [true, 'Hello, friend']
         });
       });
 
     }
+
+    it('should throw on closed file descriptor', function () {
+      check('writeSync', {
+        fs:   [fd.closed.fs,   'Hello, friend'],
+        avfs: [fd.closed.avfs, 'Hello, friend']
+      });
+    });
+
+    it('should throw on non writing file descriptor', function () {
+      check('writeSync', {
+        fs:   [fd.read.fs,   'Hello, friend'],
+        avfs: [fd.read.avfs, 'Hello, friend']
+      });
+    });
 
   });
 

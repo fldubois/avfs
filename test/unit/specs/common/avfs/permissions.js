@@ -18,15 +18,19 @@ describe('common/avfs/permissions', function () {
   var base = factory(storage);
 
   before(function () {
-    var file = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));
-    var link = elements.symlink(parseInt('0777', 8), '/file');
+    var file  = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));
+    var other = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));
+    var link  = elements.symlink(parseInt('0777', 8), '/file');
 
     file.set('gid', gid + 1);
     link.set('gid', gid + 1);
 
+    other.set('uid', uid + 1);
+
     storage.files = elements.directory(parseInt('0755', 8), {
-      file: file,
-      link: link
+      file:  file,
+      link:  link,
+      other: other
     });
   });
 
@@ -47,6 +51,12 @@ describe('common/avfs/permissions', function () {
       expect(storage.files).to.contain.an.avfs.symlink('/link').with.mode('0777');
     });
 
+    it('should throw EPERM on not owned files', function () {
+      expect(function () {
+        base.chmod('/other', '0700');
+      }).to.throw(Error, {code: 'EPERM'});
+    });
+
   });
 
   describe('chown()', function () {
@@ -64,6 +74,12 @@ describe('common/avfs/permissions', function () {
       expect(result).to.be.an('undefined');
       expect(storage.files).to.contain.an.avfs.file('/file').with.owner(uid, gid);
       expect(storage.files).to.contain.an.avfs.symlink('/link').with.owner(uid, gid + 1);
+    });
+
+    it('should throw EPERM on not owned files', function () {
+      expect(function () {
+        base.chown('/other', uid, gid);
+      }).to.throw(Error, {code: 'EPERM'});
     });
 
   });
