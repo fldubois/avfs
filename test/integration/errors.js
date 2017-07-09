@@ -40,6 +40,45 @@ var check = function (method, params) {
   });
 };
 
+var checkAsync = function (method, params, done, transform) {
+  var errors = {};
+  var status = {};
+
+  var checkAsyncErrors = function () {
+    if (status.avfs === true && status.fs === true) {
+      if (typeof transform === 'function') {
+        transform(errors);
+      }
+
+      expect(errors.avfs.message).to.equal(errors.fs.message);
+
+      expect(errors.avfs.constructor).to.equal(errors.fs.constructor);
+
+      expect(Object.keys(errors.avfs)).to.deep.equal(Object.keys(errors.fs));
+
+      Object.keys(errors.avfs).forEach(function (key) {
+        expect(errors.avfs[key]).to.equal(errors.fs[key]);
+      });
+
+      return done();
+    }
+  };
+
+  avfs[method].apply(avfs, (params.hasOwnProperty('avfs') ? params.avfs : params).concat(function (error) {
+    errors.avfs = error;
+    status.avfs = true;
+
+    checkAsyncErrors();
+  }));
+
+  fs[method].apply(fs, (params.hasOwnProperty('fs') ? params.fs : params).concat(function (error) {
+    errors.fs = error;
+    status.fs = true;
+
+    checkAsyncErrors();
+  }));
+};
+
 describe('errors', function () {
 
   var fd = null;
@@ -495,8 +534,34 @@ describe('errors', function () {
 
     describe('mkdtemp()', function () {
 
+      var replace = function (errors) {
+        var regexp = /test-[A-Za-z0-9]{6}/;
+
+        errors.avfs.message = errors.avfs.message.replace(regexp, '');
+        errors.fs.message   = errors.fs.message.replace(regexp, '');
+
+        errors.avfs.path = errors.avfs.path.replace(regexp, '');
+        errors.fs.path   = errors.fs.path.replace(regexp, '');
+      };
+
       it('should throw on non function callback', function () {
         check('mkdtemp', ['test-', false]);
+      });
+
+      it('should throw on null character in path', function (done) {
+        checkAsync('mkdtemp', ['\u0000'], done);
+      });
+
+      it('should throw on non existing parent directory', function (done) {
+        checkAsync('mkdtemp', ['/tmp/dir/not/test-'], done, replace);
+      });
+
+      it('should throw on non directory parent', function (done) {
+        checkAsync('mkdtemp', ['/tmp/dir/file/test-'], done, replace);
+      });
+
+      it('should throw on permission denied', function (done) {
+        checkAsync('mkdtemp', ['/tmp/dir/dperm/test-'], done, replace);
       });
 
     });
@@ -505,6 +570,18 @@ describe('errors', function () {
 
       it('should throw on null character in path', function () {
         check('mkdtempSync', ['\u0000']);
+      });
+
+      it('should throw on non existing parent directory', function () {
+        check('mkdtempSync', ['/tmp/dir/not/test-']);
+      });
+
+      it('should throw on non directory parent', function () {
+        check('mkdtempSync', ['/tmp/dir/file/test-']);
+      });
+
+      it('should throw on permission denied', function () {
+        check('mkdtempSync', ['/tmp/dir/dperm/test-']);
       });
 
     });

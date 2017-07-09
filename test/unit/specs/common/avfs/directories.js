@@ -61,6 +61,23 @@ describe('common/avfs/directories', function () {
 
   });
 
+  describe('mkdtemp()', function () {
+
+    it('should create a unique temporary directory', function () {
+      var nameA = base.mkdtemp('test-');
+      var nameB = base.mkdtemp('/test-');
+
+      expect(nameA).to.match(/^\/test-[A-Za-z0-9]{6}/);
+      expect(nameB).to.match(/^\/test-[A-Za-z0-9]{6}/);
+
+      expect(nameA).to.not.equal(nameB);
+
+      expect(storage.files).to.contain.an.avfs.directory(nameA).with.mode('0700').that.is.clear();
+      expect(storage.files).to.contain.an.avfs.directory(nameB).with.mode('0700').that.is.clear();
+    });
+
+  });
+
   describe('readdir()', function () {
 
     before(function () {
