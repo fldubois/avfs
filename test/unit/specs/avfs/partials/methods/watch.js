@@ -2,8 +2,9 @@
 
 var chai   = require('chai');
 var expect = chai.expect;
+var sinon  = require('sinon');
 
-var FSWatcher = require('lib/common/watchers/fs-watcher');
+chai.use(require('sinon-chai'));
 
 var noop = function () {
   return null;
@@ -13,10 +14,19 @@ module.exports = function (fs) {
 
   describe('watch()', function () {
 
-    it('should return a FSWatcher instance', function () {
-      expect(fs.watch('/tmp/file')).to.be.an.instanceOf(FSWatcher);
-      expect(fs.watch('/tmp/file', noop)).to.be.an.instanceOf(FSWatcher);
-      expect(fs.watch('/tmp/file', {}, noop)).to.be.an.instanceOf(FSWatcher);
+    before('Stub base function', function () {
+      sinon.stub(fs.base, 'watch');
+    });
+
+    it('should call the base function', function () {
+      expect(fs.watch('/tmp/file', {}, noop)).to.be.an('undefined');
+
+      expect(fs.base.watch).to.have.callCount(1);
+      expect(fs.base.watch).to.have.been.calledWithExactly('/tmp/file', {}, noop);
+    });
+
+    after('Restore base function', function () {
+      fs.base.watch.restore();
     });
 
   });

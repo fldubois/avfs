@@ -4,9 +4,13 @@ var chai   = require('chai');
 var expect = chai.expect;
 var sinon  = require('sinon');
 
-module.exports = function (fs) {
+var factory  = require('lib/common/avfs/utils');
 
-  describe('_toUnixTimestamp', function () {
+describe('common/avfs/utils', function () {
+
+  var base = factory();
+
+  describe('toUnixTimestamp()', function () {
 
     var clock = null;
 
@@ -15,23 +19,29 @@ module.exports = function (fs) {
     });
 
     it('should return parsed number for numeric string', function () {
-      expect(fs._toUnixTimestamp('125')).to.equal(125);
+      expect(base.toUnixTimestamp('125')).to.equal(125);
     });
 
     it('should return parsed number for finite positive number', function () {
-      expect(fs._toUnixTimestamp(125)).to.equal(125);
+      expect(base.toUnixTimestamp(125)).to.equal(125);
     });
 
     it('should return unix timestamp for infinite number', function () {
-      expect(fs._toUnixTimestamp(Infinity)).to.equal(1500.600);
+      expect(base.toUnixTimestamp(Infinity)).to.equal(1500.600);
     });
 
     it('should return unix timestamp for negative number', function () {
-      expect(fs._toUnixTimestamp(-1)).to.equal(1500.600);
+      expect(base.toUnixTimestamp(-1)).to.equal(1500.600);
     });
 
     it('should return unix timestamp for Date', function () {
-      expect(fs._toUnixTimestamp(new Date())).to.equal(1500.600);
+      expect(base.toUnixTimestamp(new Date())).to.equal(1500.600);
+    });
+
+    it('should throw error on not parsable parameter', function () {
+      expect(function () {
+        base.toUnixTimestamp({});
+      }).to.throw(Error, 'Cannot parse time: [object Object]');
     });
 
     after('Restore dates', function () {
@@ -40,4 +50,4 @@ module.exports = function (fs) {
 
   });
 
-};
+});

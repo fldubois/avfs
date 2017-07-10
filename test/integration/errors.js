@@ -1104,7 +1104,7 @@ describe('errors', function () {
       check('watchFile', ['\u0000']);
     });
 
-    it('should throw on invalid string parameter', function () {
+    it('should throw on missing listener function', function () {
       check('watchFile', ['/tmp/dir/file']);
     });
 
