@@ -26,6 +26,7 @@ var specs = fs.readdirSync(path.join(__dirname, 'partials/methods')).map(functio
 });
 
 specs.unshift('./partials/members');
+specs.unshift('./partials/base');
 specs.push('./partials/async');
 
 describe('avfs', function () {

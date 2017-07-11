@@ -7,21 +7,6 @@ module.exports = function (fs) {
 
   describe('lchmodSync()', function () {
 
-    it('should change the mode', function () {
-      var result = fs.lchmodSync('/tmp/file', '0700');
-
-      expect(result).to.be.an('undefined');
-      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').with.mode('0700');
-    });
-
-    it('should not follow symlinks', function () {
-      var result = fs.lchmodSync('/dir/link', '0700');
-
-      expect(result).to.be.an('undefined');
-      expect(fs.storage.files).to.contain.an.avfs.file('/tmp/file').with.mode('0666');
-      expect(fs.storage.files).to.contain.an.avfs.symlink('/dir/link').with.mode('0700');
-    });
-
     it('should throw on bad path parameter type', function () {
       expect(function () {
         fs.lchmodSync(false, '0700');
