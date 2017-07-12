@@ -5,6 +5,7 @@ var expect = chai.expect;
 
 var constants = require('lib/common/constants');
 var errors    = require('lib/common/errors');
+var version   = require('lib/common/version');
 
 function expectError(error, message, data) {
   expect(error).to.be.an('error');
@@ -61,6 +62,19 @@ describe('common/errors', function () {
     });
   });
 
+  it('should expose EBADF factory with message', function () {
+    var data = {
+      errno: constants.EBADF,
+      code:  'EBADF'
+    };
+
+    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
+      data.syscall = 'write';
+    }
+
+    expectError(errors.EBADF('write'), /^EBADF/, data);
+  });
+
   it('should expose EINVAL factory', function () {
     expectError(errors.EINVAL({
       syscall: 'open',
@@ -105,6 +119,19 @@ describe('common/errors', function () {
       path:    '/path/to/file',
       syscall: 'open'
     });
+  });
+
+  it('should expose EISDIR factory with message', function () {
+    var data = {
+      errno: constants.EISDIR,
+      code:  'EISDIR'
+    };
+
+    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
+      data.syscall = 'read';
+    }
+
+    expectError(errors.EISDIR('read'), /^EISDIR/, data);
   });
 
   it('should expose ENOENT factory', function () {

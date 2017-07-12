@@ -548,19 +548,19 @@ describe('errors', function () {
         check('mkdtemp', ['test-', false]);
       });
 
-      it('should throw on null character in path', function (done) {
+      it('should send error to callback on null character in path', function (done) {
         checkAsync('mkdtemp', ['\u0000'], done);
       });
 
-      it('should throw on non existing parent directory', function (done) {
+      it('should send error to callback on non existing parent directory', function (done) {
         checkAsync('mkdtemp', ['/tmp/dir/not/test-'], done, replace);
       });
 
-      it('should throw on non directory parent', function (done) {
+      it('should send error to callback on non directory parent', function (done) {
         checkAsync('mkdtemp', ['/tmp/dir/file/test-'], done, replace);
       });
 
-      it('should throw on permission denied', function (done) {
+      it('should send error to callback on permission denied', function (done) {
         checkAsync('mkdtemp', ['/tmp/dir/dperm/test-'], done, replace);
       });
 
@@ -747,6 +747,53 @@ describe('errors', function () {
 
     it('should throw on length beyond buffer', function () {
       check('readSync', {
+        fs:   [fd.read.fs,   new Buffer(5), 0, 1000, 0],
+        avfs: [fd.read.avfs, new Buffer(5), 0, 1000, 0]
+      });
+    });
+
+  });
+
+  describe('read()', function () {
+
+    it('should send error to callback on non existing file descriptor', function (done) {
+      checkAsync('read', [BAD_FD, new Buffer(5), 0, 5, 0], done);
+    });
+
+    it('should send error to callback on closed file descriptor', function (done) {
+      checkAsync('read', {
+        fs:   [fd.closed.fs,   new Buffer(5), 0, 5, 0],
+        avfs: [fd.closed.avfs, new Buffer(5), 0, 5, 0]
+      }, done);
+    });
+
+    it('should send error to callback on non reading file descriptor', function (done) {
+      checkAsync('read', {
+        fs:   [fd.write.fs,   new Buffer(5), 0, 5, 0],
+        avfs: [fd.write.avfs, new Buffer(5), 0, 5, 0]
+      }, done);
+    });
+
+    it('should send error to callback on directory', function (done) {
+      checkAsync('read', {
+        fs:   [fd.dir.fs,   new Buffer(5), 0, 5, 0],
+        avfs: [fd.dir.avfs, new Buffer(5), 0, 5, 0]
+      }, done);
+    });
+
+    it('should throw on bad file descriptor type', function () {
+      check('read', [true, new Buffer(5), 0, 5, 0]);
+    });
+
+    it('should throw on offset out of bounds', function () {
+      check('read', {
+        fs:   [fd.read.fs,   new Buffer(5), 1000, 5, 0],
+        avfs: [fd.read.avfs, new Buffer(5), 1000, 5, 0]
+      });
+    });
+
+    it('should throw on length beyond buffer', function () {
+      check('read', {
         fs:   [fd.read.fs,   new Buffer(5), 0, 1000, 0],
         avfs: [fd.read.avfs, new Buffer(5), 0, 1000, 0]
       });
@@ -1086,6 +1133,98 @@ describe('errors', function () {
         fs:   [fd.read.fs,   'Hello, friend'],
         avfs: [fd.read.avfs, 'Hello, friend']
       });
+    });
+
+  });
+
+  describe('write()', function () {
+
+    // Critical error in node v0.12
+    // See https://github.com/nodejs/node/issues/1550
+    if (version !== 'v0.12') {
+
+      it('should send error to callback on non existing file descriptor', function (done) {
+        checkAsync('write', [BAD_FD, new Buffer('Hello, friend'), 0, 5, 0], done);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('write', {
+          fs:   [true, new Buffer('Hello, friend'), 0, 5, 0],
+          avfs: [true, new Buffer('Hello, friend'), 0, 5, 0]
+        });
+      });
+
+    }
+
+    it('should send error to callback on closed file descriptor', function (done) {
+      checkAsync('write', {
+        fs:   [fd.closed.fs,   new Buffer('Hello, friend'), 0, 5, 0],
+        avfs: [fd.closed.avfs, new Buffer('Hello, friend'), 0, 5, 0]
+      }, done);
+    });
+
+    it('should send error to callback on non writing file descriptor', function (done) {
+      checkAsync('write', {
+        fs:   [fd.read.fs,   new Buffer('Hello, friend'), 0, 5, 0],
+        avfs: [fd.read.avfs, new Buffer('Hello, friend'), 0, 5, 0]
+      }, done);
+    });
+
+    it('should throw on offset out of bounds', function () {
+      check('write', {
+        fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 5, 0],
+        avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 5, 0]
+      });
+    });
+
+    // TODO: reactivate when version specific implementations will be independent
+    // if (version !== 'v0.10') {
+
+    //   it.only('should throw on offset out of bounds with zero length', function () {
+    //     check('write', {
+    //       fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0],
+    //       avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0]
+    //     });
+    //   });
+
+    // }
+
+    it('should throw on length beyond buffer', function () {
+      check('write', {
+        fs:   [fd.write.fs,   new Buffer('Hello, friend'), 0, 1000, 0],
+        avfs: [fd.write.avfs, new Buffer('Hello, friend'), 0, 1000, 0]
+      });
+    });
+
+    // fs.write(fd, data[, position[, encoding]]);
+
+    if (version !== 'v0.12') {
+
+      it('should send error to callback on non existing file descriptor', function (done) {
+        checkAsync('write', [BAD_FD, 'Hello, friend', 13, 'utf8'], done);
+      });
+
+      it('should throw on non integer file descriptor', function () {
+        check('write', {
+          fs:   [true, 'Hello, friend', 13, 'utf8'],
+          avfs: [true, 'Hello, friend', 13, 'utf8']
+        });
+      });
+
+    }
+
+    it('should send error to callback on closed file descriptor', function (done) {
+      checkAsync('write', {
+        fs:   [fd.closed.fs,   'Hello, friend', 13, 'utf8'],
+        avfs: [fd.closed.avfs, 'Hello, friend', 13, 'utf8']
+      }, done);
+    });
+
+    it('should send error to callback on non writing file descriptor', function (done) {
+      checkAsync('write', {
+        fs:   [fd.read.fs,   'Hello, friend', 13, 'utf8'],
+        avfs: [fd.read.avfs, 'Hello, friend', 13, 'utf8']
+      }, done);
     });
 
   });

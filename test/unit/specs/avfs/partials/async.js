@@ -61,34 +61,6 @@ module.exports = function (fs) {
         });
       });
 
-      it('should rethrow non fs errors', function () {
-        var error = new Error('Fake open error');
-
-        fs.readSync.throws(error);
-
-        expect(function () {
-          fs.read(fd, inBuffer, offset, length, position);
-        }).to.throw(error);
-      });
-
-      it('should pass fs error to the callback', function (done) {
-        var error = errors.EBADF({syscall: 'read'});
-
-        fs.readSync.throws(error);
-
-        fs.read(fd, inBuffer, offset, length, position, function (err, bytesRead, outBuffer) {
-          expect(err).to.equal(error);
-
-          expect(fs.readSync).to.have.callCount(1);
-          expect(fs.readSync).to.have.been.calledWithExactly(fd, inBuffer, offset, length, position);
-
-          expect(bytesRead).to.equal(0);
-          expect(outBuffer).to.equal(inBuffer);
-
-          return done();
-        });
-      });
-
       after(function () {
         fs.readSync.restore();
       });
@@ -122,6 +94,67 @@ module.exports = function (fs) {
 
           expect(written).to.equal(5);
           expect(outBuffer).to.equal(inBuffer);
+
+          return done();
+        });
+      });
+
+      it('should work with alternate signature', function (done) {
+        fs.writeSync.returns(5);
+
+        fs.write(fd, 'Hello, world', 0, 'utf8', function (error, written, string) {
+          expect(error).to.equal(null);
+
+          expect(fs.writeSync).to.have.callCount(1);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', 0, 'utf8', void 0);
+
+          expect(written).to.equal(5);
+          expect(string).to.equal('Hello, world');
+
+          return done();
+        });
+      });
+
+      it('should work with alternate signature without encoding', function (done) {
+        fs.writeSync.returns(5);
+
+        fs.write(fd, 'Hello, world', 0, function (error, written, string) {
+          expect(error).to.equal(null);
+
+          expect(fs.writeSync).to.have.callCount(1);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', 0, void 0, void 0);
+
+          expect(written).to.equal(5);
+          expect(string).to.equal('Hello, world');
+
+          return done();
+        });
+      });
+
+      it('should work with alternate signature without position and encoding', function (done) {
+        fs.writeSync.returns(5);
+
+        fs.write(fd, 'Hello, world', function (error, written, string) {
+          expect(error).to.equal(null);
+
+          expect(fs.writeSync).to.have.callCount(1);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', void 0, void 0, void 0);
+
+          expect(written).to.equal(5);
+          expect(string).to.equal('Hello, world');
+
+          return done();
+        });
+      });
+
+      it('should work with alternate signature without position, encoding and callback', function (done) {
+        fs.writeSync.returns(5);
+
+        fs.write(fd, 'Hello, world');
+
+        setImmediate(function () {
+          expect(fs.writeSync).to.have.callCount(1);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', void 0, void 0, void 0);
 
           return done();
         });
@@ -168,36 +201,8 @@ module.exports = function (fs) {
         });
       });
 
-      it('should rethrow non fs errors', function () {
-        var error = new Error('Fake open error');
-
-        fs.writeSync.throws(error);
-
-        expect(function () {
-          fs.write(fd, inBuffer, offset, length, position);
-        }).to.throw(error);
-      });
-
-      it('should pass fs error to the callback', function (done) {
-        var error = errors.EBADF({syscall: 'write'});
-
-        fs.writeSync.throws(error);
-
-        fs.write(fd, inBuffer, offset, length, position, function (err, written, outBuffer) {
-          expect(err).to.equal(error);
-
-          expect(fs.writeSync).to.have.callCount(1);
-          expect(fs.writeSync).to.have.been.calledWithExactly(fd, inBuffer, offset, length, position);
-
-          expect(written).to.equal(0);
-          expect(outBuffer).to.equal(inBuffer);
-
-          return done();
-        });
-      });
-
       it('should log fs error without callback', function (done) {
-        var error = errors.EBADF({syscall: 'write'});
+        var error = errors.EBADF('write');
 
         fs.writeSync.throws(error);
 
