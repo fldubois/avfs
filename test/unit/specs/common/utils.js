@@ -26,12 +26,9 @@ describe('common/utils', function () {
   describe('asyncify()', function () {
 
     var target = new Target();
+    var nocb   = sinon.spy();
 
-    utils.asyncify(target);
-
-    before(function () {
-      sinon.stub(console, 'error');
-    });
+    utils.asyncify(target, nocb);
 
     beforeEach(function () {
       target.doSync.reset();
@@ -61,19 +58,6 @@ describe('common/utils', function () {
 
     });
 
-    it('should work without callback', function (done) {
-      target.doSync.returns(1);
-
-      target.do('nope', false);
-
-      setImmediate(function () {
-        expect(target.doSync).to.have.callCount(1);
-        expect(target.doSync).to.have.been.calledWithExactly('nope', false);
-
-        return done();
-      });
-    });
-
     it('should pass error to the callback', function (done) {
       var error = new Error('Fake error');
 
@@ -87,22 +71,20 @@ describe('common/utils', function () {
       });
     });
 
-    it('should log error without callback', function (done) {
-      var error = new Error('Fake error');
+    it('should call the default callback without callback in call', function (done) {
+      target.doSync.returns(1);
 
-      target.doSync.throws(error);
-
-      target.do(true, 'test');
+      target.do('nope', false);
 
       setImmediate(function () {
-        expect(console.error).to.have.been.calledWithExactly('fs: missing callback Fake error');
+        expect(target.doSync).to.have.callCount(1);
+        expect(target.doSync).to.have.been.calledWithExactly('nope', false);
+
+        expect(nocb).to.have.callCount(1);
+        expect(nocb).to.have.been.calledWithExactly(null, 1);
 
         return done();
       });
-    });
-
-    after(function () {
-      console.error.restore();
     });
 
   });
