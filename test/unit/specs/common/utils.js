@@ -114,21 +114,21 @@ describe('common/utils', function () {
     });
 
     it('should call transform on AVFSError', function () {
-      var error = new Error('Fake error');
+      var avfsError  = new AVFSError('ENOENT');
+      var finalError = new Error('Fake error');
 
-      method.throws(new AVFSError('ENOENT'));
+      method.throws(avfsError);
 
       var callback = sinon.stub();
 
-      callback.throws(error);
+      callback.throws(finalError);
 
       expect(function () {
-        utils.invoke(method, [true], {
-          ENOENT: callback
-        });
-      }).to.throw(error);
+        utils.invoke(method, [true], callback);
+      }).to.throw(finalError);
 
       expect(callback).to.have.callCount(1);
+      expect(callback).to.have.been.calledWithExactly(avfsError);
     });
 
     it('should throw errors', function () {
@@ -139,9 +139,7 @@ describe('common/utils', function () {
       var callback = sinon.stub();
 
       expect(function () {
-        utils.invoke(method, [true], {
-          ENOENT: callback
-        });
+        utils.invoke(method, [true], callback);
       }).to.throw(error);
 
       expect(callback).to.have.callCount(0);
