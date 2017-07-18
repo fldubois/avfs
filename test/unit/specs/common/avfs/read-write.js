@@ -191,6 +191,15 @@ describe('common/avfs/read-write', function () {
       expect(storage.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.      OK');
     });
 
+    it('should do nothing with a falsy length', function () {
+      handles[FD] = new Descriptor(storage.get('/file'), '/file', constants.O_RDWR | constants.O_APPEND);
+
+      expect(base.write(FD, new Buffer(' Hello,'),  0, 0,     2)).to.equal(0);
+      expect(base.write(FD, new Buffer(' world !'), 0, false, 2)).to.equal(0);
+
+      expect(storage.files).to.contain.an.avfs.file('/file').that.contain('Hello, friend.');
+    });
+
     // write(fd, data[, position[, encoding]]);
 
     it('should write the string in the file', function () {

@@ -10,14 +10,18 @@ var AVFSError = require('lib/common/avfs-error');
 
 chai.use(require('sinon-chai'));
 
-// Target mock
+// Prototype mock factory
 
-var Target = function () {
-  this.mock = true;
+var createTarget = function () {
+  var Target = function () {
+    this.mock = true;
+  };
+
+  Target.prototype.doSync = sinon.stub();
+  Target.prototype.isSync = sinon.stub();
+
+  return new Target();
 };
-
-Target.prototype.doSync = sinon.stub();
-Target.prototype.isSync = sinon.stub();
 
 // Specs
 
@@ -25,13 +29,15 @@ describe('common/utils', function () {
 
   describe('asyncify()', function () {
 
-    var target = new Target();
+    var target = createTarget();
     var nocb   = sinon.spy();
 
     utils.asyncify(target, nocb);
 
     beforeEach(function () {
       target.doSync.reset();
+
+      nocb.reset();
     });
 
     it('should convert synchronous functions', function () {
@@ -72,7 +78,7 @@ describe('common/utils', function () {
     });
 
     it('should call the default callback without callback in call', function (done) {
-      target.doSync.returns(1);
+      target.doSync.returns(10);
 
       target.do('nope', false);
 
@@ -81,7 +87,89 @@ describe('common/utils', function () {
         expect(target.doSync).to.have.been.calledWithExactly('nope', false);
 
         expect(nocb).to.have.callCount(1);
-        expect(nocb).to.have.been.calledWithExactly(null, 1);
+        expect(nocb).to.have.been.calledWithExactly(null, 10);
+
+        return done();
+      });
+    });
+
+    it('should remove parameters after the callback', function (done) {
+      target.doSync.returns(5);
+
+      target.do('abc', null, function (error, result) {
+        expect(error).to.equal(null);
+
+        expect(result).to.equal(5);
+
+        expect(target.doSync).to.have.callCount(1);
+        expect(target.doSync).to.have.been.calledWithExactly('abc', null);
+
+        return done();
+      }, 'hello', 12);
+
+    });
+
+    it('should filter methods', function () {
+      var partial = createTarget();
+
+      utils.asyncify(partial, {
+        methods: ['doSync'],
+        nocb:    nocb
+      });
+
+      expect(partial).to.respondTo('do');
+      expect(partial).to.not.respondTo('is');
+    });
+
+    it('should call the transform callback', function (done) {
+      var partial   = createTarget();
+      var transform = sinon.spy();
+
+      utils.asyncify(partial, {
+        nocb:      nocb,
+        transform: transform
+      });
+
+      partial.doSync.returns('transformed');
+
+      partial.do('test');
+
+      setImmediate(function () {
+        expect(partial.doSync).to.have.callCount(1);
+        expect(partial.doSync).to.have.been.calledWithExactly('test');
+
+        var matcher = sinon.match.array.deepEquals(['test']);
+
+        expect(transform).to.have.callCount(1);
+        expect(transform).to.have.been.calledWithExactly(null, 'transformed', 'do', matcher, nocb);
+
+        return done();
+      });
+    });
+
+    it('should call the error callback', function (done) {
+      var error   = new Error('Fake error');
+      var onError = sinon.spy();
+      var partial = createTarget();
+
+      utils.asyncify(partial, {
+        nocb:  nocb,
+        error: onError
+      });
+
+      partial.doSync.throws(error);
+
+      partial.do('test');
+
+      setImmediate(function () {
+        expect(partial.doSync).to.have.callCount(1);
+        expect(partial.doSync).to.have.been.calledWithExactly('test');
+
+        expect(onError).to.have.callCount(1);
+        expect(onError).to.have.been.calledWithExactly(error);
+
+        expect(nocb).to.have.callCount(1);
+        expect(nocb).to.have.been.calledWithExactly(error, void 0);
 
         return done();
       });

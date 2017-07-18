@@ -106,7 +106,7 @@ module.exports = function (fs) {
           expect(error).to.equal(null);
 
           expect(fs.writeSync).to.have.callCount(1);
-          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', 0, 'utf8', void 0);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', 0, 'utf8');
 
           expect(written).to.equal(5);
           expect(string).to.equal('Hello, world');
@@ -122,7 +122,7 @@ module.exports = function (fs) {
           expect(error).to.equal(null);
 
           expect(fs.writeSync).to.have.callCount(1);
-          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', 0, void 0, void 0);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', 0);
 
           expect(written).to.equal(5);
           expect(string).to.equal('Hello, world');
@@ -138,7 +138,7 @@ module.exports = function (fs) {
           expect(error).to.equal(null);
 
           expect(fs.writeSync).to.have.callCount(1);
-          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', void 0, void 0, void 0);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world');
 
           expect(written).to.equal(5);
           expect(string).to.equal('Hello, world');
@@ -154,7 +154,7 @@ module.exports = function (fs) {
 
         setImmediate(function () {
           expect(fs.writeSync).to.have.callCount(1);
-          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world', void 0, void 0, void 0);
+          expect(fs.writeSync).to.have.been.calledWithExactly(fd, 'Hello, world');
 
           return done();
         });
@@ -168,34 +168,6 @@ module.exports = function (fs) {
         setImmediate(function () {
           expect(fs.writeSync).to.have.callCount(1);
           expect(fs.writeSync).to.have.been.calledWithExactly(fd, inBuffer, offset, length, position);
-
-          return done();
-        });
-      });
-
-      it('should do nothing with falsy length', function (done) {
-        fs.writeSync.returns(5);
-
-        fs.write(fd, inBuffer, offset, 0, position, function (error, written, outBuffer) {
-          expect(error).to.equal(null);
-          expect(written).to.equal(0);
-          expect(outBuffer).to.be.an('undefined');
-
-          expect(fs.writeSync).to.have.callCount(0);
-
-          return done();
-        });
-      });
-
-      it('should do nothing with falsy length and without callback', function (done) {
-        fs.writeSync.returns(5);
-
-        fs.write(fd, inBuffer, offset, 0, position);
-        fs.write(fd, inBuffer, offset, null, position);
-        fs.write(fd, inBuffer, offset, false, position);
-
-        setImmediate(function () {
-          expect(fs.writeSync).to.have.callCount(0);
 
           return done();
         });

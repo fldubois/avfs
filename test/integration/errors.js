@@ -1048,13 +1048,13 @@ describe('errors', function () {
 
   describe('writeSync()', function () {
 
+    it('should throw on non existing file descriptor', function () {
+      check('writeSync', [BAD_FD, new Buffer('Hello, friend'), 0, 5, 0]);
+    });
+
     // Critical error in node v0.12
     // See https://github.com/nodejs/node/issues/1550
     if (version !== 'v0.12') {
-
-      it('should throw on non existing file descriptor', function () {
-        check('writeSync', [BAD_FD, new Buffer('Hello, friend'), 0, 5, 0]);
-      });
 
       it('should throw on non integer file descriptor', function () {
         check('writeSync', {
