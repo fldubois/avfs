@@ -11,6 +11,7 @@ var Descriptor = require('lib/common/components/descriptor');
 var Storage    = require('lib/common/storage');
 
 var constants = {
+  S_IFLNK: 40960, // 0120000 - symbolic link
   S_IFDIR: 16384, // 0040000 - directory
 
   O_RDWR:   4,
@@ -21,7 +22,7 @@ var FD = 10;
 
 describe('common/avfs/read-write', function () {
 
-  var storage = new Storage();
+  var storage = new Storage(constants);
   var handles = {next: 0};
 
   var base = factory(storage, constants, handles);

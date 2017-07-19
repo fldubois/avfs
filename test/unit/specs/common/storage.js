@@ -8,6 +8,11 @@ var parsers  = require('lib/common/parsers');
 
 var Storage  = require('lib/common/storage');
 
+var constants = {
+  S_IFLNK: 40960, // 0120000 - symbolic link
+  S_IFDIR: 16384  // 0040000 - directory
+};
+
 var files = elements.directory(parseInt('0755', 8), {
   dir: elements.directory(parseInt('0777', 8), {
     file: elements.file(parseInt('0666', 8), new Buffer('Hello, friend')),
@@ -35,7 +40,7 @@ var getElement = function (storage, path) {
   return current;
 };
 
-var storage = new Storage();
+var storage = new Storage(constants);
 
 storage.files = files;
 
@@ -43,7 +48,7 @@ describe('common/storage', function () {
 
   it('should expose a constructor', function () {
     expect(Storage).to.be.a('function');
-    expect(new Storage()).to.be.an.instanceOf(Storage);
+    expect(new Storage({})).to.be.an.instanceOf(Storage);
   });
 
   it('should expose storage interface', function () {

@@ -10,12 +10,13 @@ var AVFSError = require('lib/common/avfs-error');
 var Storage   = require('lib/common/storage');
 
 var constants = {
-  S_IFDIR: 16384 // 0040000 - directory
+  S_IFLNK: 40960, // 0120000 - symbolic link
+  S_IFDIR: 16384  // 0040000 - directory
 };
 
 describe('common/avfs/directories', function () {
 
-  var storage = new Storage();
+  var storage = new Storage(constants);
 
   var base = factory(storage, constants);
 

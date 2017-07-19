@@ -8,9 +8,14 @@ var factory  = require('lib/common/avfs/exists');
 
 var Storage = require('lib/common/storage');
 
+var constants = {
+  S_IFLNK: 40960, // 0120000 - symbolic link
+  S_IFDIR: 16384  // 0040000 - directory
+};
+
 describe('common/avfs/exists', function () {
 
-  var storage = new Storage();
+  var storage = new Storage(constants);
 
   var base = factory(storage);
 

@@ -18,7 +18,7 @@ describe('common/avfs/links', function () {
   var uid = process.getuid();
   var gid = process.getgroups()[0];
 
-  var storage = new Storage();
+  var storage = new Storage(constants);
 
   var base = factory(storage, constants);
 

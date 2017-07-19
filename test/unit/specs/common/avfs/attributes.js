@@ -9,9 +9,14 @@ var factory  = require('lib/common/avfs/attributes');
 var Storage = require('lib/common/storage');
 var Stats   = require('lib/common/components/stats');
 
+var constants = {
+  S_IFLNK: 40960, // 0120000 - symbolic link
+  S_IFDIR: 16384  // 0040000 - directory
+};
+
 describe('common/avfs/attributes', function () {
 
-  var storage = new Storage();
+  var storage = new Storage(constants);
 
   var base = factory(storage);
 
