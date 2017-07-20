@@ -11,15 +11,17 @@ var errors = require('lib/common/errors');
 var PassThrough = stream.PassThrough;
 var Readable    = stream.Readable;
 
-var ReadStream = require('lib/common/streams/read-stream');
-
-chai.use(require('sinon-chai'));
+var factory = require('lib/common/streams/read-stream');
 
 var fs = {
   open:  sinon.stub(),
   read:  sinon.stub(),
   close: sinon.stub()
 };
+
+var ReadStream = factory(fs);
+
+chai.use(require('sinon-chai'));
 
 describe('common/read-stream', function () {
 
@@ -54,14 +56,18 @@ describe('common/read-stream', function () {
     });
   });
 
-  it('should expose a constructor', function () {
+  it('should expose a factory', function () {
+    expect(factory).to.be.a('function');
+  });
+
+  it('should return a ReadStream constructor', function () {
     expect(ReadStream).to.be.a('function');
-    expect(new ReadStream(fs, '/file')).to.be.an.instanceOf(ReadStream);
-    expect(ReadStream(fs, '/file')).to.be.an.instanceOf(ReadStream);
+    expect(new ReadStream('/file')).to.be.an.instanceOf(ReadStream);
+    expect(ReadStream('/file')).to.be.an.instanceOf(ReadStream);
   });
 
   it('should return a readable stream', function (done) {
-    var readable  = new ReadStream(fs, '/file');
+    var readable  = new ReadStream('/file');
     var content = '';
 
     expect(readable).to.be.an.instanceOf(Readable);
@@ -80,7 +86,7 @@ describe('common/read-stream', function () {
   });
 
   it('should delay read before the descriptor is opened', function (done) {
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     readable._read(1);
 
@@ -104,7 +110,7 @@ describe('common/read-stream', function () {
   });
 
   it('should accept fd option', function (done) {
-    var readable = new ReadStream(fs, '/file', {fd: 10});
+    var readable = new ReadStream('/file', {fd: 10});
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -121,7 +127,7 @@ describe('common/read-stream', function () {
   });
 
   it('should accept flags option', function (done) {
-    var readable = new ReadStream(fs, '/file', {flags: 'a'});
+    var readable = new ReadStream('/file', {flags: 'a'});
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -138,7 +144,7 @@ describe('common/read-stream', function () {
   });
 
   it('should accept mode option', function (done) {
-    var readable = new ReadStream(fs, '/file', {mode: '0777'});
+    var readable = new ReadStream('/file', {mode: '0777'});
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -155,7 +161,7 @@ describe('common/read-stream', function () {
   });
 
   it('should accept start option', function (done) {
-    var readable = new ReadStream(fs, '/file', {start: 12});
+    var readable = new ReadStream('/file', {start: 12});
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -179,7 +185,7 @@ describe('common/read-stream', function () {
   });
 
   it('should accept end option', function (done) {
-    var readable = new ReadStream(fs, '/file', {start: 0, end: 2});
+    var readable = new ReadStream('/file', {start: 0, end: 2});
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -203,14 +209,14 @@ describe('common/read-stream', function () {
   });
 
   it('should accept highWaterMark option', function () {
-    var readable = new ReadStream(fs, '/file', {highWaterMark: 5000});
+    var readable = new ReadStream('/file', {highWaterMark: 5000});
 
     expect(readable).to.be.an.instanceOf(Readable);
     expect(readable._readableState.highWaterMark).to.equal(5000);
   });
 
   it('should accept callback on close', function (done) {
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -220,7 +226,7 @@ describe('common/read-stream', function () {
   });
 
   it('should close the descriptor on end', function (done) {
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -238,7 +244,7 @@ describe('common/read-stream', function () {
   it('should not close the descriptor on end with autoClose option set to false', function (done) {
     this.slow(1000);
 
-    var readable = new ReadStream(fs, '/file', {autoClose: false});
+    var readable = new ReadStream('/file', {autoClose: false});
     var end      = sinon.spy();
 
     setTimeout(function () {
@@ -262,7 +268,7 @@ describe('common/read-stream', function () {
     fs.open.resetBehavior();
     fs.open.yieldsAsync(new Error('Fake open error'), null);
 
-    var readable = new ReadStream(fs, '/file', {autoClose: false});
+    var readable = new ReadStream('/file', {autoClose: false});
 
     readable.on('error', function (error) {
       expect(error).to.be.an('error');
@@ -286,7 +292,7 @@ describe('common/read-stream', function () {
     fs.read.resetBehavior();
     fs.read.yieldsAsync(new Error('Fake read error'), 0, null);
 
-    var readable = new ReadStream(fs, '/file', {autoClose: false});
+    var readable = new ReadStream('/file', {autoClose: false});
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -309,7 +315,7 @@ describe('common/read-stream', function () {
   });
 
   it('should reemit close event on each close call', function (done) {
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -327,7 +333,7 @@ describe('common/read-stream', function () {
   });
 
   it('should close the descriptor on destroy', function (done) {
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -350,7 +356,7 @@ describe('common/read-stream', function () {
     fs.open.resetBehavior();
     fs.open.yieldsAsync(new errors.EEXIST({syscall: 'open', path: '/file'}), null);
 
-    var readable = new ReadStream(fs, '/file', {flags: 'wx'});
+    var readable = new ReadStream('/file', {flags: 'wx'});
 
     readable.on('error', function (error) {
       expect(error).to.be.an('error');
@@ -368,7 +374,7 @@ describe('common/read-stream', function () {
     fs.open.resetBehavior();
     fs.open.yieldsAsync(new Error('Fake open error'), null);
 
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     readable.on('error', function (error) {
       expect(error).to.be.an('error');
@@ -386,7 +392,7 @@ describe('common/read-stream', function () {
     fs.read.resetBehavior();
     fs.read.yieldsAsync(new Error('Fake read error'), 0, null);
 
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -415,7 +421,7 @@ describe('common/read-stream', function () {
     fs.close.resetBehavior();
     fs.close.yieldsAsync(new Error('Fake close error'));
 
-    var readable = new ReadStream(fs, '/file');
+    var readable = new ReadStream('/file');
 
     expect(readable).to.be.an.instanceOf(Readable);
 
@@ -435,19 +441,19 @@ describe('common/read-stream', function () {
 
   it('should throw on non number start option', function () {
     expect(function () {
-      return new ReadStream(fs, '/file', {start: false});
+      return new ReadStream('/file', {start: false});
     }).to.throw(TypeError, 'start must be a Number');
   });
 
   it('should throw on non number end option', function () {
     expect(function () {
-      return new ReadStream(fs, '/file', {start: 0, end: false});
+      return new ReadStream('/file', {start: 0, end: false});
     }).to.throw(TypeError, 'end must be a Number');
   });
 
   it('should throw on end option less then start option', function () {
     expect(function () {
-      return new ReadStream(fs, '/file', {start: 10, end: 5});
+      return new ReadStream('/file', {start: 10, end: 5});
     }).to.throw(Error, 'start must be <= end');
   });
 

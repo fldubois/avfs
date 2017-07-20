@@ -8,14 +8,16 @@ var sinon  = require('sinon');
 
 var Stream = stream.Stream;
 
-var SyncWriteStream = require('lib/common/streams/sync-write-stream');
-
-chai.use(require('sinon-chai'));
+var factory = require('lib/common/streams/sync-write-stream');
 
 var fs = {
   writeSync: sinon.stub(),
   closeSync: sinon.stub()
 };
+
+var SyncWriteStream = factory(fs);
+
+chai.use(require('sinon-chai'));
 
 describe('common/sync-write-stream', function () {
 
@@ -24,14 +26,18 @@ describe('common/sync-write-stream', function () {
     fs.closeSync.reset();
   });
 
+  it('should expose a factory', function () {
+    expect(factory).to.be.a('function');
+  });
+
   it('should expose a constructor', function () {
     expect(SyncWriteStream).to.be.a('function');
-    expect(new SyncWriteStream(fs, 10)).to.be.an.instanceOf(Stream);
-    expect(SyncWriteStream(fs, 10)).to.be.an.instanceOf(Stream);
+    expect(new SyncWriteStream(10)).to.be.an.instanceOf(Stream);
+    expect(SyncWriteStream(10)).to.be.an.instanceOf(Stream);
   });
 
   it('should return a writable stream', function (done) {
-    var writable = new SyncWriteStream(fs, 10);
+    var writable = new SyncWriteStream(10);
 
     expect(writable).to.be.an.instanceOf(Stream);
 
@@ -52,7 +58,7 @@ describe('common/sync-write-stream', function () {
   });
 
   it('should accept autoClose option', function () {
-    var writable = new SyncWriteStream(fs, 10, {autoClose: false});
+    var writable = new SyncWriteStream(10, {autoClose: false});
 
     expect(writable).to.be.an.instanceOf(Stream);
 
@@ -66,7 +72,7 @@ describe('common/sync-write-stream', function () {
   });
 
   it('should close the descriptor on destroy', function () {
-    var writable = new SyncWriteStream(fs, 10);
+    var writable = new SyncWriteStream(10);
 
     expect(writable).to.be.an.instanceOf(Stream);
 
@@ -89,7 +95,7 @@ describe('common/sync-write-stream', function () {
     var writable = null;
 
     beforeEach(function () {
-      writable = new SyncWriteStream(fs, 10);
+      writable = new SyncWriteStream(10);
 
       expect(writable).to.be.an.instanceOf(Stream);
     });

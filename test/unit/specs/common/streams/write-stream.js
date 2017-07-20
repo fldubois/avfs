@@ -10,15 +10,17 @@ var errors = require('lib/common/errors');
 
 var Writable = stream.Writable;
 
-var WriteStream = require('lib/common/streams/write-stream');
-
-chai.use(require('sinon-chai'));
+var factory = require('lib/common/streams/write-stream');
 
 var fs = {
   open:  sinon.stub(),
   write: sinon.stub(),
   close: sinon.stub()
 };
+
+var WriteStream = factory(fs);
+
+chai.use(require('sinon-chai'));
 
 describe('common/write-stream', function () {
 
@@ -38,14 +40,18 @@ describe('common/write-stream', function () {
     });
   });
 
+  it('should expose a factory', function () {
+    expect(factory).to.be.a('function');
+  });
+
   it('should expose a constructor', function () {
     expect(WriteStream).to.be.a('function');
-    expect(new WriteStream(fs, '/file')).to.be.an.instanceOf(WriteStream);
-    expect(WriteStream(fs, '/file')).to.be.an.instanceOf(WriteStream);
+    expect(new WriteStream('/file')).to.be.an.instanceOf(WriteStream);
+    expect(WriteStream('/file')).to.be.an.instanceOf(WriteStream);
   });
 
   it('should return a writable stream', function (done) {
-    var writable = new WriteStream(fs, '/file');
+    var writable = new WriteStream('/file');
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -71,7 +77,7 @@ describe('common/write-stream', function () {
   });
 
   it('should accept fd option', function (done) {
-    var writable = new WriteStream(fs, '/file', {fd: 10});
+    var writable = new WriteStream('/file', {fd: 10});
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -94,7 +100,7 @@ describe('common/write-stream', function () {
   });
 
   it('should accept flags option', function (done) {
-    var writable = new WriteStream(fs, '/file', {flags: 'a'});
+    var writable = new WriteStream('/file', {flags: 'a'});
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -115,7 +121,7 @@ describe('common/write-stream', function () {
   });
 
   it('should accept mode option', function (done) {
-    var writable = new WriteStream(fs, '/file', {mode: '0700'});
+    var writable = new WriteStream('/file', {mode: '0700'});
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -136,7 +142,7 @@ describe('common/write-stream', function () {
   });
 
   it('should accept start option', function (done) {
-    var writable = new WriteStream(fs, '/file', {flags: 'r+', start: 12});
+    var writable = new WriteStream('/file', {flags: 'r+', start: 12});
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -160,7 +166,7 @@ describe('common/write-stream', function () {
   });
 
   it('should accept callback on close', function (done) {
-    var writable = new WriteStream(fs, '/file');
+    var writable = new WriteStream('/file');
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -170,7 +176,7 @@ describe('common/write-stream', function () {
   });
 
   it('should reemit close event on each close call', function (done) {
-    var writable = new WriteStream(fs, '/file');
+    var writable = new WriteStream('/file');
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -188,7 +194,7 @@ describe('common/write-stream', function () {
   });
 
   it('should close the descriptor on destroy', function (done) {
-    var writable = new WriteStream(fs, '/file');
+    var writable = new WriteStream('/file');
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -215,7 +221,7 @@ describe('common/write-stream', function () {
     fs.open.resetBehavior();
     fs.open.yieldsAsync(new errors.EEXIST({syscall: 'open', path: '/file'}), null);
 
-    var writable = new WriteStream(fs, '/file', {flags: 'wx'});
+    var writable = new WriteStream('/file', {flags: 'wx'});
 
     writable.on('error', function (error) {
       expect(error).to.be.an('error');
@@ -233,7 +239,7 @@ describe('common/write-stream', function () {
     fs.open.resetBehavior();
     fs.open.yieldsAsync(new Error('Fake open error'), null);
 
-    var writable = new WriteStream(fs, '/file', {flags: 'wx'});
+    var writable = new WriteStream('/file', {flags: 'wx'});
 
     writable.on('error', function (error) {
       expect(error).to.be.an('error');
@@ -248,7 +254,7 @@ describe('common/write-stream', function () {
   });
 
   it('should emit an error on non Buffer data', function () {
-    var writable = new WriteStream(fs, '/file', {flags: 'wx'});
+    var writable = new WriteStream('/file', {flags: 'wx'});
 
     expect(function () {
       writable._write(false);
@@ -259,7 +265,7 @@ describe('common/write-stream', function () {
     fs.write.resetBehavior();
     fs.write.yieldsAsync(new Error('Fake write error'), 0, null);
 
-    var writable = new WriteStream(fs, '/file');
+    var writable = new WriteStream('/file');
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -288,7 +294,7 @@ describe('common/write-stream', function () {
     fs.close.resetBehavior();
     fs.close.yieldsAsync(new Error('Fake close error'));
 
-    var writable = new WriteStream(fs, '/file');
+    var writable = new WriteStream('/file');
 
     expect(writable).to.be.an.instanceOf(Writable);
 
@@ -308,13 +314,13 @@ describe('common/write-stream', function () {
 
   it('should throw on non number start option', function () {
     expect(function () {
-      return new WriteStream(fs, '/file', {start: false});
+      return new WriteStream('/file', {start: false});
     }).to.throw(TypeError, 'start must be a Number');
   });
 
   it('should throw on negative start option', function () {
     expect(function () {
-      return new WriteStream(fs, '/file', {start: -1});
+      return new WriteStream('/file', {start: -1});
     }).to.throw(Error, 'start must be >= zero');
   });
 
