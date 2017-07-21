@@ -3,16 +3,13 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements = require('lib/common/elements');
+var constants = require('test/unit/fixtures/constants');
+
+var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/directories');
 
 var AVFSError = require('lib/common/avfs-error');
 var Storage   = require('lib/common/storage');
-
-var constants = {
-  S_IFLNK: 40960, // 0120000 - symbolic link
-  S_IFDIR: 16384  // 0040000 - directory
-};
 
 describe('common/avfs/directories', function () {
 

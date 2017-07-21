@@ -3,7 +3,9 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements  = require('lib/common/elements');
+var constants = require('test/unit/fixtures/constants');
+
+var elements = require('lib/common/elements')(constants);
 
 var Stats = require('lib/common/components/stats');
 

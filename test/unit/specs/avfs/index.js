@@ -3,7 +3,9 @@
 var fs   = require('fs');
 var path = require('path');
 
-var elements = require('lib/common/elements');
+var constants = require('test/unit/fixtures/constants');
+
+var elements = require('lib/common/elements')(constants);
 var parsers  = require('lib/common/parsers');
 var version  = require('lib/common/version');
 

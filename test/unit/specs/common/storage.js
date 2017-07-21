@@ -3,15 +3,12 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements = require('lib/common/elements');
+var constants = require('test/unit/fixtures/constants');
+
+var elements = require('lib/common/elements')(constants);
 var parsers  = require('lib/common/parsers');
 
 var Storage  = require('lib/common/storage');
-
-var constants = {
-  S_IFLNK: 40960, // 0120000 - symbolic link
-  S_IFDIR: 16384  // 0040000 - directory
-};
 
 var files = elements.directory(parseInt('0755', 8), {
   dir: elements.directory(parseInt('0777', 8), {

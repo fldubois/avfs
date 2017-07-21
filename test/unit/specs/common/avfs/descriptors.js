@@ -3,25 +3,14 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var elements = require('lib/common/elements');
+var constants = require('test/unit/fixtures/constants');
+
+var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/descriptors');
 
 var AVFSError  = require('lib/common/avfs-error');
 var Descriptor = require('lib/common/components/descriptor');
 var Storage    = require('lib/common/storage');
-
-var constants = {
-  S_IFLNK: 40960, // 0120000 - symbolic link
-  S_IFDIR: 16384, // 0040000 - directory
-
-  O_RDONLY: 1,
-  O_WRONLY: 2,
-  O_RDWR:   4,
-  O_CREAT:  8,
-  O_EXCL:   16,
-  O_TRUNC:  32,
-  O_APPEND: 64
-};
 
 var BAD_FD = 1000000000;
 
