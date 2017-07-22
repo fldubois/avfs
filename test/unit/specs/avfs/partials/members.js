@@ -3,14 +3,12 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var Stats = require('lib/common/components/stats');
-
 module.exports = function (fs, getElement, version) {
 
   describe('members', function () {
 
     it('should expose Stats', function () {
-      expect(fs.Stats).to.equal(Stats);
+      expect(fs.Stats).to.be.a('function');
     });
 
     it('should expose ReadStream', function () {

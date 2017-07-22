@@ -9,7 +9,7 @@ var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/descriptors');
 
 var AVFSError  = require('lib/common/avfs-error');
-var Descriptor = require('lib/common/components/descriptor');
+var Descriptor = require('lib/common/components/descriptor')(constants);
 var Storage    = require('lib/common/storage');
 
 var BAD_FD = 1000000000;

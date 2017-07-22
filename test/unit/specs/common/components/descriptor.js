@@ -5,7 +5,7 @@ var expect = chai.expect;
 
 var constants = require('lib/common/constants');
 
-var Descriptor = require('lib/common/components/descriptor');
+var Descriptor = require('lib/common/components/descriptor')(constants);
 
 describe('common/descriptor', function () {
 

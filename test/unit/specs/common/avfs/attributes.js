@@ -9,13 +9,12 @@ var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/attributes');
 
 var Storage = require('lib/common/storage');
-var Stats   = require('lib/common/components/stats');
 
 describe('common/avfs/attributes', function () {
 
   var storage = new Storage(constants);
 
-  var base = factory(storage);
+  var base = factory(storage, constants);
 
   before(function () {
     storage.files = elements.directory(parseInt('0755', 8), {
@@ -28,8 +27,6 @@ describe('common/avfs/attributes', function () {
 
     it('should return file stats', function () {
       var stats = base.stat('/file');
-
-      expect(stats).to.be.an.instanceOf(Stats);
 
       var file = storage.get('/file');
 

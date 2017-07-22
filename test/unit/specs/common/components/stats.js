@@ -7,7 +7,7 @@ var constants = require('test/unit/fixtures/constants');
 
 var elements = require('lib/common/elements')(constants);
 
-var Stats = require('lib/common/components/stats');
+var Stats = require('lib/common/components/stats')(constants);
 
 var elems = {
   directory: elements.directory(parseInt('777', 8)),
