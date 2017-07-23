@@ -3,8 +3,8 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var constants = require('lib/common/constants');
-var parsers     = require('lib/common/parsers');
+var constants = require('test/unit/fixtures/constants');
+var parsers   = require('lib/common/parsers')(constants);
 
 describe('common/parsers', function () {
 

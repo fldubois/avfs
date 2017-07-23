@@ -3,7 +3,7 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var constants = require('lib/common/constants');
+var constants = require('test/unit/fixtures/constants');
 
 var Descriptor = require('lib/common/components/descriptor')(constants);
 

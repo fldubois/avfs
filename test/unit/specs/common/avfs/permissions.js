@@ -17,7 +17,7 @@ describe('common/avfs/permissions', function () {
 
   var storage = new Storage(constants);
 
-  var base = factory(storage);
+  var base = factory(storage, constants);
 
   before(function () {
     var file  = elements.file(parseInt('0666', 8), new Buffer('Hello, friend.'));

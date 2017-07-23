@@ -6,7 +6,7 @@ var expect = chai.expect;
 var constants = require('test/unit/fixtures/constants');
 
 var elements = require('lib/common/elements')(constants);
-var parsers  = require('lib/common/parsers');
+var parsers  = require('lib/common/parsers')(constants);
 
 var Storage  = require('lib/common/storage');
 
