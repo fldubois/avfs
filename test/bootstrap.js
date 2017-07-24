@@ -2,7 +2,7 @@
 
 var path = require('path');
 
-var constants = require('../lib/common/constants');
+var constants = require('./unit/fixtures/constants');
 
 require('app-module-path').addPath(path.join(__dirname, '..'));
 

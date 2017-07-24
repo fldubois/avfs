@@ -6,7 +6,9 @@ var chai   = require('chai');
 var expect = chai.expect;
 var sinon  = require('sinon');
 
-var errors = require('lib/common/errors');
+var constants = require('test/unit/fixtures/constants');
+
+var errors = require('lib/common/errors')(constants);
 
 var Writable = stream.Writable;
 
