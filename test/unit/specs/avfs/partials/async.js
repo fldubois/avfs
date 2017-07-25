@@ -6,7 +6,7 @@ var sinon  = require('sinon');
 
 var constants = require('test/unit/fixtures/constants');
 
-var errors = require('lib/common/errors')(constants);
+var errors = require('lib/common/errors');
 
 chai.use(require('sinon-chai'));
 
@@ -176,14 +176,17 @@ module.exports = function (fs) {
       });
 
       it('should log fs error without callback', function (done) {
-        var error = errors.EBADF('write');
+        var error = errors.createError('EBADF, write', {
+          errno: constants.EBADF,
+          code:  'EBADF'
+        });
 
         fs.writeSync.throws(error);
 
         fs.write(fd, inBuffer, offset, length, position);
 
         setImmediate(function () {
-          expect(console.error).to.have.been.calledWithExactly('fs: missing callback ' + error.message);
+          expect(console.error).to.have.callCount(1);
 
           return done();
         });

@@ -3,173 +3,65 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-var constants = require('test/unit/fixtures/constants');
-
-var errors    = require('lib/common/errors')(constants);
-var version   = require('lib/common/version');
-
-function expectError(error, message, data) {
-  expect(error).to.be.an('error');
-
-  expect(error.message).to.match(message);
-
-  Object.keys(data).forEach(function (property) {
-    expect(error[property]).to.equal(data[property]);
-  });
-}
+var errors = require('lib/common/errors');
 
 describe('common/errors', function () {
 
-  it('should expose factories', function () {
-    expect(errors).to.be.an('object');
+  describe('createError()', function () {
 
-    expect(errors).to.include.all.keys([
-      'EACCES',
-      'EBADF',
-      'EINVAL',
-      'ENOTDIR',
-      'EISDIR',
-      'ENOENT',
-      'EEXIST',
-      'EPERM'
-    ]);
+    it('should create an error with message and data', function () {
+      var error = errors.createError('Fake error', {
+        test: true,
+        text: 'test'
+      });
 
-    Object.keys(errors).filter(function (code) {
-      return /^E[A-Z]+$/.test(code);
-    }).forEach(function (code) {
-      expect(errors[code]).to.be.a('function');
+      expect(error).to.be.an('error');
+      expect(error.message).to.equal('Fake error');
+      expect(error).to.include.keys(['test', 'text']);
+      expect(error.test).to.equal(true);
+      expect(error.text).to.equal('test');
     });
+
   });
 
-  it('should expose EACCES factory', function () {
-    expectError(errors.EACCES({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^EACCES/, {
-      errno:   constants.EACCES,
-      code:    'EACCES',
-      path:    '/path/to/file',
-      syscall: 'open'
+  describe('nullCheck()', function () {
+
+    it('should return true with valid string', function () {
+      expect(errors.nullCheck('test')).to.equal(true);
     });
-  });
 
-  it('should expose EBADF factory', function () {
-    expectError(errors.EBADF({
-      syscall: 'open'
-    }), /^EBADF/, {
-      errno:   constants.EBADF,
-      code:    'EBADF',
-      syscall: 'open'
+    it('should throw with null bytes in string', function () {
+      expect(function () {
+        errors.nullCheck('\u0000');
+      }).to.throw(Error, 'Path must be a string without null bytes.');
     });
-  });
 
-  it('should expose EBADF factory with message', function () {
-    var data = {
-      errno: constants.EBADF,
-      code:  'EBADF'
-    };
-
-    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
-      data.syscall = 'write';
-    }
-
-    expectError(errors.EBADF('write'), /^EBADF/, data);
-  });
-
-  it('should expose EINVAL factory', function () {
-    expectError(errors.EINVAL({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^EINVAL/, {
-      errno:   constants.EINVAL,
-      code:    'EINVAL',
-      path:    '/path/to/file',
-      syscall: 'open'
+    it('should accept callback', function (done) {
+      errors.nullCheck('test', done);
     });
-  });
 
-  it('should expose ENOTDIR factory', function () {
-    expectError(errors.ENOTDIR({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^ENOTDI/, {
-      errno:   constants.ENOTDIR,
-      code:    'ENOTDIR',
-      path:    '/path/to/file',
-      syscall: 'open'
+    it('should pass error to the callback', function () {
+      errors.nullCheck('\u0000', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('Path must be a string without null bytes.');
+      });
     });
-  });
 
-  it('should expose EISDIR factory with syscall', function () {
-    expectError(errors.EISDIR({
-      syscall: 'read'
-    }), /^EISDIR/, {
-      errno:   constants.EISDIR,
-      code:    'EISDIR',
-      syscall: 'read'
+    it('should accept data', function () {
+      var data = {
+        test: true,
+        text: 'test'
+      };
+
+      errors.nullCheck(data, '\u0000', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('Path must be a string without null bytes.');
+        expect(error).to.include.keys(['test', 'text']);
+        expect(error.test).to.equal(true);
+        expect(error.text).to.equal('test');
+      });
     });
+
   });
-
-  it('should expose EISDIR factory with syscall and path', function () {
-    expectError(errors.EISDIR({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^EISDIR/, {
-      errno:   constants.EISDIR,
-      code:    'EISDIR',
-      path:    '/path/to/file',
-      syscall: 'open'
-    });
-  });
-
-  it('should expose EISDIR factory with message', function () {
-    var data = {
-      errno: constants.EISDIR,
-      code:  'EISDIR'
-    };
-
-    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
-      data.syscall = 'read';
-    }
-
-    expectError(errors.EISDIR('read'), /^EISDIR/, data);
-  });
-
-  it('should expose ENOENT factory', function () {
-    expectError(errors.ENOENT({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^ENOENT/, {
-      errno:   constants.ENOENT,
-      code:    'ENOENT',
-      path:    '/path/to/file',
-      syscall: 'open'
-    });
-  });
-
-  it('should expose EEXIST factory', function () {
-    expectError(errors.EEXIST({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^EEXIST/, {
-      errno:   constants.EEXIST,
-      code:    'EEXIST',
-      path:    '/path/to/file',
-      syscall: 'open'
-    });
-  });
-
-  it('should expose EPERM factory', function () {
-    expectError(errors.EPERM({
-      syscall: 'open',
-      path:    '/path/to/file'
-    }), /^EPERM/, {
-      errno:   constants.EPERM,
-      code:    'EPERM',
-      path:    '/path/to/file',
-      syscall: 'open'
-    });
-  });
-
 
 });

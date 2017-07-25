@@ -8,7 +8,7 @@ var sinon  = require('sinon');
 
 var constants = require('test/unit/fixtures/constants');
 
-var errors = require('lib/common/errors')(constants);
+var errors = require('lib/common/errors');
 
 var PassThrough = stream.PassThrough;
 var Readable    = stream.Readable;
@@ -356,7 +356,13 @@ describe('common/read-stream', function () {
 
   it('should emit an error on open fs error', function (done) {
     fs.open.resetBehavior();
-    fs.open.yieldsAsync(new errors.EEXIST({syscall: 'open', path: '/file'}), null);
+
+    fs.open.yieldsAsync(new errors.createError('EEXIST, file already exists \'/file\'', {
+      errno:   constants.EEXIST,
+      code:    'EEXIST',
+      path:    '/file',
+      syscall: 'open'
+    }), null);
 
     var readable = new ReadStream('/file', {flags: 'wx'});
 
