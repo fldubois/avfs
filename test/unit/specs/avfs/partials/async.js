@@ -6,7 +6,8 @@ var sinon  = require('sinon');
 
 var constants = require('test/unit/fixtures/constants');
 
-var errors = require('lib/common/errors');
+var errors  = require('lib/common/errors');
+var version = require('lib/common/version');
 
 chai.use(require('sinon-chai'));
 
@@ -175,22 +176,52 @@ module.exports = function (fs) {
         });
       });
 
-      it('should log fs error without callback', function (done) {
-        var error = errors.createError('EBADF, write', {
-          errno: constants.EBADF,
-          code:  'EBADF'
+      if (version === 'v0.10') {
+
+        it('should log fs error without callback', function (done) {
+          var error = errors.createError('EBADF, write', {
+            errno: constants.EBADF,
+            code:  'EBADF'
+          });
+
+          fs.writeSync.throws(error);
+
+          fs.write(fd, inBuffer, offset, length, position);
+
+          setImmediate(function () {
+            expect(console.error).to.have.callCount(1);
+
+            return done();
+          });
         });
 
-        fs.writeSync.throws(error);
+      } else {
 
-        fs.write(fd, inBuffer, offset, length, position);
+        it('should throw error without callback', function (done) {
+          var error = errors.createError('EBADF, bad file descriptor', {
+            errno: constants.EBADF,
+            code:  'EBADF'
+          });
 
-        setImmediate(function () {
-          expect(console.error).to.have.callCount(1);
+          var mochaListener = process.listeners('uncaughtException').pop();
 
-          return done();
+          process.removeAllListeners('uncaughtException');
+
+          process.once('uncaughtException', function (err) {
+            expect(err).to.be.an('error');
+            expect(err.message).to.match(/^EBADF/);
+            expect(err).to.include.keys(['errno', 'code']);
+
+            process.on('uncaughtException', mochaListener);
+
+            done();
+          });
+
+          fs.writeSync.throws(error);
+
+          fs.write(fd, inBuffer, offset, length, position);
         });
-      });
+      }
 
       after(function () {
         fs.writeSync.restore();
