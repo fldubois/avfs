@@ -3,7 +3,9 @@
 var chai   = require('chai');
 var expect = chai.expect;
 
-module.exports = function (fs, getElement, version) {
+var version = require('lib/common/version');
+
+module.exports = function (fs) {
 
   describe('members', function () {
 

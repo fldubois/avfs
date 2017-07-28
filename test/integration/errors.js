@@ -1177,17 +1177,16 @@ describe('errors', function () {
       });
     });
 
-    // TODO: reactivate when version specific implementations will be independent
-    // if (version !== 'v0.10') {
+    if (version !== 'v0.10') {
 
-    //   it.only('should throw on offset out of bounds with zero length', function () {
-    //     check('write', {
-    //       fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0],
-    //       avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0]
-    //     });
-    //   });
+      it('should throw on offset out of bounds with zero length', function () {
+        check('write', {
+          fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0],
+          avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0]
+        });
+      });
 
-    // }
+    }
 
     it('should throw on length beyond buffer', function () {
       check('write', {
