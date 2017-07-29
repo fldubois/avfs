@@ -62,6 +62,22 @@ describe('common/errors', function () {
       });
     });
 
+    it('should accept custom message', function () {
+      var data = {
+        message: 'Error message',
+        test:    true,
+        text:    'test'
+      };
+
+      errors.nullCheck(data, '\u0000', function (error) {
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('Error message');
+        expect(error).to.include.keys(['test', 'text']);
+        expect(error.test).to.equal(true);
+        expect(error.text).to.equal('test');
+      });
+    });
+
   });
 
 });
