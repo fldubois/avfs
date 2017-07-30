@@ -544,9 +544,13 @@ describe('errors', function () {
         errors.fs.path   = errors.fs.path.replace(regexp, '');
       };
 
-      it('should throw on non function callback', function () {
-        check('mkdtemp', ['test-', false]);
-      });
+      if (version !== 'v6') {
+
+        it('should throw on non function callback', function () {
+          check('mkdtemp', ['test-', false]);
+        });
+
+      }
 
       it('should send error to callback on null character in path', function (done) {
         checkAsync('mkdtemp', ['\u0000'], done);
@@ -807,13 +811,17 @@ describe('errors', function () {
       check('realpathSync', ['/tmp/dir/not']);
     });
 
-    it('should throw on not string path', function () {
-      check('realpathSync', [false]);
-    });
+    if (version !== 'v6') {
 
-    it('should throw on not string path in cache', function () {
-      check('realpathSync', ['/tmp/dir/file', {'/tmp/dir': false}]);
-    });
+      it('should throw on not string path', function () {
+        check('realpathSync', [false]);
+      });
+
+      it('should throw on not string path in cache', function () {
+        check('realpathSync', ['/tmp/dir/file', {'/tmp/dir': false}]);
+      });
+
+    }
 
   });
 

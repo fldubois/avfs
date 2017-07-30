@@ -111,7 +111,7 @@ describe('common/avfs/descriptors', function () {
     it('should throw on bad flags type', function () {
       expect(function () {
         base.open('/file', false);
-      }).to.throw(TypeError, 'flags must be an int');
+      }).to.throw(AVFSError, {code: 'flags:type'});
     });
 
     it('should throw ENOENT on non existing file in read mode', function () {

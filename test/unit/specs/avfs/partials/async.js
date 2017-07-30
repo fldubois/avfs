@@ -229,6 +229,31 @@ module.exports = function (fs) {
 
     });
 
+    if (version === 'v6') {
+
+      describe('mkdtemp()', function () {
+
+        it('should throw error without callback', function (done) {
+          var mochaListener = process.listeners('uncaughtException').pop();
+
+          process.removeAllListeners('uncaughtException');
+
+          process.once('uncaughtException', function (error) {
+            expect(error).to.be.an('error');
+            expect(error.message).to.equal('Path must be a string without null bytes');
+
+            process.on('uncaughtException', mochaListener);
+
+            done();
+          });
+
+          fs.mkdtemp('\u0000');
+        });
+
+      });
+
+    }
+
     after(function () {
       console.error.restore();
     });
