@@ -24,7 +24,7 @@ var WriteStream = factory(fs);
 
 chai.use(require('sinon-chai'));
 
-describe('common/write-stream', function () {
+describe('common/streams/write-stream', function () {
 
   beforeEach(function () {
     fs.open.reset();

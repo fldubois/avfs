@@ -7,7 +7,7 @@ var constants = require('test/unit/fixtures/constants');
 
 var Descriptor = require('lib/common/components/descriptor')(constants);
 
-describe('common/descriptor', function () {
+describe('common/components/descriptor', function () {
 
   it('should expose a constructor', function () {
     expect(Descriptor).to.be.a('function');

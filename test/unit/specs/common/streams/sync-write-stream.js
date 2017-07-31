@@ -19,7 +19,7 @@ var SyncWriteStream = factory(fs);
 
 chai.use(require('sinon-chai'));
 
-describe('common/sync-write-stream', function () {
+describe('common/streams/sync-write-stream', function () {
 
   beforeEach(function () {
     fs.writeSync.reset();

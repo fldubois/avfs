@@ -15,7 +15,7 @@ var elems = {
   symlink:   elements.symlink(parseInt('777', 8), '/')
 };
 
-describe('common/stats', function () {
+describe('common/components/stats', function () {
 
   it('should expose a constructor', function () {
     expect(Stats).to.be.a('function');

@@ -7,7 +7,7 @@ var expect = chai.expect;
 
 var StatWatcher = require('lib/common/watchers/stat-watcher');
 
-describe('common/stat-watcher', function () {
+describe('common/watchers/stat-watcher', function () {
 
   it('should expose a constructor', function () {
     expect(StatWatcher).to.be.a('function');

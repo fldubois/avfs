@@ -7,7 +7,7 @@ var expect = chai.expect;
 
 var FSWatcher = require('lib/common/watchers/fs-watcher');
 
-describe('common/fs-watcher', function () {
+describe('common/watchers/fs-watcher', function () {
 
   it('should expose a constructor', function () {
     expect(FSWatcher).to.be.a('function');

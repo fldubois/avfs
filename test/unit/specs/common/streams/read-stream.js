@@ -25,7 +25,7 @@ var ReadStream = factory(fs);
 
 chai.use(require('sinon-chai'));
 
-describe('common/read-stream', function () {
+describe('common/streams/read-stream', function () {
 
   beforeEach(function () {
     var content = new Buffer('Hello, friend.');
