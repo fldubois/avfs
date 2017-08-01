@@ -6,6 +6,7 @@ var sinon  = require('sinon');
 
 var factory  = require('lib/common/avfs/watchers');
 
+var AVFSError   = require('lib/common/avfs-error');
 var FSWatcher   = require('lib/common/watchers/fs-watcher');
 var StatWatcher = require('lib/common/watchers/stat-watcher');
 
@@ -111,7 +112,7 @@ describe('common/avfs/watchers', function () {
     it('should throw on missing listener function', function () {
       expect(function () {
         base.watchFile('/file');
-      }).to.throw(Error, 'watchFile requires a listener function');
+      }).to.throw(AVFSError, {code: 'listener:missing'});
     });
 
   });
