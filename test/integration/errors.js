@@ -1094,7 +1094,14 @@ describe('errors', function () {
       });
     });
 
-    if (version !== 'v0.10') {
+    if (version === 'v0.10') {
+
+      it('should not throw on offset out of bounds with zero length', function () {
+        expect(avfs.writeSync.bind(avfs, fd.write.fs, new Buffer('Hello, friend'), 1000, 0, 0)).to.not.throw();
+        expect(fs.writeSync.bind(fs, fd.write.fs, new Buffer('Hello, friend'), 1000, 0, 0)).to.not.throw();
+      });
+
+    } else {
 
       it('should throw on offset out of bounds with zero length', function () {
         check('writeSync', {

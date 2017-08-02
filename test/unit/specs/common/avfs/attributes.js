@@ -8,7 +8,8 @@ var constants = require('test/unit/fixtures/constants');
 var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/attributes');
 
-var Storage = require('lib/common/storage');
+var AVFSError = require('lib/common/avfs-error');
+var Storage   = require('lib/common/storage');
 
 describe('common/avfs/attributes', function () {
 
@@ -43,6 +44,12 @@ describe('common/avfs/attributes', function () {
       expect(stats.atime).to.equal(file.get('atime'));
       expect(stats.mtime).to.equal(file.get('mtime'));
       expect(stats.ctime).to.equal(file.get('ctime'));
+    });
+
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.stat.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+      });
     });
 
   });
@@ -89,6 +96,24 @@ describe('common/avfs/attributes', function () {
 
       expect(file.get('atime').getTime()).to.equal(date.getTime());
       expect(file.get('mtime').getTime()).to.equal(date.getTime());
+    });
+
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.utimes.bind(null, path, 0, 0)).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
+    it('should throw atime:type on bad atime type', function () {
+      [void 0, null, false, 'test', {}, []].forEach(function (atime) {
+        expect(base.utimes.bind(null, '/file', atime, 0)).to.throw(AVFSError, {code: 'atime:type'});
+      });
+    });
+
+    it('should throw mtime:type on bad mtime type', function () {
+      [void 0, null, false, 'test', {}, []].forEach(function (mtime) {
+        expect(base.utimes.bind(null, '/file', 0, mtime)).to.throw(AVFSError, {code: 'mtime:type'});
+      });
     });
 
   });

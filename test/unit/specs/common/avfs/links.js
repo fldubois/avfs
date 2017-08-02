@@ -8,7 +8,8 @@ var constants = require('test/unit/fixtures/constants');
 var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/links');
 
-var Storage = require('lib/common/storage');
+var AVFSError = require('lib/common/avfs-error');
+var Storage   = require('lib/common/storage');
 
 describe('common/avfs/links', function () {
 
@@ -55,6 +56,18 @@ describe('common/avfs/links', function () {
       expect(storage.files).to.contain.an.avfs.symlink('/link').with.mode('0700');
     });
 
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.lchmod.bind(null, path, '0700')).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
+    it('should throw mode:type error on bad mode type', function () {
+      [void 0, null, false, {}, []].forEach(function (mode) {
+        expect(base.lchmod.bind(null, '/link', mode)).to.throw(AVFSError, {code: 'mode:type'});
+      });
+    });
+
     it('should throw EPERM on not owned files', function () {
       expect(function () {
         base.lchmod('/other', '0700');
@@ -78,6 +91,24 @@ describe('common/avfs/links', function () {
       expect(result).to.be.an('undefined');
       expect(storage.files).to.contain.an.avfs.symlink('/link').with.owner(uid, gid);
       expect(storage.files).to.contain.an.avfs.file('/file').with.owner(uid, gid + 1);
+    });
+
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.lchown.bind(null, path, uid, gid)).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
+    it('should throw uid:type error on bad uid type', function () {
+      [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
+        expect(base.lchown.bind(null, '/link', value, gid)).to.throw(AVFSError, {code: 'uid:type'});
+      });
+    });
+
+    it('should throw gid:type error on bad gid type', function () {
+      [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
+        expect(base.lchown.bind(null, '/link', uid, value)).to.throw(AVFSError, {code: 'gid:type'});
+      });
     });
 
     it('should throw EPERM on permission denied', function () {
@@ -108,6 +139,18 @@ describe('common/avfs/links', function () {
 
       expect(result).to.be.an('undefined');
       expect(storage.get('/file').get('nlink')).to.equal(2);
+    });
+
+    it('should throw srcpath:type error on bad srcpath type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (srcpath) {
+        expect(base.link.bind(null, srcpath, '/new')).to.throw(AVFSError, {code: 'srcpath:type'});
+      });
+    });
+
+    it('should throw dstpath:type error on bad dstpath type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (dstpath) {
+        expect(base.link.bind(null, '/file', dstpath)).to.throw(AVFSError, {code: 'dstpath:type'});
+      });
     });
 
     it('should throw EPERM on directory source', function () {
@@ -154,12 +197,24 @@ describe('common/avfs/links', function () {
       expect(stats.ctime).to.equal(file.get('ctime'));
     });
 
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.lstat.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
   });
 
   describe('readlink()', function () {
 
     it('should return the symlink target', function () {
       expect(base.readlink('/link')).to.equal('/file');
+    });
+
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.readlink.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+      });
     });
 
     it('should throw EINVAL on not link', function () {
@@ -207,6 +262,18 @@ describe('common/avfs/links', function () {
       expect(storage.files).to.contain.an.avfs.symlink('/new').with.mode('0777').that.target('/not');
     });
 
+    it('should throw srcpath:type error on bad srcpath type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (srcpath) {
+        expect(base.symlink.bind(null, srcpath, '/new')).to.throw(AVFSError, {code: 'srcpath:type'});
+      });
+    });
+
+    it('should throw dstpath:type error on bad dstpath type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (dstpath) {
+        expect(base.symlink.bind(null, '/file', dstpath)).to.throw(AVFSError, {code: 'dstpath:type'});
+      });
+    });
+
     it('should throw EEXIST on existing destination', function () {
       expect(function () {
         base.symlink('/file', '/link');
@@ -233,6 +300,12 @@ describe('common/avfs/links', function () {
 
       expect(result).to.be.an('undefined');
       expect(file.get('nlink')).to.equal(4);
+    });
+
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.unlink.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+      });
     });
 
     it('should throw EISDIR on directory', function () {

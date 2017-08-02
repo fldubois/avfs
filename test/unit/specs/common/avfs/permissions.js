@@ -8,7 +8,8 @@ var constants = require('test/unit/fixtures/constants');
 var elements = require('lib/common/elements')(constants);
 var factory  = require('lib/common/avfs/permissions');
 
-var Storage = require('lib/common/storage');
+var AVFSError = require('lib/common/avfs-error');
+var Storage   = require('lib/common/storage');
 
 describe('common/avfs/permissions', function () {
 
@@ -53,6 +54,18 @@ describe('common/avfs/permissions', function () {
       expect(storage.files).to.contain.an.avfs.symlink('/link').with.mode('0777');
     });
 
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.chmod.bind(null, path, '0700')).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
+    it('should throw mode:type error on bad mode type', function () {
+      [void 0, null, false, {}, []].forEach(function (mode) {
+        expect(base.chmod.bind(null, '/file', mode)).to.throw(AVFSError, {code: 'mode:type'});
+      });
+    });
+
     it('should throw EPERM on not owned files', function () {
       expect(function () {
         base.chmod('/other', '0700');
@@ -76,6 +89,24 @@ describe('common/avfs/permissions', function () {
       expect(result).to.be.an('undefined');
       expect(storage.files).to.contain.an.avfs.file('/file').with.owner(uid, gid);
       expect(storage.files).to.contain.an.avfs.symlink('/link').with.owner(uid, gid + 1);
+    });
+
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.chown.bind(null, path, uid, gid)).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
+    it('should throw uid:type error on bad uid type', function () {
+      [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
+        expect(base.chown.bind(null, '/file', value, gid)).to.throw(AVFSError, {code: 'uid:type'});
+      });
+    });
+
+    it('should throw gid:type error on bad gid type', function () {
+      [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
+        expect(base.chown.bind(null, '/file', uid, value)).to.throw(AVFSError, {code: 'gid:type'});
+      });
     });
 
     it('should throw EPERM on not owned files', function () {

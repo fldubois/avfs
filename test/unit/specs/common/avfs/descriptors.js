@@ -108,7 +108,13 @@ describe('common/avfs/descriptors', function () {
       });
     });
 
-    it('should throw on bad flags type', function () {
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.open.bind(null, path, 'r')).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
+    it('should throw flags:type on bad flags type', function () {
       expect(function () {
         base.open('/file', false);
       }).to.throw(AVFSError, {code: 'flags:type'});
@@ -155,15 +161,21 @@ describe('common/avfs/descriptors', function () {
       expect(storage.files).to.contain.an.avfs.file('/file').with.mode('0700');
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.fchmod(false, '0700');
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
+    it('should throw mode:type error on bad mode type', function () {
+      [void 0, null, false, {}, []].forEach(function (mode) {
+        expect(base.fchmod.bind(null, 0, mode)).to.throw(AVFSError, {code: 'mode:type'});
+      });
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.fchmod(BAD_FD, '0700');
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.fchmod(false, '0700');
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -171,11 +183,12 @@ describe('common/avfs/descriptors', function () {
 
   describe('fchown()', function () {
 
+    var gid  = process.getgroups()[0];
+    var uid  = process.getuid();
+
     it('should change the owner and group', function () {
       var fd   = 10;
       var file = storage.get('/file');
-      var gid  = process.getgroups()[0];
-      var uid  = process.getuid();
 
       file.set('gid', 3000);
 
@@ -187,15 +200,27 @@ describe('common/avfs/descriptors', function () {
       expect(storage.files).to.contain.an.avfs.file('/file').with.owner(uid, gid);
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.fchmod(false, '0700');
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
+    it('should throw uid:type error on bad uid type', function () {
+      [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
+        expect(base.fchmod.bind(null, 0, value, gid)).to.throw(AVFSError, {code: 'uid:type'});
+      });
+    });
+
+    it('should throw gid:type error on bad gid type', function () {
+      [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
+        expect(base.fchmod.bind(null, 0, uid, value)).to.throw(AVFSError, {code: 'gid:type'});
+      });
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.fchown(BAD_FD, '0700');
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.fchown(false, '0700');
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -211,15 +236,15 @@ describe('common/avfs/descriptors', function () {
       expect(base.fdatasync(fd)).to.be.an('undefined');
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.fdatasync(false);
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.fdatasync(BAD_FD);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.fdatasync(false);
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -252,15 +277,15 @@ describe('common/avfs/descriptors', function () {
       expect(stats.ctime).to.equal(file.get('ctime'));
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.fstat(false);
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.fstat(BAD_FD);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.fstat(false);
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -276,15 +301,15 @@ describe('common/avfs/descriptors', function () {
       expect(base.fsync(fd)).to.be.an('undefined');
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.fsync(false);
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.fsync(BAD_FD);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.fsync(false);
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -315,15 +340,21 @@ describe('common/avfs/descriptors', function () {
       expect(storage.files).to.contain.an.avfs.file('/file').that.contain(content.slice(0, 3).toString());
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.ftruncate(false);
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
+    it('should throw length:type on bad length type', function () {
+      [null, false, 'test', {}, []].forEach(function (length) {
+        expect(base.ftruncate.bind(null, 0, length)).to.throw(AVFSError, {code: 'length:type'});
+      });
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.ftruncate(BAD_FD);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.ftruncate(false);
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -379,15 +410,27 @@ describe('common/avfs/descriptors', function () {
       expect(file.get('mtime').getTime()).to.equal(date.getTime());
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.futimes(false, 0, 0);
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
+    it('should throw atime:type on bad atime type', function () {
+      [void 0, null, false, 'test', {}, []].forEach(function (atime) {
+        expect(base.futimes.bind(null, 0, atime, 0)).to.throw(AVFSError, {code: 'atime:type'});
+      });
+    });
+
+    it('should throw mtime:type on bad mtime type', function () {
+      [void 0, null, false, 'test', {}, []].forEach(function (mtime) {
+        expect(base.futimes.bind(null, 0, 0, mtime)).to.throw(AVFSError, {code: 'mtime:type'});
+      });
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.futimes(BAD_FD, 0, 0);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.futimes(false, 0, 0);
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 
@@ -408,15 +451,15 @@ describe('common/avfs/descriptors', function () {
       expect(handles[fd].closed).to.equal(true);
     });
 
+    it('should throw fd:type on non integer file descriptor', function () {
+      expect(function () {
+        base.close(false);
+      }).to.throw(AVFSError, {code: 'fd:type'});
+    });
+
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.close(BAD_FD);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.close(false);
       }).to.throw(AVFSError, {code: 'EBADF'});
     });
 

@@ -49,6 +49,12 @@ describe('common/avfs/access', function () {
       });
     });
 
+    it('should throw path:type error on bad path type', function () {
+      [void 0, null, 0, false, {}, []].forEach(function (path) {
+        expect(base.access.bind(null, path, constants.W_OK)).to.throw(AVFSError, {code: 'path:type'});
+      });
+    });
+
     it('should throw EACCESS non accessible file', function () {
       expect(base.access.bind(null, '/r', constants.W_OK)).to.throw(AVFSError, {code: 'EACCESS'});
       expect(base.access.bind(null, '/r', constants.X_OK)).to.throw(AVFSError, {code: 'EACCESS'});
