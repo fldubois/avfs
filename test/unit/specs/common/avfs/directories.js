@@ -55,12 +55,12 @@ describe('common/avfs/directories', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.mkdir.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.mkdir.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw EEXIST on non existing directory', function () {
-      expect(base.mkdir.bind(null, '/dir')).to.throw(AVFSError, {code: 'EEXIST'});
+      expect(base.mkdir.bind(null, '/dir')).to.throw(AVFSError).with.property('code', 'EEXIST');
     });
 
   });
@@ -108,12 +108,12 @@ describe('common/avfs/directories', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.readdir.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.readdir.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw ENOTDIR on non directory', function () {
-      expect(base.readdir.bind(null, '/file')).to.throw(AVFSError, {code: 'ENOTDIR'});
+      expect(base.readdir.bind(null, '/file')).to.throw(AVFSError).with.property('code', 'ENOTDIR');
     });
 
   });
@@ -136,12 +136,12 @@ describe('common/avfs/directories', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.rmdir.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.rmdir.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw ENOTDIR on non directory', function () {
-      expect(base.rmdir.bind(null, '/file')).to.throw(AVFSError, {code: 'ENOTDIR'});
+      expect(base.rmdir.bind(null, '/file')).to.throw(AVFSError).with.property('code', 'ENOTDIR');
     });
 
   });

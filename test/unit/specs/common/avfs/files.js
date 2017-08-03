@@ -82,19 +82,25 @@ describe('common/avfs/files', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.appendFile.bind(null, path, 'OK')).to.throw(AVFSError, {code: 'path:type'});
+        expect(function () {
+          base.appendFile(path, 'OK');
+        }).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw options:type error on bad options type', function () {
       [1, true].forEach(function (options) {
-        expect(base.appendFile.bind(null, '/file', 'OK', options)).to.throw(AVFSError, {code: 'options:type'});
+        expect(function () {
+          base.appendFile('/file', 'OK', options);
+        }).to.throw(AVFSError).with.property('code', 'options:type');
       });
     });
 
     it('should throw options:encoding error on unknown encoding', function () {
       ['utf5', {encoding: 'utf5'}].forEach(function (options) {
-        expect(base.appendFile.bind(null, '/file', 'OK', options)).to.throw(AVFSError, {code: 'options:encoding'});
+        expect(function () {
+          base.appendFile('/file', 'OK', options);
+        }).to.throw(AVFSError).with.property('code', 'options:encoding');
       });
     });
 
@@ -125,26 +131,32 @@ describe('common/avfs/files', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.readFile.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(function () {
+          base.readFile(path);
+        }).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw options:type error on bad options type', function () {
       [1, true].forEach(function (options) {
-        expect(base.readFile.bind(null, '/file', options)).to.throw(AVFSError, {code: 'options:type'});
+        expect(function () {
+          base.readFile('/file', options);
+        }).to.throw(AVFSError).with.property('code', 'options:type');
       });
     });
 
     it('should throw options:encoding error on unknown encoding', function () {
       ['utf5', {encoding: 'utf5'}].forEach(function (options) {
-        expect(base.readFile.bind(null, '/file', options)).to.throw(AVFSError, {code: 'options:encoding'});
+        expect(function () {
+          base.readFile('/file', options);
+        }).to.throw(AVFSError).with.property('code', 'options:encoding');
       });
     });
 
     it('should throw EISDIR on directory', function () {
       expect(function () {
         base.readFile('/dir');
-      }).to.throw(AVFSError, {code: 'EISDIR'});
+      }).to.throw(AVFSError).with.property('code', 'EISDIR');
     });
 
   });
@@ -167,32 +179,36 @@ describe('common/avfs/files', function () {
 
     it('should throw old:type error on bad old path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.rename.bind(null, path, '/new')).to.throw(AVFSError, {code: 'old:type'});
+        expect(function () {
+          base.rename(path, '/new');
+        }).to.throw(AVFSError).with.property('code', 'old:type');
       });
     });
 
     it('should throw new:type error on bad new path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.rename.bind(null, path)).to.throw(AVFSError, {code: 'new:type'});
+        expect(function () {
+          base.rename('/old', path);
+        }).to.throw(AVFSError).with.property('code', 'new:type');
       });
     });
 
     it('should throw EINVAL on new path under old path', function () {
       expect(function () {
         base.rename('/file', '/file/new');
-      }).to.throw(AVFSError, {code: 'EINVAL'});
+      }).to.throw(AVFSError).with.property('code', 'EINVAL');
     });
 
     it('should throw EACCES on not writable parent directory', function () {
       expect(function () {
         base.rename('/perm/file', '/new');
-      }).to.throw(AVFSError, {code: 'EACCES'});
+      }).to.throw(AVFSError).with.property('code', 'EACCES');
     });
 
     it('should throw EACCES on not writable destination directory', function () {
       expect(function () {
         base.rename('/file', '/perm/new');
-      }).to.throw(AVFSError, {code: 'EACCES'});
+      }).to.throw(AVFSError).with.property('code', 'EACCES');
     });
 
   });
@@ -217,20 +233,24 @@ describe('common/avfs/files', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.truncate.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(function () {
+          base.truncate(path);
+        }).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw length:type on bad length type', function () {
       [null, false, 'test', {}, []].forEach(function (length) {
-        expect(base.truncate.bind(null, '/file', length)).to.throw(AVFSError, {code: 'length:type'});
+        expect(function () {
+          base.truncate('/file', length);
+        }).to.throw(AVFSError).with.property('code', 'length:type');
       });
     });
 
     it('should throw ENOENT on not existing path', function () {
       expect(function () {
         base.truncate('/not');
-      }).to.throw(AVFSError, {code: 'ENOENT'});
+      }).to.throw(AVFSError).with.property('code', 'ENOENT');
     });
 
   });
@@ -292,19 +312,25 @@ describe('common/avfs/files', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.writeFile.bind(null, path, 'OK')).to.throw(AVFSError, {code: 'path:type'});
+        expect(function () {
+          base.writeFile(path, 'OK');
+        }).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw options:type error on bad options type', function () {
       [1, true].forEach(function (options) {
-        expect(base.writeFile.bind(null, '/file', 'OK', options)).to.throw(AVFSError, {code: 'options:type'});
+        expect(function () {
+          base.writeFile('/file', 'OK', options);
+        }).to.throw(AVFSError).with.property('code', 'options:type');
       });
     });
 
     it('should throw options:encoding error on unknown encoding', function () {
       ['utf5', {encoding: 'utf5'}].forEach(function (options) {
-        expect(base.writeFile.bind(null, '/file', 'OK', options)).to.throw(AVFSError, {code: 'options:encoding'});
+        expect(function () {
+          base.writeFile('/file', 'OK', options);
+        }).to.throw(AVFSError).with.property('code', 'options:encoding');
       });
     });
 

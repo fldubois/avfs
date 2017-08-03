@@ -51,24 +51,24 @@ describe('common/avfs/access', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.access.bind(null, path, constants.W_OK)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.access.bind(null, path, constants.W_OK)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
-    it('should throw EACCESS non accessible file', function () {
-      expect(base.access.bind(null, '/r', constants.W_OK)).to.throw(AVFSError, {code: 'EACCESS'});
-      expect(base.access.bind(null, '/r', constants.X_OK)).to.throw(AVFSError, {code: 'EACCESS'});
+    it('should throw EACCES non accessible file', function () {
+      expect(base.access.bind(null, '/r', constants.W_OK)).to.throw(AVFSError).with.property('code', 'EACCES');
+      expect(base.access.bind(null, '/r', constants.X_OK)).to.throw(AVFSError).with.property('code', 'EACCES');
 
-      expect(base.access.bind(null, '/w', constants.R_OK)).to.throw(AVFSError, {code: 'EACCESS'});
-      expect(base.access.bind(null, '/w', constants.X_OK)).to.throw(AVFSError, {code: 'EACCESS'});
+      expect(base.access.bind(null, '/w', constants.R_OK)).to.throw(AVFSError).with.property('code', 'EACCES');
+      expect(base.access.bind(null, '/w', constants.X_OK)).to.throw(AVFSError).with.property('code', 'EACCES');
 
-      expect(base.access.bind(null, '/x', constants.R_OK)).to.throw(AVFSError, {code: 'EACCESS'});
-      expect(base.access.bind(null, '/x', constants.W_OK)).to.throw(AVFSError, {code: 'EACCESS'});
+      expect(base.access.bind(null, '/x', constants.R_OK)).to.throw(AVFSError).with.property('code', 'EACCES');
+      expect(base.access.bind(null, '/x', constants.W_OK)).to.throw(AVFSError).with.property('code', 'EACCES');
     });
 
     it('should throw EINVAL non bad mode parameter', function () {
-      expect(base.access.bind(null, '/r', -1)).to.throw(AVFSError, {code: 'EINVAL'});
-      expect(base.access.bind(null, '/r',  8)).to.throw(AVFSError, {code: 'EINVAL'});
+      expect(base.access.bind(null, '/r', -1)).to.throw(AVFSError).with.property('code', 'EINVAL');
+      expect(base.access.bind(null, '/r',  8)).to.throw(AVFSError).with.property('code', 'EINVAL');
     });
 
   });

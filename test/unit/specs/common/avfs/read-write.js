@@ -100,33 +100,33 @@ describe('common/avfs/read-write', function () {
     it('should throw fd:type on non integer file descriptor', function () {
       expect(function () {
         base.read(false, new Buffer(5), 0, 10, null);
-      }).to.throw(AVFSError, {code: 'fd:type'});
+      }).to.throw(AVFSError).with.property('code', 'fd:type');
     });
 
-    it('should throw offset:size on non integer file descriptor', function () {
+    it('should throw offset:size on offset out of bounds', function () {
       expect(function () {
         base.read(0, new Buffer(5), 1000, 5, 0);
-      }).to.throw(AVFSError, {code: 'offset:size'});
+      }).to.throw(AVFSError).with.property('code', 'offset:size');
     });
 
-    it('should throw length:size on non integer file descriptor', function () {
+    it('should throw length:size on length beyond buffer', function () {
       expect(function () {
         base.read(0, new Buffer(5), 0, 1000, 0);
-      }).to.throw(AVFSError, {code: 'length:size'});
+      }).to.throw(AVFSError).with.property('code', 'length:size');
     });
 
     it('should throw EISDIR on directory', function () {
       handles[FD] = new Descriptor(storage.get('/dir'), '/dir', constants.O_RDWR);
 
       expect(function () {
-        base.read(FD, new Buffer(5), 0, 10, null);
-      }).to.throw(AVFSError, {code: 'EISDIR'});
+        base.read(FD, new Buffer(5), 0, 5, null);
+      }).to.throw(AVFSError).with.property('code', 'EISDIR');
     });
 
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
-        base.read(FD, new Buffer(5), 0, 10, null);
-      }).to.throw(AVFSError, {code: 'EBADF'});
+        base.read(FD, new Buffer(5), 0, 5, null);
+      }).to.throw(AVFSError).with.property('code', 'EBADF');
     });
 
   });
@@ -281,31 +281,29 @@ describe('common/avfs/read-write', function () {
     it('should throw fd:type on non integer file descriptor', function () {
       expect(function () {
         base.write(false, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(AVFSError, {code: 'fd:type'});
+      }).to.throw(AVFSError).with.property('code', 'fd:type');
     });
 
-    it('should throw offset:size on non integer file descriptor', function () {
+    it('should throw offset:size on offset out of bounds', function () {
+      handles[FD] = new Descriptor(storage.get('/empty'), '/empty', constants.O_RDWR);
+
       expect(function () {
-        base.write(0, new Buffer('Hello, friend'), 1000, 5, 0);
-      }).to.throw(AVFSError, {code: 'offset:size'});
+        base.write(FD, new Buffer('Hello, friend'), 1000, 5, 0);
+      }).to.throw(AVFSError).with.property('code', 'offset:size');
     });
 
-    it('should throw length:size on non integer file descriptor', function () {
+    it('should throw length:size on length beyond buffer', function () {
+      handles[FD] = new Descriptor(storage.get('/empty'), '/empty', constants.O_RDWR);
+
       expect(function () {
-        base.write(0, new Buffer('Hello, friend'), 0, 1000, 0);
-      }).to.throw(AVFSError, {code: 'length:size'});
+        base.write(FD, new Buffer('Hello, friend'), 0, 1000, 0);
+      }).to.throw(AVFSError).with.property('code', 'length:size');
     });
 
     it('should throw EBADF on non existing file descriptor', function () {
       expect(function () {
         base.write(FD, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(AVFSError, {code: 'EBADF'});
-    });
-
-    it('should throw EBADF on non integer file descriptor', function () {
-      expect(function () {
-        base.write(true, new Buffer('Hello, friend'), 0, 5, 0);
-      }).to.throw(AVFSError, {code: 'EBADF'});
+      }).to.throw(AVFSError).with.property('code', 'EBADF');
     });
 
   });

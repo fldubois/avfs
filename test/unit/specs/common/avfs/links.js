@@ -58,13 +58,13 @@ describe('common/avfs/links', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.lchmod.bind(null, path, '0700')).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.lchmod.bind(null, path, '0700')).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw mode:type error on bad mode type', function () {
       [void 0, null, false, {}, []].forEach(function (mode) {
-        expect(base.lchmod.bind(null, '/link', mode)).to.throw(AVFSError, {code: 'mode:type'});
+        expect(base.lchmod.bind(null, '/link', mode)).to.throw(AVFSError).with.property('code', 'mode:type');
       });
     });
 
@@ -95,19 +95,19 @@ describe('common/avfs/links', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.lchown.bind(null, path, uid, gid)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.lchown.bind(null, path, uid, gid)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw uid:type error on bad uid type', function () {
       [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
-        expect(base.lchown.bind(null, '/link', value, gid)).to.throw(AVFSError, {code: 'uid:type'});
+        expect(base.lchown.bind(null, '/link', value, gid)).to.throw(AVFSError).with.property('code', 'uid:type');
       });
     });
 
     it('should throw gid:type error on bad gid type', function () {
       [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
-        expect(base.lchown.bind(null, '/link', uid, value)).to.throw(AVFSError, {code: 'gid:type'});
+        expect(base.lchown.bind(null, '/link', uid, value)).to.throw(AVFSError).with.property('code', 'gid:type');
       });
     });
 
@@ -143,13 +143,13 @@ describe('common/avfs/links', function () {
 
     it('should throw srcpath:type error on bad srcpath type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (srcpath) {
-        expect(base.link.bind(null, srcpath, '/new')).to.throw(AVFSError, {code: 'srcpath:type'});
+        expect(base.link.bind(null, srcpath, '/new')).to.throw(AVFSError).with.property('code', 'srcpath:type');
       });
     });
 
     it('should throw dstpath:type error on bad dstpath type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (dstpath) {
-        expect(base.link.bind(null, '/file', dstpath)).to.throw(AVFSError, {code: 'dstpath:type'});
+        expect(base.link.bind(null, '/file', dstpath)).to.throw(AVFSError).with.property('code', 'dstpath:type');
       });
     });
 
@@ -199,7 +199,7 @@ describe('common/avfs/links', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.lstat.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.lstat.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
@@ -213,7 +213,7 @@ describe('common/avfs/links', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.readlink.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.readlink.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
@@ -264,13 +264,13 @@ describe('common/avfs/links', function () {
 
     it('should throw srcpath:type error on bad srcpath type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (srcpath) {
-        expect(base.symlink.bind(null, srcpath, '/new')).to.throw(AVFSError, {code: 'srcpath:type'});
+        expect(base.symlink.bind(null, srcpath, '/new')).to.throw(AVFSError).with.property('code', 'srcpath:type');
       });
     });
 
     it('should throw dstpath:type error on bad dstpath type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (dstpath) {
-        expect(base.symlink.bind(null, '/file', dstpath)).to.throw(AVFSError, {code: 'dstpath:type'});
+        expect(base.symlink.bind(null, '/file', dstpath)).to.throw(AVFSError).with.property('code', 'dstpath:type');
       });
     });
 
@@ -304,7 +304,7 @@ describe('common/avfs/links', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.unlink.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.unlink.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 

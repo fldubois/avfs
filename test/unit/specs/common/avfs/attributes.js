@@ -48,7 +48,7 @@ describe('common/avfs/attributes', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.stat.bind(null, path)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.stat.bind(null, path)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
@@ -100,19 +100,19 @@ describe('common/avfs/attributes', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.utimes.bind(null, path, 0, 0)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.utimes.bind(null, path, 0, 0)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw atime:type on bad atime type', function () {
       [void 0, null, false, 'test', {}, []].forEach(function (atime) {
-        expect(base.utimes.bind(null, '/file', atime, 0)).to.throw(AVFSError, {code: 'atime:type'});
+        expect(base.utimes.bind(null, '/file', atime, 0)).to.throw(AVFSError).with.property('code', 'atime:type');
       });
     });
 
     it('should throw mtime:type on bad mtime type', function () {
       [void 0, null, false, 'test', {}, []].forEach(function (mtime) {
-        expect(base.utimes.bind(null, '/file', 0, mtime)).to.throw(AVFSError, {code: 'mtime:type'});
+        expect(base.utimes.bind(null, '/file', 0, mtime)).to.throw(AVFSError).with.property('code', 'mtime:type');
       });
     });
 

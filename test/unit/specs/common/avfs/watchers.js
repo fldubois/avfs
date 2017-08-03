@@ -112,7 +112,7 @@ describe('common/avfs/watchers', function () {
     it('should throw on missing listener function', function () {
       expect(function () {
         base.watchFile('/file');
-      }).to.throw(AVFSError, {code: 'listener:missing'});
+      }).to.throw(AVFSError).with.property('code', 'listener:missing');
     });
 
   });

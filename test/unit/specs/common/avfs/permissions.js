@@ -56,13 +56,13 @@ describe('common/avfs/permissions', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.chmod.bind(null, path, '0700')).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.chmod.bind(null, path, '0700')).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw mode:type error on bad mode type', function () {
       [void 0, null, false, {}, []].forEach(function (mode) {
-        expect(base.chmod.bind(null, '/file', mode)).to.throw(AVFSError, {code: 'mode:type'});
+        expect(base.chmod.bind(null, '/file', mode)).to.throw(AVFSError).with.property('code', 'mode:type');
       });
     });
 
@@ -93,19 +93,19 @@ describe('common/avfs/permissions', function () {
 
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
-        expect(base.chown.bind(null, path, uid, gid)).to.throw(AVFSError, {code: 'path:type'});
+        expect(base.chown.bind(null, path, uid, gid)).to.throw(AVFSError).with.property('code', 'path:type');
       });
     });
 
     it('should throw uid:type error on bad uid type', function () {
       [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
-        expect(base.chown.bind(null, '/file', value, gid)).to.throw(AVFSError, {code: 'uid:type'});
+        expect(base.chown.bind(null, '/file', value, gid)).to.throw(AVFSError).with.property('code', 'uid:type');
       });
     });
 
     it('should throw gid:type error on bad gid type', function () {
       [void 0, null, -1, false, 'test', {}, []].forEach(function (value) {
-        expect(base.chown.bind(null, '/file', uid, value)).to.throw(AVFSError, {code: 'gid:type'});
+        expect(base.chown.bind(null, '/file', uid, value)).to.throw(AVFSError).with.property('code', 'gid:type');
       });
     });
 
