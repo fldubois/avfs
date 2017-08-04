@@ -31,7 +31,9 @@ describe('common/avfs/links', function () {
     other.set('uid', uid + 1);
 
     storage.files = elements.directory(parseInt('0755', 8), {
-      dir:   elements.directory(parseInt('0755', 8), {}),
+      dir: elements.directory(parseInt('0755', 8), {
+        file: elements.file(parseInt('0777', 8), new Buffer('Hello, friend.'))
+      }),
       dlink: elements.symlink(parseInt('0777', 8), '/'),
       file:  file,
       link:  link,
@@ -229,8 +231,24 @@ describe('common/avfs/links', function () {
 
     it('should resolve symlinks and cached links', function () {
       expect(base.realpath('/link')).to.equal('/file');
+      expect(base.realpath('/dlink/link')).to.equal('/file');
+      expect(base.realpath('/dir/file', {'/dir': '/dir'})).to.equal('/dir/file');
       expect(base.realpath('/cache/file', {'/cache': '/'})).to.equal('/file');
       expect(base.realpath('/cache/file', {'/cache': '/dlink'})).to.equal('/file');
+    });
+
+    it('should update cache', function () {
+      var cache = {
+        '/cache': '/dlink'
+      };
+
+      expect(base.realpath('/cache/link', cache)).to.equal('/file');
+
+      expect(cache).to.deep.equal({
+        '/cache': '/dlink',
+        '/dlink': '/',
+        '/link':  '/file'
+      });
     });
 
     it('should directly resolve fully cached links', function () {

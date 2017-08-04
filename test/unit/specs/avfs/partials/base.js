@@ -61,7 +61,13 @@ module.exports = function (fs) {
     check('readFileSync',   'readFile',    ['/file', {encoding: 'utf8'}]);
     check('readlinkSync',   'readlink',    ['/link']);
     check('readSync',       'read',        [0, new Buffer(40), 10, 20, 5]);
-    check('realpathSync',   'realpath',    ['/dir/file', {'/dir': '/other'}]);
+
+    if (['v6'].indexOf(version) === -1) {
+      check('realpathSync', 'realpath', ['/dir/file', {'/dir': '/other'}]);
+    } else {
+      check('realpathSync', 'realpath', ['/dir/file']);
+    }
+
     check('renameSync',     'rename',      ['/old', '/new']);
     check('rmdirSync',      'rmdir',       ['/file']);
     check('statSync',       'stat',        ['/file']);
