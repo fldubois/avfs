@@ -6,7 +6,7 @@ var expect = chai.expect;
 var constants = require('test/unit/fixtures/constants');
 
 var elements = require('lib/common/elements')(constants);
-var factory  = require('lib/common/avfs/descriptors');
+var factory  = require('lib/base/descriptors');
 
 var AVFSError  = require('lib/common/avfs-error');
 var Descriptor = require('lib/common/components/descriptor')(constants);
@@ -14,7 +14,7 @@ var Storage    = require('lib/common/storage');
 
 var BAD_FD = 1000000000;
 
-describe('common/avfs/descriptors', function () {
+describe('base/descriptors', function () {
 
   var storage = new Storage(constants);
   var handles = {next: 0};

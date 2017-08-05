@@ -6,12 +6,12 @@ var expect = chai.expect;
 var constants = require('test/unit/fixtures/constants');
 
 var elements = require('lib/common/elements')(constants);
-var factory  = require('lib/common/avfs/directories');
+var factory  = require('lib/base/directories');
 
 var AVFSError = require('lib/common/avfs-error');
 var Storage   = require('lib/common/storage');
 
-describe('common/avfs/directories', function () {
+describe('base/directories', function () {
 
   var storage = new Storage(constants);
 

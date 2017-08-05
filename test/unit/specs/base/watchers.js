@@ -4,7 +4,7 @@ var chai   = require('chai');
 var expect = chai.expect;
 var sinon  = require('sinon');
 
-var factory  = require('lib/common/avfs/watchers');
+var factory  = require('lib/base/watchers');
 
 var AVFSError   = require('lib/common/avfs-error');
 var FSWatcher   = require('lib/common/watchers/fs-watcher');
@@ -16,7 +16,7 @@ var noop = function () {
   return null;
 };
 
-describe('common/avfs/watchers', function () {
+describe('base/watchers', function () {
 
   var base = factory();
 

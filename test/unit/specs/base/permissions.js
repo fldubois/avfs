@@ -6,12 +6,12 @@ var expect = chai.expect;
 var constants = require('test/unit/fixtures/constants');
 
 var elements = require('lib/common/elements')(constants);
-var factory  = require('lib/common/avfs/permissions');
+var factory  = require('lib/base/permissions');
 
 var AVFSError = require('lib/common/avfs-error');
 var Storage   = require('lib/common/storage');
 
-describe('common/avfs/permissions', function () {
+describe('base/permissions', function () {
 
   var uid = process.getuid();
   var gid = process.getgroups()[0];

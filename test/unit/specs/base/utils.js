@@ -4,9 +4,9 @@ var chai   = require('chai');
 var expect = chai.expect;
 var sinon  = require('sinon');
 
-var factory  = require('lib/common/avfs/utils');
+var factory  = require('lib/base/utils');
 
-describe('common/avfs/utils', function () {
+describe('base/utils', function () {
 
   var base = factory();
 
