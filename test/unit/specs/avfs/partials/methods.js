@@ -23,6 +23,12 @@ module.exports = function (fs) {
 
   describe('lchmodSync()', function () {
 
+    it('should throw on null character in path', function () {
+      expect(function () {
+        fs.lchmodSync('\u0000', '0700');
+      }).to.throw(Error);
+    });
+
     it('should throw on bad path parameter type', function () {
       expect(function () {
         fs.lchmodSync(false, '0700');
@@ -64,6 +70,12 @@ module.exports = function (fs) {
   describe('lchownSync()', function () {
 
     var uid = process.getuid();
+
+    it('should throw on null character in path', function () {
+      expect(function () {
+        fs.lchownSync('\u0000', 1001, 1001);
+      }).to.throw(Error);
+    });
 
     it('should throw on bad path parameter type', function () {
       expect(function () {

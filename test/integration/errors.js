@@ -176,6 +176,10 @@ describe('errors', function () {
 
   describe('appendFileSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('appendFileSync', ['\u0000', 'Hello, friend.']);
+    });
+
     it('should throw on non existing parent directory', function () {
       check('appendFileSync', ['/tmp/dir/not/file', 'Hello, friend.']);
     });
@@ -664,6 +668,10 @@ describe('errors', function () {
 
   describe('readFileSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('readFileSync', ['\u0000']);
+    });
+
     it('should throw on non existing file', function () {
       check('readFileSync', ['/tmp/dir/not']);
     });
@@ -806,6 +814,10 @@ describe('errors', function () {
   });
 
   describe('realpathSync()', function () {
+
+    it('should throw on null character in path', function () {
+      check('realpathSync', ['\u0000']);
+    });
 
     it('should throw on non existing element', function () {
       check('realpathSync', ['/tmp/dir/not']);
@@ -951,6 +963,10 @@ describe('errors', function () {
 
   describe('truncateSync()', function () {
 
+    it('should throw on null character in path', function () {
+      check('readFileSync', ['\u0000']);
+    });
+
     it('should throw on non existing path', function () {
       check('truncateSync', ['/tmp/dir/not']);
     });
@@ -1026,6 +1042,10 @@ describe('errors', function () {
   });
 
   describe('writeFileSync()', function () {
+
+    it('should throw on null character in path', function () {
+      check('writeFileSync', ['\u0000', 'Hello, friend.']);
+    });
 
     it('should throw on non existing parent directory', function () {
       check('writeFileSync', ['/tmp/dir/not/file', 'Hello, friend.']);
