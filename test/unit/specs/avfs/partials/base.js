@@ -2,6 +2,7 @@
 
 var chai   = require('chai');
 var expect = chai.expect;
+var pad    = require('lodash.padstart');
 var sinon  = require('sinon');
 
 var version = require('lib/common/version');
@@ -18,7 +19,7 @@ module.exports = function (fs) {
 
     function check(method, base, parameters) {
 
-      it(method + '() should call the base function ' + base + '()', function () {
+      it(pad(method, 14) + '() should call the base function ' + base + '()', function () {
         sinon.stub(fs.base, base);
 
         fs[method].apply(fs, parameters);
@@ -32,6 +33,10 @@ module.exports = function (fs) {
         fs.base[base].restore();
       });
 
+    }
+
+    if (['v0.10'].indexOf(version) === -1) {
+      check('accessSync', 'access', ['/file', fs.R_OK]);
     }
 
     check('appendFileSync', 'appendFile',  ['/file', 'Hello, world', {encoding: 'utf8'}]);

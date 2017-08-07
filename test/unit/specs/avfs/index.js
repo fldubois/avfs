@@ -11,6 +11,7 @@ var avfs = new AVFS();
 var specs = [
   './partials/async',
   './partials/base',
+  './partials/buffer',
   './partials/members',
   './partials/methods'
 ];

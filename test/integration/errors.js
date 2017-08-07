@@ -592,6 +592,14 @@ describe('errors', function () {
         check('mkdtempSync', ['/tmp/dir/dperm/test-']);
       });
 
+      if (version === 'v6') {
+
+        it('should throw on bad options type', function () {
+          check('mkdtempSync', ['/tmp/dir/test-', true]);
+        });
+
+      }
+
     });
 
   }
@@ -664,6 +672,14 @@ describe('errors', function () {
       check('readdirSync', [true]);
     });
 
+    if (version === 'v6') {
+
+      it('should throw on bad options type', function () {
+        check('readdirSync', ['/tmp/dir', true]);
+      });
+
+    }
+
   });
 
   describe('readFileSync()', function () {
@@ -716,6 +732,14 @@ describe('errors', function () {
     it('should throw on non string path', function () {
       check('readlinkSync', [true]);
     });
+
+    if (version === 'v6') {
+
+      it('should throw on bad options type', function () {
+        check('readlinkSync', ['/tmp/dir/link', true]);
+      });
+
+    }
 
   });
 
@@ -831,6 +855,17 @@ describe('errors', function () {
 
       it('should throw on not string path in cache', function () {
         check('realpathSync', ['/tmp/dir/file', {'/tmp/dir': false}]);
+      });
+
+    } else {
+
+      it('should throw on unknown encoding', function () {
+        check('realpathSync', ['/tmp/dir', 'utf5']);
+        check('realpathSync', ['/tmp/dir', {encoding: 'utf5'}]);
+      });
+
+      it('should throw on bad options type', function () {
+        check('realpathSync', ['/tmp/dir', true]);
       });
 
     }
