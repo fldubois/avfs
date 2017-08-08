@@ -2,6 +2,7 @@
 
 var chai   = require('chai');
 var expect = chai.expect;
+var semver = require('semver');
 
 var constants = require('test/unit/fixtures/constants');
 
@@ -74,7 +75,7 @@ describe('avfs/errors', function () {
       code:  'EBADF'
     };
 
-    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
+    if (semver.gte(process.version, '4.0.0')) {
       data.syscall = 'write';
     }
 
@@ -133,7 +134,7 @@ describe('avfs/errors', function () {
       code:  'EISDIR'
     };
 
-    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
+    if (semver.gte(process.version, '4.0.0')) {
       data.syscall = 'read';
     }
 

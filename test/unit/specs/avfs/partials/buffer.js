@@ -3,9 +3,8 @@
 var chai   = require('chai');
 var expect = chai.expect;
 var pad    = require('lodash.padstart');
+var semver = require('semver');
 var sinon  = require('sinon');
-
-var version = require('lib/common/version');
 
 chai.use(require('sinon-chai'));
 
@@ -15,7 +14,7 @@ var noop = function () {
 
 module.exports = function (fs) {
 
-  if (['v6'].indexOf(version) !== -1) {
+  if (semver.gte(process.version, '6.0.0')) {
 
     describe('Buffer API', function () {
 

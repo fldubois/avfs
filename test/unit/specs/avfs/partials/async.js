@@ -2,12 +2,12 @@
 
 var chai   = require('chai');
 var expect = chai.expect;
+var semver = require('semver');
 var sinon  = require('sinon');
 
 var constants = require('test/unit/fixtures/constants');
 
-var errors  = require('lib/common/errors');
-var version = require('lib/common/version');
+var errors = require('lib/common/errors');
 
 chai.use(require('sinon-chai'));
 
@@ -176,7 +176,7 @@ module.exports = function (fs) {
         });
       });
 
-      if (version === 'v0.10') {
+      if (semver.lt(process.version, '0.12.0')) {
 
         it('should log fs error without callback', function (done) {
           var error = errors.createError('EBADF, write', {
@@ -229,7 +229,7 @@ module.exports = function (fs) {
 
     });
 
-    if (version === 'v6') {
+    if (semver.gte(process.version, '6.0.0')) {
 
       describe('mkdtemp()', function () {
 

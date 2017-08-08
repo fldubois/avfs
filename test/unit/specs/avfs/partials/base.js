@@ -3,9 +3,8 @@
 var chai   = require('chai');
 var expect = chai.expect;
 var pad    = require('lodash.padstart');
+var semver = require('semver');
 var sinon  = require('sinon');
-
-var version = require('lib/common/version');
 
 chai.use(require('sinon-chai'));
 
@@ -35,7 +34,7 @@ module.exports = function (fs) {
 
     }
 
-    if (['v0.10'].indexOf(version) === -1) {
+    if (semver.gte(process.version, '0.12.0')) {
       check('accessSync', 'access', ['/file', fs.R_OK]);
     }
 
@@ -57,7 +56,7 @@ module.exports = function (fs) {
     check('lstatSync',      'lstat',       ['/file']);
     check('mkdirSync',      'mkdir',       ['/file', '0666']);
 
-    if (['v0.10', 'v0.12'].indexOf(version) === -1) {
+    if (semver.gte(process.version, '4.0.0')) {
       check('mkdtempSync', 'mkdtemp', ['test']);
     }
 
@@ -67,7 +66,7 @@ module.exports = function (fs) {
     check('readlinkSync',   'readlink',    ['/link']);
     check('readSync',       'read',        [0, new Buffer(40), 10, 20, 5]);
 
-    if (['v6'].indexOf(version) === -1) {
+    if (semver.lt(process.version, '6.0.0')) {
       check('realpathSync', 'realpath', ['/dir/file', {'/dir': '/other'}]);
     } else {
       check('realpathSync', 'realpath', ['/dir/file']);

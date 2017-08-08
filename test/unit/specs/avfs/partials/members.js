@@ -2,8 +2,7 @@
 
 var chai   = require('chai');
 var expect = chai.expect;
-
-var version = require('lib/common/version');
+var semver = require('semver');
 
 module.exports = function (fs) {
 
@@ -23,7 +22,7 @@ module.exports = function (fs) {
       expect(new fs.WriteStream('/file')).to.be.an.instanceof(fs.WriteStream);
     });
 
-    if (['v0.10', 'v0.12'].indexOf(version) !== -1) {
+    if (semver.lt(process.version, '4.0.0')) {
 
       it('should expose SyncWriteStream', function () {
         expect(fs.SyncWriteStream).to.be.a('function');
@@ -32,7 +31,7 @@ module.exports = function (fs) {
 
     }
 
-    if (version !== 'v0.10') {
+    if (semver.gte(process.version, '0.12.0')) {
 
       it('should expose access flags', function () {
         expect(fs).to.contain.keys([

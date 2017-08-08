@@ -5,8 +5,7 @@ var fs = require('fs');
 var chai   = require('chai');
 var expect = chai.expect;
 var rimraf = require('rimraf');
-
-var version = require('lib/common/version');
+var semver = require('semver');
 
 var BAD_FD = 1000000000;
 
@@ -130,7 +129,7 @@ describe('errors', function () {
     avfs.closeSync(fd.closed.avfs);
   });
 
-  if (version !== 'v0.10') {
+  if (semver.gte(process.version, '0.12.0')) {
 
     describe('accessSync()', function () {
 
@@ -534,7 +533,7 @@ describe('errors', function () {
 
   });
 
-  if (['v0.10', 'v0.12'].indexOf(version) === -1) {
+  if (semver.gte(process.version, '4.0.0')) {
 
     describe('mkdtemp()', function () {
 
@@ -548,7 +547,7 @@ describe('errors', function () {
         errors.fs.path   = errors.fs.path.replace(regexp, '');
       };
 
-      if (version !== 'v6') {
+      if (semver.lt(process.version, '6.0.0')) {
 
         it('should throw on non function callback', function () {
           check('mkdtemp', ['test-', false]);
@@ -592,7 +591,7 @@ describe('errors', function () {
         check('mkdtempSync', ['/tmp/dir/dperm/test-']);
       });
 
-      if (version === 'v6') {
+      if (semver.gte(process.version, '6.0.0')) {
 
         it('should throw on bad options type', function () {
           check('mkdtempSync', ['/tmp/dir/test-', true]);
@@ -672,7 +671,7 @@ describe('errors', function () {
       check('readdirSync', [true]);
     });
 
-    if (version === 'v6') {
+    if (semver.gte(process.version, '6.0.0')) {
 
       it('should throw on bad options type', function () {
         check('readdirSync', ['/tmp/dir', true]);
@@ -733,7 +732,7 @@ describe('errors', function () {
       check('readlinkSync', [true]);
     });
 
-    if (version === 'v6') {
+    if (semver.gte(process.version, '6.0.0')) {
 
       it('should throw on bad options type', function () {
         check('readlinkSync', ['/tmp/dir/link', true]);
@@ -847,7 +846,7 @@ describe('errors', function () {
       check('realpathSync', ['/tmp/dir/not']);
     });
 
-    if (version !== 'v6') {
+    if (semver.lt(process.version, '6.0.0')) {
 
       it('should throw on not string path', function () {
         check('realpathSync', [false]);
@@ -1117,7 +1116,7 @@ describe('errors', function () {
 
     // Critical error in node v0.12
     // See https://github.com/nodejs/node/issues/1550
-    if (version !== 'v0.12') {
+    if (!semver.satisfies(process.version, '0.12')) {
 
       it('should throw on non integer file descriptor', function () {
         check('writeSync', {
@@ -1149,7 +1148,7 @@ describe('errors', function () {
       });
     });
 
-    if (version === 'v0.10') {
+    if (semver.lt(process.version, '0.12.0')) {
 
       it('should not throw on offset out of bounds with zero length', function () {
         expect(avfs.writeSync.bind(avfs, fd.write.fs, new Buffer('Hello, friend'), 1000, 0, 0)).to.not.throw();
@@ -1176,7 +1175,7 @@ describe('errors', function () {
 
     // fs.writeSync(fd, data[, position[, encoding]]);
 
-    if (version !== 'v0.12') {
+    if (!semver.satisfies(process.version, '0.12')) {
 
       it('should throw on non existing file descriptor', function () {
         check('writeSync', [BAD_FD, 'Hello, friend']);
@@ -1211,7 +1210,7 @@ describe('errors', function () {
 
     // Critical error in node v0.12
     // See https://github.com/nodejs/node/issues/1550
-    if (version !== 'v0.12') {
+    if (!semver.satisfies(process.version, '0.12')) {
 
       it('should send error to callback on non existing file descriptor', function (done) {
         checkAsync('write', [BAD_FD, new Buffer('Hello, friend'), 0, 5, 0], done);
@@ -1247,7 +1246,7 @@ describe('errors', function () {
       });
     });
 
-    if (version !== 'v0.10') {
+    if (semver.gte(process.version, '0.12.0')) {
 
       it('should throw on offset out of bounds with zero length', function () {
         check('write', {
@@ -1267,7 +1266,7 @@ describe('errors', function () {
 
     // fs.write(fd, data[, position[, encoding]]);
 
-    if (version !== 'v0.12') {
+    if (!semver.satisfies(process.version, '0.12')) {
 
       it('should send error to callback on non existing file descriptor', function (done) {
         checkAsync('write', [BAD_FD, 'Hello, friend', 13, 'utf8'], done);
