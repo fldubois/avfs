@@ -39,35 +39,59 @@ module.exports = function (fs) {
 
       }
 
-      function checkRes(method, base, parameters) {
+      function checkRes(method, base, parameters, isArray) {
 
         it(pad(method, 17) + '() should return paths as Buffer', function () {
-          var path = '/path/to/file';
+          var paths = (isArray === true) ? ['path/to/fileA', 'path/to/fileB'] : '/path/to/file';
 
           sinon.stub(fs.base, base);
 
-          fs.base[base].returns(path);
+          fs.base[base].returns(paths);
+
+          var convert = function (encoding) {
+            if (isArray === true) {
+              return paths.map(function (path) {
+                return (encoding === 'buffer') ? path : Buffer.from(path).toString(encoding);
+              });
+            }
+
+            return (encoding === 'buffer') ? paths : Buffer.from(paths).toString(encoding);
+          };
 
           var specs = [
-            {options: void 0,               type: 'string', result: Buffer.from(path).toString('utf8')},
-            {options: {},                   type: 'string', result: Buffer.from(path).toString('utf8')},
-            {options: {encoding: 'utf8'},   type: 'string', result: Buffer.from(path).toString('utf8')},
-            {options: {encoding: 'utf8'},   type: 'string', result: Buffer.from(path).toString('utf8')},
-            {options: 'ascii',              type: 'string', result: Buffer.from(path).toString('ascii')},
-            {options: {encoding: 'ascii'},  type: 'string', result: Buffer.from(path).toString('ascii')},
-            {options: 'buffer',             type: 'buffer', result: path},
-            {options: {encoding: 'buffer'}, type: 'buffer', result: path}
+            {options: void 0,               type: 'string', result: convert('utf8')},
+            {options: {},                   type: 'string', result: convert('utf8')},
+            {options: {encoding: 'utf8'},   type: 'string', result: convert('utf8')},
+            {options: {encoding: 'utf8'},   type: 'string', result: convert('utf8')},
+            {options: 'ascii',              type: 'string', result: convert('ascii')},
+            {options: {encoding: 'ascii'},  type: 'string', result: convert('ascii')},
+            {options: 'buffer',             type: 'buffer', result: convert('buffer')},
+            {options: {encoding: 'buffer'}, type: 'buffer', result: convert('buffer')}
           ];
 
           specs.forEach(function (spec) {
             var result = fs[method].apply(fs, [].concat(parameters, spec.options));
 
-            if (spec.type === 'buffer') {
-              expect(result).to.be.an.instanceof(Buffer);
-              expect(result.toString()).to.equal(spec.result);
+            var check = function (value, expectation) {
+              if (spec.type === 'buffer') {
+                expect(value).to.be.an.instanceof(Buffer);
+                expect(value.toString()).to.equal(expectation);
+              } else {
+                expect(value).to.be.a('string');
+                expect(value).to.equal(expectation);
+              }
+            };
+
+            if (isArray === true) {
+              expect(result).to.be.an('array');
+
+              result.forEach(function (value, index) {
+                check(value, spec.result[index]);
+              });
             } else {
-              expect(result).to.be.a('string');
-              expect(result).to.equal(spec.result);
+              expect(result).not.to.be.an('array');
+
+              check(result, spec.result);
             }
           });
 
@@ -91,7 +115,7 @@ module.exports = function (fs) {
       checkRes('mkdtempSync',       'mkdtemp',             ['prefix']);
       checkArg('openSync',          'open',        [0],    [Buffer.from('/file'), 'r', '0666']);
       checkArg('readdirSync',       'readdir',     [0],    [Buffer.from('/dir')]);
-      checkRes('readdirSync',       'readdir',             ['/dir']);
+      checkRes('readdirSync',       'readdir',             ['/dir'], true);
       checkArg('readFileSync',      'readFile',    [0],    [Buffer.from('/file'), {encoding: 'utf8'}]);
       checkArg('readlinkSync',      'readlink',    [0],    [Buffer.from('/link')]);
       checkRes('readlinkSync',      'readlink',            ['/link']);
