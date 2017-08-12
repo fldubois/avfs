@@ -1,10 +1,22 @@
 'use strict';
 
+var os = require('os');
+
+var url = require('url');
+
 var chai   = require('chai');
 var expect = chai.expect;
 
 var constants = require('test/unit/fixtures/constants');
 var parsers   = require('lib/common/parsers')(constants);
+
+function createURL(str) {
+  if (url.hasOwnProperty('URL')) {
+    return new url.URL(str);
+  }
+
+  return url.parse(str);
+}
 
 describe('common/parsers', function () {
 
@@ -98,6 +110,42 @@ describe('common/parsers', function () {
       expect(parsers.path('path/to/file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
       expect(parsers.path('C:\\path\\to\\file.txt')).to.deep.equal(['C:', 'path', 'to', 'file.txt']);
       expect(parsers.path('path\\to\\file.txt')).to.deep.equal(['path', 'to', 'file.txt']);
+    });
+
+  });
+
+  describe('url()', function () {
+
+    it('should return non url parameter', function () {
+      [void 0, null, 1, 'test', true, {}, []].forEach(function (param) {
+        expect(parsers.url(param)).to.equal(param);
+      });
+    });
+
+    it('should extract path from url', function () {
+      expect(parsers.url(createURL('file:///'))).to.equal('/');
+      expect(parsers.url(createURL('file:///test'))).to.equal('/test');
+      expect(parsers.url(createURL('file:///test/file'))).to.equal('/test/file');
+    });
+
+    it('should throw on bad protocol', function () {
+      expect(function () {
+        parsers.url(createURL('http://www.example.com'));
+      }).to.throw(TypeError, 'Only `file:` URLs are supported');
+    });
+
+    it('should throw on specified hostname', function () {
+      var message = 'File URLs on ' + os.platform() + ' must use hostname \'localhost\' or not specify any hostname';
+
+      expect(function () {
+        parsers.url(createURL('file://host/file'));
+      }).to.throw(TypeError, message);
+    });
+
+    it('should throw on encoded /', function () {
+      expect(function () {
+        parsers.url(createURL('file:///' + encodeURIComponent('test/file')));
+      }).to.throw(TypeError, 'Path must not include encoded / characters');
     });
 
   });

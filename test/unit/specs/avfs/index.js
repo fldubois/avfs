@@ -13,7 +13,8 @@ var specs = [
   './partials/base',
   './partials/buffer',
   './partials/members',
-  './partials/methods'
+  './partials/methods',
+  './partials/url'
 ];
 
 describe('avfs', function () {
