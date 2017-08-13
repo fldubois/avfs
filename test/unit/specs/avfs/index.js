@@ -14,6 +14,7 @@ var specs = [
   './partials/buffer',
   './partials/members',
   './partials/methods',
+  './partials/uint8array',
   './partials/url'
 ];
 
