@@ -20,6 +20,9 @@ It creates a virtual file system stored directly in memory.
 * v0.12
 * v4
 * v5
+* v6
+* v7
+* v8
 
 ### Usage
 

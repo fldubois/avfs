@@ -291,10 +291,6 @@ describe('common/streams/write-stream', function () {
       expect(fs.open).to.have.been.calledWith('/file', 'w', null);
     });
 
-    writable.on('finish', function () {
-      return done(new Error('Event `finish` emitted with write error'));
-    });
-
     writable.end('Hello');
   });
 
