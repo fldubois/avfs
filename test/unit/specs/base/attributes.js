@@ -15,7 +15,7 @@ describe('base/attributes', function () {
 
   var storage = new Storage(constants);
 
-  var base = factory(storage, constants);
+  var base = factory(storage, constants, {birthtime: true});
 
   before(function () {
     storage.files = elements.directory(parseInt('0755', 8), {
@@ -44,6 +44,11 @@ describe('base/attributes', function () {
       expect(stats.atime).to.equal(file.get('atime'));
       expect(stats.mtime).to.equal(file.get('mtime'));
       expect(stats.ctime).to.equal(file.get('ctime'));
+      expect(stats.birthtime).to.equal(file.get('birthtime'));
+
+      expect(stats.atimeMs).to.be.an('undefined');
+      expect(stats.mtimeMs).to.be.an('undefined');
+      expect(stats.ctimeMs).to.be.an('undefined');
     });
 
     it('should throw path:type error on bad path type', function () {

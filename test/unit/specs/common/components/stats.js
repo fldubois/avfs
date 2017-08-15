@@ -43,6 +43,65 @@ describe('common/components/stats', function () {
       expect(stats.atime).to.equal(element.get('atime'));
       expect(stats.mtime).to.equal(element.get('mtime'));
       expect(stats.ctime).to.equal(element.get('ctime'));
+
+      expect(stats.birthtime).to.be.an('undefined');
+      expect(stats.atimeMs).to.be.an('undefined');
+      expect(stats.mtimeMs).to.be.an('undefined');
+      expect(stats.ctimeMs).to.be.an('undefined');
+      expect(stats.birthtimeMs).to.be.an('undefined');
+    });
+  });
+
+  it('should optionally expose birthtime', function () {
+    var StatsB = require('lib/common/components/stats')(constants, {
+      birthtime: true
+    });
+
+    Object.keys(elems).forEach(function (key) {
+      var element = elems[key];
+
+      var stats = new StatsB(element);
+
+      expect(stats).to.be.an.instanceOf(StatsB);
+
+      expect(stats.birthtime).to.equal(element.get('birthtime'));
+    });
+  });
+
+  it('should optionally expose times in milliseconds', function () {
+    var StatsB = require('lib/common/components/stats')(constants, {
+      milliseconds: true
+    });
+
+    Object.keys(elems).forEach(function (key) {
+      var element = elems[key];
+
+      var stats = new StatsB(element);
+
+      expect(stats).to.be.an.instanceOf(StatsB);
+
+      expect(stats.atimeMs).to.equal(element.get('atime').getTime());
+      expect(stats.mtimeMs).to.equal(element.get('mtime').getTime());
+      expect(stats.ctimeMs).to.equal(element.get('ctime').getTime());
+
+      expect(stats.birthtimeMs).to.be.an('undefined');
+    });
+  });
+
+  it('should optionally expose birthtime in milliseconds', function () {
+    var StatsB = require('lib/common/components/stats')(constants, {
+      birthtime:    true,
+      milliseconds: true
+    });
+
+    Object.keys(elems).forEach(function (key) {
+      var element = elems[key];
+
+      var stats = new StatsB(element);
+
+      expect(stats).to.be.an.instanceOf(StatsB);
+
+      expect(stats.birthtimeMs).to.equal(element.get('birthtime').getTime());
     });
   });
 
