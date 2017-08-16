@@ -13,6 +13,10 @@ var AVFS = require('lib/avfs');
 
 var avfs = new AVFS();
 
+var noop = function () {
+  return null;
+};
+
 var check = function (method, params) {
   var errors = {};
 
@@ -1218,8 +1222,8 @@ describe('errors', function () {
 
       it('should throw on non integer file descriptor', function () {
         check('write', {
-          fs:   [true, new Buffer('Hello, friend'), 0, 5, 0],
-          avfs: [true, new Buffer('Hello, friend'), 0, 5, 0]
+          fs:   [true, new Buffer('Hello, friend'), 0, 5, 0, noop],
+          avfs: [true, new Buffer('Hello, friend'), 0, 5, 0, noop]
         });
       });
 
@@ -1241,8 +1245,8 @@ describe('errors', function () {
 
     it('should throw on offset out of bounds', function () {
       check('write', {
-        fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 5, 0],
-        avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 5, 0]
+        fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 5, 0, noop],
+        avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 5, 0, noop]
       });
     });
 
@@ -1250,8 +1254,8 @@ describe('errors', function () {
 
       it('should throw on offset out of bounds with zero length', function () {
         check('write', {
-          fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0],
-          avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0]
+          fs:   [fd.write.fs,   new Buffer('Hello, friend'), 1000, 0, 0, noop],
+          avfs: [fd.write.avfs, new Buffer('Hello, friend'), 1000, 0, 0, noop]
         });
       });
 
@@ -1259,8 +1263,8 @@ describe('errors', function () {
 
     it('should throw on length beyond buffer', function () {
       check('write', {
-        fs:   [fd.write.fs,   new Buffer('Hello, friend'), 0, 1000, 0],
-        avfs: [fd.write.avfs, new Buffer('Hello, friend'), 0, 1000, 0]
+        fs:   [fd.write.fs,   new Buffer('Hello, friend'), 0, 1000, 0, noop],
+        avfs: [fd.write.avfs, new Buffer('Hello, friend'), 0, 1000, 0, noop]
       });
     });
 
@@ -1274,8 +1278,8 @@ describe('errors', function () {
 
       it('should throw on non integer file descriptor', function () {
         check('write', {
-          fs:   [true, 'Hello, friend', 13, 'utf8'],
-          avfs: [true, 'Hello, friend', 13, 'utf8']
+          fs:   [true, 'Hello, friend', 13, 'utf8', noop],
+          avfs: [true, 'Hello, friend', 13, 'utf8', noop]
         });
       });
 

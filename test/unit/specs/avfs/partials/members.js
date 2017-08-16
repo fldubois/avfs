@@ -3,6 +3,7 @@
 var chai   = require('chai');
 var expect = chai.expect;
 var semver = require('semver');
+var sinon  = require('sinon');
 
 var constants = require('test/unit/fixtures/constants');
 var parsers   = require('lib/common/parsers')(constants);
@@ -10,6 +11,14 @@ var parsers   = require('lib/common/parsers')(constants);
 module.exports = function (fs) {
 
   describe('members', function () {
+
+    if (semver.gte(process.version, '6.0.0')) {
+
+      it('should expose constants', function () {
+        expect(fs.constants).to.be.an('object');
+      });
+
+    }
 
     it('should expose Stats', function () {
       expect(fs.Stats).to.be.a('function');
@@ -30,6 +39,36 @@ module.exports = function (fs) {
       it('should expose SyncWriteStream', function () {
         expect(fs.SyncWriteStream).to.be.a('function');
         expect(new fs.SyncWriteStream('/file')).to.be.an.instanceof(fs.SyncWriteStream);
+      });
+
+    } else {
+
+      it('should expose SyncWriteStream (non enumerable)', function () {
+        expect(fs.SyncWriteStream).to.be.a('function');
+        expect(new fs.SyncWriteStream('/file')).to.be.an.instanceof(fs.SyncWriteStream);
+        expect(fs).to.not.have.key('SyncWriteStream');
+      });
+
+    }
+
+    if (semver.gte(process.version, '8.0.0')) {
+
+      it('should deprecate SyncWriteStream', function (done) {
+        sinon.stub(process, 'emitWarning');
+
+        var SyncWriteStream = fs.SyncWriteStream;
+
+        fs.SyncWriteStream = true;
+
+        process.nextTick(function () {
+          expect(process.emitWarning.callCount).to.be.above(0);
+
+          fs.SyncWriteStream = SyncWriteStream;
+
+          process.emitWarning.restore();
+
+          return done();
+        });
       });
 
     }
