@@ -8,13 +8,13 @@
 
 > Another Virtual File System
 
-### Description
+## Description
 
 The goal of this project is to reproduce the Node.js core fs API essentially for testing/mocking purpose.
 
 It creates a virtual file system stored directly in memory.
 
-### Supported Node.js versions
+## Supported Node.js versions
 
 * v0.10
 * v0.12
@@ -24,7 +24,7 @@ It creates a virtual file system stored directly in memory.
 * v7
 * v8
 
-### Usage
+## Usage
 
 ```js
 // The module exports an AVFS constructor
@@ -54,7 +54,7 @@ fs.open('/tmp/test.txt', 'r', function (error, fd) {
 });
 ```
 
-### Caveats
+## Caveats
 
 * File types support
 
@@ -67,3 +67,20 @@ Other types (_socker_, _FIFO_, _block device_, _character device_) are not suppo
 Watching functions (`watch`, `watchFile` and `unwatchFile`) are only placeholder.
 
 They work as their core fs module couterparts but will not emit events.
+
+## Motivation
+
+Initially, this project has been started in order to create a file system independent of the host.
+The idea was to run file dependent tests in a consistent environment on all systems.
+This project should have hidden the specificities between the file systems (system directories, access rights ...).
+
+But some more effective and reliable solutions to these issues have now become standard.
+The best example is certainly the use of docker containers to run tests.
+
+Despite this, I decided to continue this project at least to a first release.
+It allowed me to dive a little deeper into the node's core in a different way than simply reading the code.
+And maybe someone could find some use to this module.
+
+## License
+
+See [License](LICENSE)
