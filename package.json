@@ -1,6 +1,6 @@
 {
   "name": "avfs",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Another Virtual File System",
   "author": "Florent Dubois <florent.dubois@devaddict.io>",
   "license": "MIT",
