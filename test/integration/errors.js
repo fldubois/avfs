@@ -290,6 +290,66 @@ describe('errors', function () {
 
   });
 
+  if (semver.gte(process.version, '8.0.0')) {
+
+    describe('copyFileSync()', function () {
+
+      it('should throw on null character in src', function () {
+        check('copyFileSync', ['\u0000', '/tmp/dir/dest']);
+      });
+
+      it('should throw on bad src parameter type', function () {
+        check('copyFileSync', [false, '/tmp/dir/dest']);
+      });
+
+      it('should throw on non existing src file', function () {
+        check('copyFileSync', ['/tmp/dir/not', '/tmp/dir/dest']);
+      });
+
+      it('should throw on non existing src parent directory', function () {
+        check('copyFileSync', ['/tmp/dir/not/file', '/tmp/dir/dest']);
+      });
+
+      it('should throw on not directory src parent', function () {
+        check('copyFileSync', ['/tmp/dir/file/file', '/tmp/dir/dest']);
+      });
+
+      it('should throw on not directory src parent', function () {
+        check('copyFileSync', ['/tmp/dir/file/file', '/tmp/dir/dest']);
+      });
+
+      it('should throw on permission denied on src', function () {
+        check('copyFileSync', ['/tmp/dir/dperm/not', '/tmp/dir/dest']);
+      });
+
+      it('should throw on null character in dest', function () {
+        check('copyFileSync', ['/tmp/dir/file', '\u0000']);
+      });
+
+      it('should throw on bad dest parameter type', function () {
+        check('copyFileSync', ['/tmp/dir/file', false]);
+      });
+
+      it('should throw on existing dest file with COPYFILE_EXCL mode', function () {
+        check('copyFileSync', ['/tmp/dir/file', '/tmp/dir/foo', fs.constants.COPYFILE_EXCL]);
+      });
+
+      it('should throw on non existing dest parent directory', function () {
+        check('copyFileSync', ['/tmp/dir/file', '/tmp/dir/not/file']);
+      });
+
+      it('should throw on not directory dest parent', function () {
+        check('copyFileSync', ['/tmp/dir/file', '/tmp/dir/file/file']);
+      });
+
+      it('should throw on permission denied on descriptor', function () {
+        check('copyFileSync', ['/tmp/dir/file', '/tmp/dir/dperm/dest']);
+      });
+
+    });
+
+  }
+
   describe('existsSync()', function () {
 
     it('should not throw on null character in path', function () {
