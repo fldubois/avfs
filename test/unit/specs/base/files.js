@@ -298,10 +298,10 @@ describe('base/files', function () {
     });
 
     it('should accept mode option', function () {
-      var result = base.writeFile('/file', 'OK', {mode: '0700'});
+      var result = base.writeFile('/tmp', 'OK', {mode: '0700'});
 
       expect(result).to.be.an('undefined');
-      expect(storage.files).to.contain.an.avfs.file('/file').with.mode('0700');
+      expect(storage.files).to.contain.an.avfs.file('/tmp').with.mode('0700');
     });
 
     it('should accept flag option', function () {

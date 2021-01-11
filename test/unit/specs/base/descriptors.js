@@ -88,6 +88,28 @@ describe('base/descriptors', function () {
       expect(storage.files).to.contain.an.avfs.file('/new').with.mode('0666').that.is.clear();
     });
 
+    it('should not create new file in truncate mode', function () {
+      var inode = storage.get('/file').get('inode');
+
+      var fd = base.open('/file', constants.O_RDWR | constants.O_TRUNC);
+
+      expect(fd).to.be.a('number');
+      expect(fd).to.equal(handles.next - 1);
+
+      expect(storage.get('/file').get('inode')).to.equal(inode);
+    });
+
+    it('should not change mode of existing file in truncate mode', function () {
+      var mode = storage.get('/file').get('mode');
+
+      var fd = base.open('/file', constants.O_RDWR | constants.O_TRUNC, '0700');
+
+      expect(fd).to.be.a('number');
+      expect(fd).to.equal(handles.next - 1);
+
+      expect(storage.get('/file').get('mode')).to.equal(mode);
+    });
+
     it('should erase existing file in truncate mode', function () {
       var fd = base.open('/file', constants.O_RDWR | constants.O_TRUNC);
 
