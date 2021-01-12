@@ -954,7 +954,7 @@ describe('errors', function () {
     });
 
     it('should throw on new path under old path', function () {
-      check('renameSync', ['/tmp', '/tmp/new']);
+      check('renameSync', ['/tmp/dir', '/tmp/dir/new']);
     });
 
     it('should throw on not directory parent', function () {

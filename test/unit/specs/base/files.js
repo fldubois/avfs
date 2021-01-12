@@ -196,7 +196,7 @@ describe('base/files', function () {
     it('should throw EINVAL on new path under old path', function () {
       expect(function () {
         base.rename('/file', '/file/new');
-      }).to.throw(AVFSError).with.property('code', 'EACCES');
+      }).to.throw(AVFSError).with.property('code', 'EINVAL');
     });
 
     it('should throw EACCES on not writable parent directory', function () {
