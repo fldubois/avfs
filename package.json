@@ -27,7 +27,9 @@
     "test:integration": "nyc mocha --recursive --require test/bootstrap.js test/integration",
     "test:report": "nyc report",
     "test:coverage": "nyc check-coverage",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "precommit": "npm run test:lint",
+    "prepush": "npm run test"
   },
   "dependencies": {
     "object-assign": "^4.1.1"
@@ -38,6 +40,7 @@
     "coveralls": "^2.11.16",
     "eslint": "^2.13.1",
     "fs-readdir-recursive": "^1.0.0",
+    "husky": "^0.13.4",
     "lodash.padstart": "^4.6.1",
     "mocha": "^3.2.0",
     "nyc": "^10.3.2",
