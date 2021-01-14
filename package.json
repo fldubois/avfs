@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "app-module-path": "^2.2.0",
+    "async-each": "^1.0.3",
     "chai": "^3.5.0",
     "coveralls": "^2.11.16",
     "eslint": "^2.13.1",

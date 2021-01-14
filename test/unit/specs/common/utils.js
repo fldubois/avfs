@@ -1,6 +1,7 @@
 'use strict';
 
 var chai   = require('chai');
+var each   = require('async-each');
 var expect = chai.expect;
 var sinon  = require('sinon');
 
@@ -61,7 +62,25 @@ describe('common/utils', function () {
 
         return done();
       });
+    });
 
+    it('should call synchronous couterpart with the right context', function (done) {
+      var Target = function () {
+        this.mock = true;
+
+        utils.asyncify(this, nocb);
+      };
+
+      Target.prototype.doSync = sinon.stub();
+
+      each([new Target(), new Target()], function (instance, cb) {
+        instance.do(function (error) {
+          expect(error).to.equal(null);
+          expect(instance.doSync).have.been.calledOn(instance);
+
+          return cb();
+        });
+      }, done);
     });
 
     it('should pass error to the callback', function (done) {
