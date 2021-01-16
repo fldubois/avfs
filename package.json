@@ -28,6 +28,8 @@
     "test:report": "nyc report",
     "test:coverage": "nyc check-coverage",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "preversion": "npm run test",
+    "postversion": "git push --follow-tags --no-verify",
     "precommit": "npm run test:lint",
     "prepush": "npm run test"
   },
