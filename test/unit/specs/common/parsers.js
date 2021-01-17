@@ -35,7 +35,9 @@ describe('common/parsers', function () {
 
       specs.forEach(function (spec) {
         spec.values.forEach(function (value) {
-          expect(parsers.flags(value) & spec.flag).to.be.above(0, value + ' should contain ' + spec.flag + ' flag');
+          var flag = spec.flag;
+
+          expect(parsers.flags(value) & flag).to.equal(flag, value + ' should contain ' + spec.flag + ' flag');
         });
       });
     });

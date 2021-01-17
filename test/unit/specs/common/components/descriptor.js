@@ -35,7 +35,6 @@ describe('common/components/descriptor', function () {
 
     it('should return false for non readable flags', function () {
       expect(new Descriptor({}, '', constants.O_WRONLY).isReadable()).to.equal(false);
-      expect(new Descriptor({}, '', 0).isReadable()).to.equal(false);
       expect(new Descriptor({}, '', false).isReadable()).to.equal(false);
       expect(new Descriptor({}, '', null).isReadable()).to.equal(false);
     });
