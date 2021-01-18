@@ -254,4 +254,28 @@ describe('common/utils', function () {
 
   });
 
+  describe('filter()', function () {
+
+    it('should filter object by keys with the predicate', function () {
+      var object = {
+        a: Math.random(),
+        b: Math.random()
+      };
+
+      var predicate = sinon.stub();
+
+      predicate.withArgs('a').returns(false);
+      predicate.withArgs('b').returns(true);
+
+      var result = utils.filter(object, predicate);
+
+      expect(predicate).to.have.callCount(2);
+
+      expect(predicate.getCall(0)).to.have.been.calledWithExactly('a');
+      expect(predicate.getCall(1)).to.have.been.calledWithExactly('b');
+
+      expect(result).to.be.an('object').that.have.all.keys('b');
+      expect(result.b).to.equal(object.b);
+    });
+  });
 });

@@ -37,4 +37,16 @@ describe('Constants', function () {
     });
   });
 
+  if (typeof fs.constants === 'object') {
+
+    it('should expose constants object', function () {
+      expect(avfs.constants).to.have.all.keys(fs.constants);
+
+      Object.keys(fs.constants).forEach(function (name) {
+        expect(avfs.constants[name], name + ' should have the correct value').to.equal(fs.constants[name]);
+      });
+    });
+
+  }
+
 });
