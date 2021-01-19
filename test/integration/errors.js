@@ -1,6 +1,7 @@
 'use strict';
 
-var fs = require('fs');
+var constants = require('constants');
+var fs        = require('fs');
 
 var chai   = require('chai');
 var expect = chai.expect;
@@ -713,6 +714,10 @@ describe('errors', function () {
 
     it('should throw on permission denied', function () {
       check('openSync', ['/tmp/dir/perm', 'r']);
+    });
+
+    it('should throw on non directory path with O_DIRECTORY flag', function () {
+      check('openSync', ['/tmp/dir/file', constants.O_RDONLY | constants.O_DIRECTORY]);
     });
 
   });
