@@ -720,6 +720,10 @@ describe('errors', function () {
       check('openSync', ['/tmp/dir/file', constants.O_RDONLY | constants.O_DIRECTORY]);
     });
 
+    it('should throw on symlink path with O_NOFOLLOW flag', function () {
+      check('openSync', ['/tmp/dir/link', constants.O_RDONLY | constants.O_NOFOLLOW]);
+    });
+
   });
 
   describe('readdirSync()', function () {
