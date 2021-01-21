@@ -129,6 +129,19 @@ describe('base/files', function () {
       expect(content).to.equal('Hello, friend.');
     });
 
+    it('should update file access time', function (done) {
+      var file   = storage.get('/file');
+      var before = file.get('atime');
+
+      setTimeout(function () {
+        base.readFile('/file');
+
+        expect(file.get('atime').getTime()).to.be.above(before.getTime());
+
+        done();
+      }, 200);
+    });
+
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
         expect(function () {

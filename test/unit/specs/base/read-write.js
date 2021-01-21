@@ -97,6 +97,21 @@ describe('base/read-write', function () {
       expect(buffer.toString()).to.equal('Hello, world!');
     });
 
+    it('should update file access time', function (done) {
+      var file   = storage.get('/file');
+      var before = file.get('atime');
+
+      setTimeout(function () {
+        handles[FD] = new Descriptor(file, '/file', constants.O_RDWR);
+
+        base.read(FD, new Buffer(5), 0, 5, 0);
+
+        expect(file.get('atime').getTime()).to.be.above(before.getTime());
+
+        done();
+      }, 200);
+    });
+
     it('should throw fd:type on non integer file descriptor', function () {
       expect(function () {
         base.read(false, new Buffer(5), 0, 10, null);
