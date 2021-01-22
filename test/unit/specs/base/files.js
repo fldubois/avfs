@@ -142,6 +142,19 @@ describe('base/files', function () {
       }, 200);
     });
 
+    it('should not update file access time with O_NOATIME flag', function (done) {
+      var file  = storage.get('/file');
+      var atime = file.get('atime');
+
+      setTimeout(function () {
+        base.readFile('/file', {flag: constants.O_RDWR | constants.O_NOATIME});
+
+        expect(file.get('atime').getTime()).to.be.equal(atime.getTime());
+
+        done();
+      }, 200);
+    });
+
     it('should throw path:type error on bad path type', function () {
       [void 0, null, 0, false, {}, []].forEach(function (path) {
         expect(function () {

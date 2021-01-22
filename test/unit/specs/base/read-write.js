@@ -112,6 +112,21 @@ describe('base/read-write', function () {
       }, 200);
     });
 
+    it('should not update file access time with O_NOATIME flag', function (done) {
+      var file  = storage.get('/file');
+      var atime = file.get('atime');
+
+      setTimeout(function () {
+        handles[FD] = new Descriptor(file, '/file', constants.O_RDWR | constants.O_NOATIME);
+
+        base.read(FD, new Buffer(5), 0, 5, 0);
+
+        expect(file.get('atime').getTime()).to.be.equal(atime.getTime());
+
+        done();
+      }, 200);
+    });
+
     it('should throw fd:type on non integer file descriptor', function () {
       expect(function () {
         base.read(false, new Buffer(5), 0, 10, null);
