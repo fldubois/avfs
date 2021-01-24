@@ -31,12 +31,12 @@ describe('common/components/descriptor', function () {
     it('should return true for readable flags', function () {
       expect(new Descriptor({}, '', constants.O_RDONLY).isReadable()).to.equal(true);
       expect(new Descriptor({}, '', constants.O_RDWR).isReadable()).to.equal(true);
+      expect(new Descriptor({}, '', constants.O_SYNC | constants.O_RDONLY).isReadable()).to.equal(true);
+      expect(new Descriptor({}, '', constants.O_SYNC | constants.O_RDWR).isReadable()).to.equal(true);
     });
 
     it('should return false for non readable flags', function () {
       expect(new Descriptor({}, '', constants.O_WRONLY).isReadable()).to.equal(false);
-      expect(new Descriptor({}, '', false).isReadable()).to.equal(false);
-      expect(new Descriptor({}, '', null).isReadable()).to.equal(false);
     });
 
   });
@@ -46,13 +46,12 @@ describe('common/components/descriptor', function () {
     it('should return true for writable flags', function () {
       expect(new Descriptor({}, '', constants.O_WRONLY).isWritable()).to.equal(true);
       expect(new Descriptor({}, '', constants.O_RDWR).isWritable()).to.equal(true);
+      expect(new Descriptor({}, '', constants.O_SYNC | constants.O_WRONLY).isWritable()).to.equal(true);
+      expect(new Descriptor({}, '', constants.O_SYNC | constants.O_RDWR).isWritable()).to.equal(true);
     });
 
     it('should return false for non writable flags', function () {
       expect(new Descriptor({}, '', constants.O_RDONLY).isWritable()).to.equal(false);
-      expect(new Descriptor({}, '', 0).isWritable()).to.equal(false);
-      expect(new Descriptor({}, '', false).isWritable()).to.equal(false);
-      expect(new Descriptor({}, '', null).isWritable()).to.equal(false);
     });
 
   });
