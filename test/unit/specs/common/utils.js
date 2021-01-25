@@ -278,4 +278,31 @@ describe('common/utils', function () {
       expect(result.b).to.equal(object.b);
     });
   });
+
+  describe('map()', function () {
+
+    it('should map object values', function () {
+      var object = {
+        a: Math.random(),
+        b: Math.random()
+      };
+
+      var transform = sinon.stub().callsFake(function (value) {
+        return value * 2;
+      });
+
+      var result = utils.map(object, transform);
+
+      expect(transform).to.have.callCount(2);
+
+      expect(transform.getCall(0)).to.have.been.calledWithExactly(object.a);
+      expect(transform.getCall(1)).to.have.been.calledWithExactly(object.b);
+
+      expect(result).to.deep.equal({
+        a: object.a * 2,
+        b: object.b * 2
+      });
+    });
+  });
+
 });
