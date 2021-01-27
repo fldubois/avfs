@@ -89,7 +89,7 @@ describe('base/files', function () {
     });
 
     it('should throw options:type error on bad options type', function () {
-      [1, true].forEach(function (options) {
+      [0, 1, true, false].forEach(function (options) {
         expect(function () {
           base.appendFile('/file', 'OK', options);
         }).to.throw(AVFSError).with.property('code', 'options:type');
@@ -164,7 +164,7 @@ describe('base/files', function () {
     });
 
     it('should throw options:type error on bad options type', function () {
-      [1, true].forEach(function (options) {
+      [0, 1, true, false].forEach(function (options) {
         expect(function () {
           base.readFile('/file', options);
         }).to.throw(AVFSError).with.property('code', 'options:type');
@@ -345,7 +345,7 @@ describe('base/files', function () {
     });
 
     it('should throw options:type error on bad options type', function () {
-      [1, true].forEach(function (options) {
+      [0, 1, true, false].forEach(function (options) {
         expect(function () {
           base.writeFile('/file', 'OK', options);
         }).to.throw(AVFSError).with.property('code', 'options:type');
