@@ -59,7 +59,7 @@ describe('base/directories', function () {
       });
     });
 
-    it('should throw EEXIST on non existing directory', function () {
+    it('should throw EEXIST on existing directory', function () {
       expect(base.mkdir.bind(null, '/dir')).to.throw(AVFSError).with.property('code', 'EEXIST');
     });
 
@@ -78,6 +78,10 @@ describe('base/directories', function () {
 
       expect(storage.files).to.contain.an.avfs.directory(nameA).with.mode('0700').that.is.clear();
       expect(storage.files).to.contain.an.avfs.directory(nameB).with.mode('0700').that.is.clear();
+    });
+
+    it('should throw ENOENT on non existing parent directory', function () {
+      expect(base.mkdtemp.bind(null, '/not/test')).to.throw(AVFSError).with.property('code', 'ENOENT');
     });
 
   });
