@@ -26,8 +26,8 @@ describe('common/errors', function () {
 
   describe('nullCheck()', function () {
 
-    it('should return true with valid string', function () {
-      expect(errors.nullCheck('test')).to.equal(true);
+    it('should return undefined with valid string', function () {
+      expect(errors.nullCheck('test')).to.be.an('undefined');
     });
 
     it('should throw with null bytes in string', function () {
@@ -36,46 +36,45 @@ describe('common/errors', function () {
       }).to.throw(Error, 'Path must be a string without null bytes.');
     });
 
-    it('should accept callback', function (done) {
-      errors.nullCheck('test', done);
-    });
-
-    it('should pass error to the callback', function () {
-      errors.nullCheck('\u0000', function (error) {
-        expect(error).to.be.an('error');
-        expect(error.message).to.equal('Path must be a string without null bytes.');
-      });
-    });
-
-    it('should accept data', function () {
+    it('should accept data', function (done) {
       var data = {
         test: true,
         text: 'test'
       };
 
-      errors.nullCheck(data, '\u0000', function (error) {
-        expect(error).to.be.an('error');
+      try {
+        errors.nullCheck(data, '\u0000');
+
+        return done(new Error('nullCheck should have thrown an error'));
+      } catch (error) {
+        expect(error).to.be.an.instanceOf(Error);
         expect(error.message).to.equal('Path must be a string without null bytes.');
-        expect(error).to.include.keys(['test', 'text']);
-        expect(error.test).to.equal(true);
-        expect(error.text).to.equal('test');
-      });
+        expect(error).to.have.property('test', true);
+        expect(error).to.have.property('text', 'test');
+
+        return done();
+      }
     });
 
-    it('should accept custom message', function () {
+    it('should accept custom message', function (done) {
       var data = {
         message: 'Error message',
         test:    true,
         text:    'test'
       };
 
-      errors.nullCheck(data, '\u0000', function (error) {
-        expect(error).to.be.an('error');
+      try {
+        errors.nullCheck(data, '\u0000');
+
+        return done(new Error('nullCheck should have thrown an error'));
+      } catch (error) {
+        expect(error).to.be.an.instanceOf(Error);
         expect(error.message).to.equal('Error message');
-        expect(error).to.include.keys(['test', 'text']);
-        expect(error.test).to.equal(true);
-        expect(error.text).to.equal('test');
-      });
+        expect(error).to.have.property('test', true);
+        expect(error).to.have.property('text', 'test');
+
+        return done();
+      }
     });
 
   });
