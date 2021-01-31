@@ -5,6 +5,8 @@ var expect = chai.expect;
 
 var errors = require('lib/common/errors');
 
+var AVFSError = require('lib/common/avfs-error');
+
 describe('common/errors', function () {
 
   describe('createError()', function () {
@@ -30,51 +32,8 @@ describe('common/errors', function () {
       expect(errors.nullCheck('test')).to.be.an('undefined');
     });
 
-    it('should throw with null bytes in string', function () {
-      expect(function () {
-        errors.nullCheck('\u0000');
-      }).to.throw(Error, 'Path must be a string without null bytes.');
-    });
-
-    it('should accept data', function (done) {
-      var data = {
-        test: true,
-        text: 'test'
-      };
-
-      try {
-        errors.nullCheck(data, '\u0000');
-
-        return done(new Error('nullCheck should have thrown an error'));
-      } catch (error) {
-        expect(error).to.be.an.instanceOf(Error);
-        expect(error.message).to.equal('Path must be a string without null bytes.');
-        expect(error).to.have.property('test', true);
-        expect(error).to.have.property('text', 'test');
-
-        return done();
-      }
-    });
-
-    it('should accept custom message', function (done) {
-      var data = {
-        message: 'Error message',
-        test:    true,
-        text:    'test'
-      };
-
-      try {
-        errors.nullCheck(data, '\u0000');
-
-        return done(new Error('nullCheck should have thrown an error'));
-      } catch (error) {
-        expect(error).to.be.an.instanceOf(Error);
-        expect(error.message).to.equal('Error message');
-        expect(error).to.have.property('test', true);
-        expect(error).to.have.property('text', 'test');
-
-        return done();
-      }
+    it('should throw path:null error with null bytes in string', function () {
+      expect(errors.nullCheck.bind(null, '\u0000')).to.throw(AVFSError).with.property('code', 'path:null');
     });
 
   });

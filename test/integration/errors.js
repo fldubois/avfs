@@ -1071,7 +1071,7 @@ describe('errors', function () {
   describe('truncateSync()', function () {
 
     it('should throw on null character in path', function () {
-      check('readFileSync', ['\u0000']);
+      check('truncateSync', ['\u0000']);
     });
 
     it('should throw on non existing path', function () {
